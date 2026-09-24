@@ -19,19 +19,22 @@ Khi tôi yêu cầu chỉnh sửa hoặc viết tính năng mới, bạn BẮT B
    - Khi viết code: Sử dụng React + TypeScript + Tailwind CSS, icon từ `lucide-react`. Đảm bảo code sạch, không lỗi type linter.
    - Hỗ trợ đa ngôn ngữ: Giữ nguyên cơ chế chuyển đổi ngôn ngữ qua `useLanguage()` (VI/EN) trong `src/context/LanguageContext.tsx`.
 
-2. QUY TRÌNH GIT & BÁO CÁO (BẮT BUỘC):
-   - Sau khi hoàn thành code hoặc sửa lỗi, bạn phải TỔNG HỢP danh sách file đã thay đổi.
+2. QUY TRÌNH GIT & BẢO VỆ NHÁNH MAIN (BẮT BUỘC):
+   - TUYỆT ĐỐI KHÔNG hướng dẫn commit/push trực tiếp vào nhánh `main`.
+   - Bắt buộc tạo và làm việc trên branch riêng theo cú pháp: `feature/<tên-tính-năng>` hoặc `fix/<tên-lỗi>`.
+   - Sau khi hoàn thành code, bạn phải TỔNG HỢP danh sách file đã thay đổi.
    - GỢI Ý ĐẦY ĐỦ CÁC LỆNH GIT theo thứ tự để tôi có thể copy và chạy ngay trên Terminal:
-     + Lệnh kiểm tra trạng thái (`git status`)
-     + Lệnh thêm file vào stage (`git add .` hoặc từng file)
-     + Lệnh commit với thông điệp rõ ràng chuẩn Conventional Commits (ví dụ: `git commit -m "feat: thêm component X"` hoặc `git commit -m "fix: sửa lỗi hiển thị Y"`)
-     + Lệnh kéo code mới nhất để tránh conflict (`git pull origin main` hoặc `git pull --rebase origin main`)
-     + Lệnh đẩy code lên GitHub (`git push origin <tên-branch>` hoặc `git push origin main`)
+     + 1. Lệnh kiểm tra branch hiện tại & trạng thái (`git status`)
+     + 2. Lệnh tạo branch mới nếu chưa có (`git checkout -b feature/<tên-tính-năng>`)
+     + 3. Lệnh thêm file vào stage (`git add .`)
+     + 4. Lệnh commit chuẩn Conventional Commits (ví dụ: `git commit -m "feat: cập nhật trang X"`)
+     + 5. Lệnh đẩy branch lên GitHub (`git push -u origin feature/<tên-tính-năng>`)
+     + 6. Hướng dẫn tạo Pull Request (PR) trên GitHub gửi vào `main` để Admin/Chủ dự án duyệt (Approve) trước khi merge.
 ```
 
 ---
 
-## 🛠️ 2. Quy Trình Làm Việc & Bộ Lệnh Git Chuẩn
+## 🛠️ 2. Quy Trình Làm Việc & Bộ Lệnh Git Chuẩn (Có Xét Duyệt Pull Request)
 
 ### Bước 1: Lần đầu tiên tham gia dự án (Clone code)
 ```bash
@@ -50,20 +53,21 @@ npm run dev
 
 ---
 
-### Bước 2: Bắt đầu một phiên làm việc / Tính năng mới
-> ⚠️ **Quan trọng**: Luôn kéo code mới nhất từ team về máy trước khi viết code để tránh bị xung đột (conflict).
+### Bước 2: Bắt đầu một tính năng mới / sửa lỗi
+> ⚠️ **Bắt buộc**: Luôn kéo code mới nhất từ `main` về trước, sau đó tạo branch riêng để làm việc. Không commit trực tiếp lên `main`.
 
 ```bash
-# Kéo code mới nhất từ nhánh main
+# 1. Chuyển về main và kéo code mới nhất
+git checkout main
 git pull origin main
 
-# (Khuyến nghị) Tạo branch riêng để làm việc
+# 2. Tạo branch mới cho tính năng của bạn (VD: feature/hoat-dong, fix/header)
 git checkout -b feature/ten-tinh-nang-moi
 ```
 
 ---
 
-### Bước 3: Sau khi sửa code / viết tính năng xong (Cập nhật lên GitHub)
+### Bước 3: Sau khi sửa code xong (Đẩy lên GitHub và tạo Pull Request)
 
 ```bash
 # 1. Kiểm tra lại các file đã sửa
@@ -72,19 +76,21 @@ git status
 # 2. Thêm toàn bộ các file đã thay đổi vào Git
 git add .
 
-# 3. Tạo commit với nội dung mô tả rõ ràng (VD: feat, fix, style, docs, refactor)
+# 3. Tạo commit với nội dung mô tả rõ ràng
 git commit -m "feat: mô tả ngắn gọn tính năng bạn vừa làm"
 
-# 4. Kéo code mới nhất về một lần nữa để đảm bảo không bị đè code của người khác
-git pull origin main
-
-# 5. Đẩy code lên GitHub
-# Nếu đang làm trên branch riêng:
+# 4. Đẩy branch của bạn lên GitHub
 git push -u origin feature/ten-tinh-nang-moi
-
-# Hoặc nếu làm trực tiếp trên main:
-git push origin main
 ```
+
+---
+
+### Bước 4: Tạo Pull Request & Chờ Admin Phê Duyệt
+
+1. Truy cập vào GitHub: [https://github.com/khanhphamvn222/web2](https://github.com/khanhphamvn222/web2)
+2. Bạn sẽ thấy thông báo màu vàng xuất hiện: **"feature/ten-tinh-nang-moi had recent pushes"** -> Nhấn nút **Compare & pull request**.
+3. Nhập mô tả các thay đổi đã thực hiện và nhấn **Create pull request**.
+4. **Admin (Chủ repo)** sẽ vào tab **Pull requests**, kiểm tra code, review và nhấn **Approve & Merge** để đưa code vào `main`.
 
 ---
 
@@ -101,6 +107,6 @@ git push origin main
 ---
 
 ## ⚠️ Những Điều Cần Lưu Ý Khi Làm Việc Chung
-1. **Không commit thư mục `node_modules` hoặc thư mục `dist`** (Đã có sẵn trong file `.gitignore`).
-2. **Kiểm tra `npm run build` hoặc `npm run dev`** trước khi push để đảm bảo code không bị lỗi compile/TypeScript.
-3. Nếu gặp thông báo **Merge Conflict** khi push: Hãy liên hệ ngay với người làm cùng để đối chiếu file bị trùng trước khi ghi đè!
+1. **Không commit trực tiếp lên `main`**: Nhánh `main` đã được bật chế độ bảo vệ (Branch Protection), mọi commit đều phải thông qua Pull Request.
+2. **Không commit thư mục `node_modules` hoặc `dist`** (Đã có trong `.gitignore`).
+3. **Kiểm tra `npm run build` hoặc `npm run dev`** trước khi tạo PR để tránh lỗi TypeScript/Build.
