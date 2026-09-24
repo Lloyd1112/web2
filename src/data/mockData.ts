@@ -761,34 +761,239 @@ export const mockDoctorProfiles = [
 
 export const mockNewsArticles = [
   {
-    id: 'n1',
-    title: 'Khai mạc tuần lễ Thực hành Living Lab Y tế cộng đồng Bình Mỹ 2025',
-    date: '18/05/2025',
-    category: 'Sự kiện',
-    summary: 'Hơn 200 sinh viên y dược và 30 chuyên gia quốc tế đã tham gia chuỗi hoạt động khám sàng lọc và thử nghiệm trạm y tế số.',
-    image: 'https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=800&q=80',
-    views: 1420
+    id: 'art-featured',
+    title: 'Lễ ra mắt mô hình “Living & Startup Lab” tại Làng Sinh viên Bình Mỹ',
+    date: '15 Tháng 9, 2026',
+    category: 'Hoạt động',
+    badgeColor: 'emerald',
+    summary: 'Không gian sáng tạo dành cho sinh viên, nơi ý tưởng được ươm mầm và hiện thực hóa.',
+    image: '/news-students.jpg',
+    detailImage: '/startup-lab.jpg',
+    caption: 'Không gian làm việc và sáng tạo tại Living & Startup Lab – Làng Sinh viên Bình Mỹ',
+    views: '1.248 lượt xem',
+    readTime: '4 phút',
+    author: 'Ban truyền thông',
+    paragraphs: [
+      'Ngày 15/9/2026, Làng Sinh viên Đổi mới Sáng tạo Bình Mỹ chính thức ra mắt mô hình “Living & Startup Lab” – không gian sáng tạo, kết nối và ươm mầm các ý tưởng khởi nghiệp của sinh viên, thanh niên và cộng đồng.',
+      'Sự kiện có sự tham dự của đại diện chính quyền địa phương, các chuyên gia khởi nghiệp, doanh nghiệp đối tác và đông đảo sinh viên. Đây là một trong những mô hình trọng điểm nhằm thúc đẩy tinh thần đổi mới sáng tạo, đồng thời tạo cơ hội kết nối giữa sinh viên – doanh nghiệp – nhà đầu tư.'
+    ],
+    highlightsTitle: 'Những điểm nổi bật trong sự kiện',
+    highlights: [
+      'Giới thiệu không gian làm việc chung hiện đại, trang bị đầy đủ công nghệ.',
+      'Kết nối hơn 20 doanh nghiệp và quỹ đầu tư với các dự án khởi nghiệp tiềm năng.',
+      'Chương trình chia sẻ kinh nghiệm từ các startup thành công.'
+    ],
+    quote: 'Cùng nhau xây dựng hệ sinh thái đổi mới sáng tạo vì cộng đồng!'
   },
   {
-    id: 'n2',
-    title: 'Ký kết biên bản ghi nhớ hợp tác đào tạo điều dưỡng lão khoa với các đối tác Nhật Bản',
-    date: '10/05/2025',
+    id: 'art-seminar',
+    title: 'Hội thảo “Chuyển đổi số trong nông nghiệp và du lịch cộng đồng”',
+    date: '09 Tháng 9, 2026',
+    category: 'Hoạt động',
+    badgeColor: 'emerald',
+    summary: 'Ứng dụng giải pháp chuyển đổi số và công nghệ cao nhằm nâng cao chuỗi giá trị nông nghiệp gắn kết du lịch sức khỏe sinh thái.',
+    image: '/news-seminar.jpg',
+    detailImage: '/news-seminar.jpg',
+    caption: 'Toàn cảnh hội thảo chuyển đổi số với hơn 150 chuyên gia và đại diện doanh nghiệp',
+    views: '986 lượt xem',
+    readTime: '3 phút',
+    author: 'Viện Nghiên cứu Nông nghiệp Sức khỏe',
+    paragraphs: [
+      'Hội thảo quy tụ hơn 150 chuyên gia nông nghiệp, đại diện các hợp tác xã và doanh nghiệp công nghệ số. Sự kiện tập trung thảo luận các giải pháp truy xuất nguồn gốc nông sản hữu cơ, số hóa quy trình canh tác dược liệu bản địa và phát triển các tour du lịch sinh thái nông nghiệp gắn với chăm sóc sức khỏe.',
+      'Các mô hình thử nghiệm ứng dụng cảm biến IoT và bản đồ số hóa vùng trồng đã được giới thiệu trực quan tại không gian hội thảo.'
+    ],
+    highlightsTitle: 'Nội dung cốt lõi của hội thảo',
+    highlights: [
+      'Ứng dụng IoT và cảm biến thông minh trong quản lý vườn dược liệu chuẩn GACP.',
+      'Xây dựng chuỗi liên kết giá trị từ nông trại sinh thái đến các gói du lịch dưỡng sinh.',
+      'Thảo luận cơ chế trợ vốn và chuyển giao kỹ thuật số hóa cho bà con nông dân.'
+    ],
+    quote: 'Số hóa nông nghiệp gắn liền du lịch xanh – Hướng đi bền vững cho Bình Mỹ!'
+  },
+  {
+    id: 'art-health',
+    title: 'Chương trình khám sức khỏe miễn phí cho người dân Bình Mỹ',
+    date: '05 Tháng 9, 2026',
+    category: 'Thông báo',
+    badgeColor: 'sky',
+    summary: 'Chương trình tầm soát sức khỏe tổng quát, đo đường huyết, huyết áp và cấp phát thuốc miễn phí cho người dân Bình Mỹ.',
+    image: '/news-health.jpg',
+    detailImage: '/news-health.jpg',
+    caption: 'Các bác sĩ và điều dưỡng tận tình thăm khám và tư vấn sức khỏe cho bà con',
+    views: '2.140 lượt xem',
+    readTime: '3 phút',
+    author: 'Trung tâm Y tế Cộng đồng Bình Mỹ',
+    paragraphs: [
+      'Chương trình do Làng Sinh viên Bình Mỹ phối hợp cùng các bác sĩ chuyên khoa Bệnh viện Đại học Y Dược tổ chức. Đợt khám đã thực hiện tầm soát tim mạch, đo chỉ số sinh hiệu tự động và tư vấn dinh dưỡng cho hơn 500 bà con cao tuổi tại xã Bình Mỹ.',
+      'Người dân tham gia được lập hồ sơ theo dõi sức khỏe điện tử trên hệ thống Telehealth cơ sở, giúp theo dõi liên tục và kịp thời phát hiện sớm các bệnh mãn tính.'
+    ],
+    highlightsTitle: 'Kết quả đạt được trong đợt khám',
+    highlights: [
+      'Khám và cấp thuốc miễn phí cho hơn 500 người cao tuổi và gia đình chính sách.',
+      'Số hóa 100% hồ sơ bệnh án cơ bản vào hệ thống y tế số của Living Lab.',
+      'Tặng 200 phần quà dinh dưỡng và cẩm nang tự chăm sóc sức khỏe tại nhà.'
+    ],
+    quote: 'Chung tay vì một cộng đồng Bình Mỹ khỏe mạnh, an vui và trường thọ!'
+  },
+  {
+    id: 'art-signing',
+    title: 'Ký kết hợp tác với Đại học Y khoa Quốc tế Hàn Quốc',
+    date: '28 Tháng 8, 2026',
     category: 'Hợp tác quốc tế',
-    summary: 'Chương trình mở ra cơ hội thực tập hưởng lương và cấp chứng chỉ hành nghề chuẩn quốc tế cho sinh viên tại Làng.',
-    image: 'https://images.unsplash.com/photo-1521791136064-7986c2920216?auto=format&fit=crop&w=800&q=80',
-    views: 980
+    badgeColor: 'purple',
+    summary: 'Ký kết biên bản ghi nhớ hợp tác chiến lược trong đào tạo y khoa, trao đổi học thuật và nghiên cứu lâm sàng.',
+    image: '/news-signing.jpg',
+    detailImage: '/news-signing.jpg',
+    caption: 'Lễ ký kết biên bản ghi nhớ hợp tác quốc tế giữa hai đơn vị',
+    views: '1.430 lượt xem',
+    readTime: '5 phút',
+    author: 'Văn phòng Hợp tác Quốc tế',
+    paragraphs: [
+      'Thỏa thuận hợp tác mở ra các chương trình trao đổi sinh viên y khoa, học bổng thạc sĩ điều dưỡng lão khoa và tiếp nhận các đoàn bác sĩ chuyên gia Hàn Quốc đến giảng dạy, hội chẩn tại Trung tâm Y tế Cộng đồng Bình Mỹ.',
+      'Hai bên thống nhất triển khai dự án nghiên cứu chung về ứng dụng Trí tuệ nhân tạo (AI) trong chẩn đoán sớm bệnh lý lão khoa tại nông thôn.'
+    ],
+    highlightsTitle: 'Trọng tâm thỏa thuận hợp tác',
+    highlights: [
+      'Chương trình liên kết đào tạo cử nhân và thạc sĩ điều dưỡng chuẩn quốc tế.',
+      'Hội chẩn y khoa từ xa Tele-consultation giữa các bệnh viện đối tác tại Seoul và Bình Mỹ.',
+      'Quỹ học bổng toàn phần dành cho sinh viên y dược xuất sắc tham gia dự án Living Lab.'
+    ],
+    quote: 'Nâng tầm y tế cộng đồng thông qua cầu nối hợp tác quốc tế sâu rộng!'
   },
   {
-    id: 'n3',
-    title: 'Ra mắt cụm vườn trị liệu và mô hình chăm sóc người cao tuổi bán trú tại Bình Mỹ',
-    date: '02/05/2025',
-    category: 'Mô hình y tế',
-    summary: 'Mô hình kết hợp cây dược liệu bản địa với phương pháp vận động dưỡng sinh, nhận được sự đánh giá cao từ Bộ Y tế.',
-    image: 'https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80',
-    views: 1850
+    id: 'art-job-fair',
+    title: 'Ngày hội việc làm – Kết nối doanh nghiệp và sinh viên',
+    date: '20 Tháng 8, 2026',
+    category: 'Sự kiện',
+    badgeColor: 'amber',
+    summary: 'Cơ hội kết nối trực tiếp giữa hơn 30 doanh nghiệp y tế, dược phẩm, công nghệ với sinh viên sắp tốt nghiệp.',
+    image: '/job-fair.jpg',
+    detailImage: '/job-fair.jpg',
+    caption: 'Không khí sôi động tại ngày hội hướng nghiệp và tuyển dụng',
+    views: '1.850 lượt xem',
+    readTime: '3 phút',
+    author: 'Trung tâm Hỗ trợ Sinh viên & Khởi nghiệp',
+    paragraphs: [
+      'Ngày hội việc làm năm 2026 thu hút hơn 1.000 sinh viên tham dự, với sự hiện diện của hơn 30 nhà tuyển dụng hàng đầu trong các lĩnh vực bệnh viện tư nhân, chuỗi chăm sóc sức khỏe, viện điều dưỡng và công ty công nghệ sinh học.',
+      'Nhiều sinh viên xuất sắc đã nhận được lời mời thực tập hưởng lương và ký hợp đồng tuyển dụng trực tiếp ngay tại sự kiện.'
+    ],
+    highlightsTitle: 'Điểm sáng của ngày hội',
+    highlights: [
+      'Hơn 500 vị trí việc làm và thực tập chuyên ngành y dược, điều dưỡng, quản trị.',
+      'Chuỗi workshop phỏng vấn thử và hiệu chỉnh CV chuẩn quốc tế cùng chuyên gia nhân sự.',
+      'Ký kết thỏa thuận cung ứng nhân lực độc quyền với 5 tập đoàn y tế đối tác.'
+    ],
+    quote: 'Chắp cánh ước mơ nghề nghiệp – Đồng hành cùng thế hệ nhân lực y tế tương lai!'
+  },
+  {
+    id: 'art-admissions',
+    title: 'Tuyển sinh các khóa đào tạo ngắn hạn về chăm sóc sức khỏe cộng đồng',
+    date: '12 Tháng 8, 2026',
+    category: 'Thông báo',
+    badgeColor: 'rose',
+    summary: 'Thông báo tuyển sinh các lớp chứng chỉ hành nghề: Chăm sóc người cao tuổi, Kỹ năng sơ cấp cứu và Quản lý phòng khám số.',
+    image: '/health-training.jpg',
+    detailImage: '/health-training.jpg',
+    caption: 'Lớp học thực hành kỹ năng chăm sóc và giao tiếp y tế chuyên nghiệp',
+    views: '3.120 lượt xem',
+    readTime: '2 phút',
+    author: 'Phòng Đào tạo & Quản lý Khoa học',
+    paragraphs: [
+      'Nhằm đáp ứng nhu cầu nhân lực chăm sóc sức khỏe chất lượng cao cho khu vực kinh tế trọng điểm phía Nam, Làng Sinh viên Bình Mỹ chính thức mở đơn đăng ký cho các khóa đào tạo ngắn hạn cấp chứng chỉ uy tín.',
+      'Khóa học được thiết kế theo phương pháp thực hành 70% thời lượng tại Living Lab và các cơ sở y tế đối tác, được hướng dẫn bởi đội ngũ bác sĩ, chuyên gia đầu ngành.'
+    ],
+    highlightsTitle: 'Ưu đãi và quyền lợi học viên',
+    highlights: [
+      'Học bổng 30% học phí dành cho thanh niên và người dân địa phương Củ Chi.',
+      'Cam kết giới thiệu việc làm 100% sau khi tốt nghiệp và hoàn thành chứng chỉ.',
+      'Cơ hội tham gia các dự án nghiên cứu thực địa có phụ cấp sinh hoạt.'
+    ],
+    quote: 'Đào tạo chuẩn thực tiễn – Khởi đầu vững chắc cho sự nghiệp y tế nhân văn!'
+  }
+];
+
+export const mockEventItems = [
+  {
+    id: 'ev-1',
+    day: '25',
+    monthYear: 'Tháng 9, 2026',
+    dateFull: '25/09/2026',
+    category: 'Hội thảo',
+    badgeBg: 'bg-[#0284c7]',
+    title: 'Hội thảo “Chuyển đổi số trong nông nghiệp và du lịch cộng đồng”',
+    summary: 'Cùng các chuyên gia, doanh nghiệp và sinh viên thảo luận về xu hướng chuyển đổi số, ứng dụng công nghệ trong nông nghiệp và du lịch cộng đồng.',
+    location: 'Hội trường A – Đại học HUTECH',
+    image: '/news-seminar.jpg',
+    dotColor: 'bg-blue-500'
+  },
+  {
+    id: 'ev-2',
+    day: '02',
+    monthYear: 'Tháng 10, 2026',
+    dateFull: '02/10/2026',
+    category: 'Workshop',
+    badgeBg: 'bg-[#00875a]',
+    title: 'Workshop “Kỹ năng khởi nghiệp và xây dựng ý tưởng kinh doanh”',
+    summary: 'Trang bị kiến thức và kỹ năng thực tiễn cho sinh viên về khởi nghiệp, đổi mới sáng tạo và phát triển dự án.',
+    location: 'Phòng Lab Innovation – Bình Mỹ',
+    image: '/startup-lab.jpg',
+    dotColor: 'bg-emerald-500'
+  },
+  {
+    id: 'ev-3',
+    day: '10',
+    monthYear: 'Tháng 10, 2026',
+    dateFull: '10/10/2026',
+    category: 'Hoạt động sinh viên',
+    badgeBg: 'bg-[#7c3aed]',
+    title: 'Ngày hội tình nguyện “Vì một Bình Mỹ xanh”',
+    summary: 'Cùng chung tay trồng cây, làm sạch môi trường và lan tỏa lối sống xanh trong cộng đồng sinh viên.',
+    location: 'Khu nông nghiệp công nghệ cao Bình Mỹ',
+    image: '/volunteer-green.jpg',
+    dotColor: 'bg-amber-500'
+  },
+  {
+    id: 'ev-4',
+    day: '18',
+    monthYear: 'Tháng 10, 2026',
+    dateFull: '18/10/2026',
+    category: 'Giao lưu - Kết nối',
+    badgeBg: 'bg-[#f59e0b]',
+    title: 'Giao lưu quốc tế: Hợp tác giáo dục và nghiên cứu với các trường đại học Hàn Quốc',
+    summary: 'Kết nối sinh viên, giảng viên và chuyên gia từ các trường đại học Hàn Quốc, mở ra cơ hội hợp tác và học bổng.',
+    location: 'Phòng hội thảo – HUTECH',
+    image: '/news-signing.jpg',
+    dotColor: 'bg-indigo-500'
+  },
+  {
+    id: 'ev-5',
+    day: '25',
+    monthYear: 'Tháng 10, 2026',
+    dateFull: '25/10/2026',
+    category: 'Hội thảo',
+    badgeBg: 'bg-[#0284c7]',
+    title: 'Tọa đàm “Sống khỏe – Học tốt – Phát triển bản thân”',
+    summary: 'Chia sẻ từ các chuyên gia tâm lý, dinh dưỡng và bác sĩ về sức khỏe thể chất và tinh thần cho sinh viên.',
+    location: 'Hội trường B – HUTECH',
+    image: '/news-health.jpg',
+    dotColor: 'bg-sky-500'
+  },
+  {
+    id: 'ev-6',
+    day: '09',
+    monthYear: 'Tháng 11, 2026',
+    dateFull: '09/11/2026',
+    category: 'Cuộc thi',
+    badgeBg: 'bg-[#ef4444]',
+    title: 'Cuộc thi “Ý tưởng sáng tạo vì cộng đồng”',
+    summary: 'Cơ hội để sinh viên thể hiện ý tưởng, giải pháp sáng tạo vì sự phát triển bền vững tại Bình Mỹ.',
+    location: 'Trung tâm Đổi mới sáng tạo – Bình Mỹ',
+    image: '/innovation-idea.jpg',
+    dotColor: 'bg-rose-500'
   }
 ];
 
 export const mockEvents = mockEventsData;
 export const mockActivityFields = mockActivityFieldsData;
 export const mockStats = mockStatsData;
+

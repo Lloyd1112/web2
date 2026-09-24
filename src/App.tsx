@@ -50,7 +50,15 @@ export function App() {
       case 'doctors':
         return <DoctorsAcrossBordersPage onOpenCollaboration={handleOpenCollaboration} />;
       case 'news-contact':
-        return <NewsContactPage onOpenCollaboration={handleOpenCollaboration} />;
+        return (
+          <NewsContactPage
+            onNavigate={(tab) => {
+              setActiveTab(tab);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+            onOpenCollaboration={handleOpenCollaboration}
+          />
+        );
       default:
         return (
           <HomePage
