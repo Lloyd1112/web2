@@ -19,8 +19,8 @@ Khi tôi yêu cầu chỉnh sửa hoặc viết tính năng mới, bạn BẮT B
    - Khi viết code: Sử dụng React + TypeScript + Tailwind CSS, icon từ `lucide-react`. Đảm bảo code sạch, không lỗi type linter.
    - Hỗ trợ đa ngôn ngữ: Giữ nguyên cơ chế chuyển đổi ngôn ngữ qua `useLanguage()` (VI/EN) trong `src/context/LanguageContext.tsx`.
 
-2. QUY TRÌNH GIT & BẢO VỆ NHÁNH MAIN (BẮT BUỘC):
-   - TUYỆT ĐỐI KHÔNG hướng dẫn commit/push trực tiếp vào nhánh `main`.
+2. QUY TRÌNH GIT & BẢO VỆ NHÁNH OK (BẮT BUỘC):
+   - TUYỆT ĐỐI KHÔNG hướng dẫn commit/push trực tiếp vào nhánh `ok`.
    - Bắt buộc tạo và làm việc trên branch riêng theo cú pháp: `feature/<tên-tính-năng>` hoặc `fix/<tên-lỗi>`.
    - Sau khi hoàn thành code, bạn phải TỔNG HỢP danh sách file đã thay đổi.
    - GỢI Ý ĐẦY ĐỦ CÁC LỆNH GIT theo thứ tự để tôi có thể copy và chạy ngay trên Terminal:
@@ -29,7 +29,7 @@ Khi tôi yêu cầu chỉnh sửa hoặc viết tính năng mới, bạn BẮT B
      + 3. Lệnh thêm file vào stage (`git add .`)
      + 4. Lệnh commit chuẩn Conventional Commits (ví dụ: `git commit -m "feat: cập nhật trang X"`)
      + 5. Lệnh đẩy branch lên GitHub (`git push -u origin feature/<tên-tính-năng>`)
-     + 6. Hướng dẫn tạo Pull Request (PR) trên GitHub gửi vào `main` để Admin/Chủ dự án duyệt (Approve) trước khi merge.
+     + 6. Hướng dẫn tạo Pull Request (PR) trên GitHub gửi vào nhánh `ok` để Admin/Chủ dự án duyệt (Approve) trước khi merge.
 ```
 
 ---
@@ -54,12 +54,12 @@ npm run dev
 ---
 
 ### Bước 2: Bắt đầu một tính năng mới / sửa lỗi
-> ⚠️ **Bắt buộc**: Luôn kéo code mới nhất từ `main` về trước, sau đó tạo branch riêng để làm việc. Không commit trực tiếp lên `main`.
+> ⚠️ **Bắt buộc**: Luôn kéo code mới nhất từ nhánh `ok` về trước, sau đó tạo branch riêng để làm việc. Không commit trực tiếp lên `ok`.
 
 ```bash
-# 1. Chuyển về main và kéo code mới nhất
-git checkout main
-git pull origin main
+# 1. Chuyển về nhánh ok và kéo code mới nhất
+git checkout ok
+git pull origin ok
 
 # 2. Tạo branch mới cho tính năng của bạn (VD: feature/hoat-dong, fix/header)
 git checkout -b feature/ten-tinh-nang-moi
@@ -89,8 +89,8 @@ git push -u origin feature/ten-tinh-nang-moi
 
 1. Truy cập vào GitHub: [https://github.com/khanhphamvn222/web2](https://github.com/khanhphamvn222/web2)
 2. Bạn sẽ thấy thông báo màu vàng xuất hiện: **"feature/ten-tinh-nang-moi had recent pushes"** -> Nhấn nút **Compare & pull request**.
-3. Nhập mô tả các thay đổi đã thực hiện và nhấn **Create pull request**.
-4. **Admin (Chủ repo)** sẽ vào tab **Pull requests**, kiểm tra code, review và nhấn **Approve & Merge** để đưa code vào `main`.
+3. Chọn **base branch** là `ok` (thay vì `main`), nhập mô tả các thay đổi đã thực hiện và nhấn **Create pull request**.
+4. **Admin (Chủ repo)** sẽ vào tab **Pull requests**, kiểm tra code, review và nhấn **Approve & Merge** để đưa code vào nhánh `ok`.
 
 ---
 
@@ -107,6 +107,6 @@ git push -u origin feature/ten-tinh-nang-moi
 ---
 
 ## ⚠️ Những Điều Cần Lưu Ý Khi Làm Việc Chung
-1. **Không commit trực tiếp lên `main`**: Nhánh `main` đã được bật chế độ bảo vệ (Branch Protection), mọi commit đều phải thông qua Pull Request.
+1. **Không commit trực tiếp lên nhánh `ok`**: Nhánh `ok` đã được bật chế độ bảo vệ (Branch Protection), mọi commit đều phải thông qua Pull Request.
 2. **Không commit thư mục `node_modules` hoặc `dist`** (Đã có trong `.gitignore`).
 3. **Kiểm tra `npm run build` hoặc `npm run dev`** trước khi tạo PR để tránh lỗi TypeScript/Build.
