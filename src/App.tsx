@@ -1,125 +1,209 @@
 import React, { useState } from 'react';
-import { LanguageProvider } from './context/LanguageContext';
-import { Header } from './components/common/Header';
-import { Footer } from './components/common/Footer';
+import { Header } from './components/livinglab/Header';
+import { Footer } from './components/livinglab/Footer';
 import { ScrollProgressBar } from './components/common/ScrollProgressBar';
 import { BackToTop } from './components/common/BackToTop';
-import { CollaborationModal } from './components/common/CollaborationModal';
-import { SearchModal } from './components/common/SearchModal';
-import { HomePage } from './pages/HomePage';
-import { HealthModelsPage } from './pages/HealthModelsPage';
-import { TrainingPage } from './pages/TrainingPage';
-import { ConsultingPage } from './pages/ConsultingPage';
-import { InternationalPage } from './pages/InternationalPage';
-import { DoctorsAcrossBordersPage } from './pages/DoctorsAcrossBordersPage';
-import { NewsContactPage } from './pages/NewsContactPage';
+import { HomePage } from './pages/livinglab/HomePage';
+import { ProblemsPage } from './pages/livinglab/ProblemsPage';
+import { ProblemDetailPage } from './pages/livinglab/ProblemDetailPage';
+import { ProjectsPage } from './pages/livinglab/ProjectsPage';
+import { ProjectDetailPage } from './pages/livinglab/ProjectDetailPage';
+import { CommunityPage } from './pages/livinglab/CommunityPage';
+import { SubmitProblemPage } from './pages/livinglab/SubmitProblemPage';
+import { AboutLivingLabPage } from './pages/livinglab/AboutLivingLabPage';
+import { LoginModal } from './components/livinglab/LoginModal';
+import { ParticipateModal } from './components/livinglab/ParticipateModal';
+import { mockProblems, mockProjects } from './data/livingLabData';
+import { ProblemItem, ProjectItem, UserSession } from './types/livingLab';
 
 export function App() {
-  const [activeTab, setActiveTab] = useState<string>('home');
-  const [isCollabModalOpen, setIsCollabModalOpen] = useState(false);
-  const [collabModalType, setCollabModalType] = useState<string>('general');
-  const [collabModalTitle, setCollabModalTitle] = useState<string>('');
-  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [currentTab, setCurrentTab] = useState<string>('home');
+  const [selectedProblem, setSelectedProblem] = useState<ProblemItem | null>(mockProblems[0]);
+  const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(mockProjects[0]);
+  const [problemsFieldFilter, setProblemsFieldFilter] = useState<string>('all');
+  
+  // Modals state
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
+  const [isParticipateModalOpen, setIsParticipateModalOpen] = useState(false);
 
-  const handleOpenCollaboration = (type = 'general', title = '') => {
-    setCollabModalType(type);
-    setCollabModalTitle(title);
-    setIsCollabModalOpen(true);
+  // User session state (demo account preloaded for seamless UX)
+  const [userSession, setUserSession] = useState<UserSession>({
+    isLoggedIn: true,
+    name: 'Nguyễn Văn An',
+    role: 'Sinh viên CNTT (ĐH HUTECH)',
+    roleType: 'student',
+    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80'
+  });
+
+  const handleNavigate = (tab: string, filter: string = 'all') => {
+    setCurrentTab(tab);
+    if (tab === 'problems') {
+      setProblemsFieldFilter(filter);
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectProblem = (problem: ProblemItem) => {
+    setSelectedProblem(problem);
+    setCurrentTab('problem-detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleSelectProject = (project: ProjectItem) => {
+    setSelectedProject(project);
+    setCurrentTab('project-detail');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const handleNavigateToProjectById = (projectId: string) => {
+    const proj = mockProjects.find(p => p.id === projectId) || mockProjects[0];
+    handleSelectProject(proj);
+  };
+
+  const handleOpenParticipateModal = (problem?: ProblemItem) => {
+    if (problem) {
+      setSelectedProblem(problem);
+    }
+    setIsParticipateModalOpen(true);
   };
 
   const renderActivePage = () => {
-    switch (activeTab) {
+    switch (currentTab) {
       case 'home':
         return (
           <HomePage
-            onNavigate={(tab) => {
-              setActiveTab(tab);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenCollaboration={handleOpenCollaboration}
+            onNavigate={handleNavigate}
+            onSelectProblem={handleSelectProblem}
           />
         );
-      case 'health-models':
-        return <HealthModelsPage onOpenCollaboration={handleOpenCollaboration} />;
-      case 'training':
-        return <TrainingPage onOpenCollaboration={handleOpenCollaboration} />;
-      case 'consulting':
-        return <ConsultingPage onOpenCollaboration={handleOpenCollaboration} />;
-      case 'international':
-        return <InternationalPage onOpenCollaboration={handleOpenCollaboration} />;
-      case 'doctors':
-        return <DoctorsAcrossBordersPage onOpenCollaboration={handleOpenCollaboration} />;
-      case 'news-contact':
+
+      case 'problems':
         return (
-          <NewsContactPage
-            onNavigate={(tab) => {
-              setActiveTab(tab);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenCollaboration={handleOpenCollaboration}
+          <ProblemsPage
+            key={problemsFieldFilter}
+            initialFieldFilter={problemsFieldFilter}
+            onSelectProblem={handleSelectProblem}
+            onNavigateToSubmit={() => handleNavigate('submit-problem')}
           />
         );
+
+      case 'problem-detail':
+        return selectedProblem ? (
+          <ProblemDetailPage
+            problem={selectedProblem}
+            onBack={() => handleNavigate('problems')}
+            onOpenParticipateModal={() => setIsParticipateModalOpen(true)}
+            onNavigateToProject={handleNavigateToProjectById}
+          />
+        ) : (
+          <ProblemsPage
+            onSelectProblem={handleSelectProblem}
+            onNavigateToSubmit={() => handleNavigate('submit-problem')}
+          />
+        );
+
+      case 'projects':
+        return (
+          <ProjectsPage
+            onSelectProject={handleSelectProject}
+          />
+        );
+
+      case 'project-detail':
+        return selectedProject ? (
+          <ProjectDetailPage
+            project={selectedProject}
+            onBack={() => handleNavigate('projects')}
+            onNavigateToProblem={(probId) => {
+              const prob = mockProblems.find(p => p.id === probId) || mockProblems[0];
+              handleSelectProblem(prob);
+            }}
+          />
+        ) : (
+          <ProjectsPage
+            onSelectProject={handleSelectProject}
+          />
+        );
+
+      case 'community':
+        return <CommunityPage />;
+
+      case 'submit-problem':
+        return (
+          <SubmitProblemPage
+            onBackToHome={() => handleNavigate('home')}
+            onNavigateToProblems={() => handleNavigate('problems')}
+          />
+        );
+
+      case 'about':
+        return (
+          <AboutLivingLabPage
+            onNavigateToProblems={() => handleNavigate('problems')}
+            onNavigateToSubmit={() => handleNavigate('submit-problem')}
+          />
+        );
+
       default:
         return (
           <HomePage
-            onNavigate={(tab) => {
-              setActiveTab(tab);
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }}
-            onOpenCollaboration={handleOpenCollaboration}
+            onNavigate={handleNavigate}
+            onSelectProblem={handleSelectProblem}
           />
         );
     }
   };
 
   return (
-    <LanguageProvider>
-      <div className="min-h-screen flex flex-col bg-[#f8fafc] text-slate-800 font-sans selection:bg-emerald-500 selection:text-white relative">
-        
-        {/* Top Scroll Reading Progress Indicator */}
-        <ScrollProgressBar />
+    <div className="min-h-screen flex flex-col bg-[#F7FAF8] text-slate-800 font-sans selection:bg-emerald-500 selection:text-white relative">
+      
+      {/* Scroll Reading Progress Bar */}
+      <ScrollProgressBar />
 
-        {/* Navigation Bar */}
-        <Header
-          activeTab={activeTab}
-          setActiveTab={(tab) => {
-            setActiveTab(tab);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-          onOpenCollaboration={handleOpenCollaboration}
-          onOpenSearch={() => setIsSearchModalOpen(true)}
-        />
+      {/* Header */}
+      <Header
+        currentTab={currentTab}
+        onNavigate={handleNavigate}
+        userSession={userSession}
+        onOpenLoginModal={() => setIsLoginModalOpen(true)}
+        onLogout={() => setUserSession({
+          isLoggedIn: false,
+          name: '',
+          role: '',
+          roleType: 'resident',
+          avatar: ''
+        })}
+      />
 
-        {/* Page Main Content with smooth fade-in */}
-        <main className="flex-1 animate-fade-in">
-          {renderActivePage()}
-        </main>
+      {/* Main Content Area */}
+      <main className="flex-1 animate-fade-in">
+        {renderActivePage()}
+      </main>
 
-        {/* Universal Footer */}
-        <Footer setActiveTab={setActiveTab} />
+      {/* Universal Footer */}
+      <Footer onNavigate={handleNavigate} />
 
-        {/* Floating Back-To-Top Button with circular progress ring */}
-        <BackToTop />
+      {/* Floating Back to Top Button */}
+      <BackToTop />
 
-        {/* Global Modals */}
-        <CollaborationModal
-          isOpen={isCollabModalOpen}
-          onClose={() => setIsCollabModalOpen(false)}
-          defaultType={collabModalType}
-          defaultTitle={collabModalTitle}
-        />
+      {/* Global Login & Role Switcher Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+        onLoginSuccess={(session) => setUserSession(session)}
+      />
 
-        <SearchModal
-          isOpen={isSearchModalOpen}
-          onClose={() => setIsSearchModalOpen(false)}
-          onNavigate={(tab) => {
-            setActiveTab(tab);
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-          }}
-        />
+      {/* Global Participate Proposal Modal */}
+      <ParticipateModal
+        isOpen={isParticipateModalOpen}
+        onClose={() => setIsParticipateModalOpen(false)}
+        problem={selectedProblem}
+        onProposalSubmitted={(data) => {
+          console.log('Đề xuất tham gia đã gửi:', data);
+        }}
+      />
 
-      </div>
-    </LanguageProvider>
+    </div>
   );
 }
 
