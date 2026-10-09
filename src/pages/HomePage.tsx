@@ -277,24 +277,28 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
         </div>
       </section>
 
-      {/* ================= 2. BỐN LĨNH VỰC HOẠT ĐỘNG (4 CARDS NGANG) ================= */}
+      {/* ================= 2. BỐN LĨNH VỰC HOẠT ĐỘNG (4 PILLARS STRIP CHUẨN HÌNH 1) ================= */}
       <section className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
-        <div className="bg-white rounded-3xl p-6 sm:p-7 shadow-xl border border-slate-100">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8 divide-y sm:divide-y-0 lg:divide-x divide-slate-100">
+        <div className="bg-white rounded-3xl p-5 sm:p-6 shadow-xl border border-slate-100">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-0">
             
             {/* Thẻ 1: Nông nghiệp bền vững */}
             <div 
               onClick={() => onNavigate('agriculture')}
-              className="flex items-start gap-3.5 pt-3 sm:pt-0 cursor-pointer group hover:opacity-90 transition-opacity"
+              className="relative flex items-center gap-3.5 pr-4 cursor-pointer group hover:opacity-90 transition-opacity lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-slate-200/90"
             >
-              <div className="w-12 h-12 rounded-full bg-emerald-100/70 text-[#00875a] flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Sprout className="w-6 h-6" />
+              <div className="w-[50px] h-[50px] rounded-full overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <img 
+                  src="/assets/pillar-icon-1.png" 
+                  alt="Nông nghiệp bền vững" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="space-y-0.5">
-                <h4 className="font-bold text-slate-900 text-sm group-hover:text-[#00875a] transition-colors">
+                <h4 className="font-bold text-[#0f294a] text-[14px] sm:text-[14.5px] leading-snug group-hover:text-[#00875a] transition-colors">
                   Nông nghiệp bền vững
                 </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-[12px] text-slate-500 leading-relaxed font-normal">
                   Ứng dụng công nghệ, nâng cao giá trị nông sản địa phương
                 </p>
               </div>
@@ -303,18 +307,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             {/* Thẻ 2: Y tế – Sức khỏe cộng đồng */}
             <div 
               onClick={() => onNavigate('health-models')}
-              className="flex items-start gap-3.5 pt-3 sm:pt-0 lg:pl-6 cursor-pointer group hover:opacity-90 transition-opacity"
+              className="relative flex items-center gap-3.5 lg:pl-6 pr-4 cursor-pointer group hover:opacity-90 transition-opacity lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-slate-200/90"
             >
-              <div className="w-12 h-12 rounded-full bg-sky-100/80 text-sky-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <div className="w-5 h-5 rounded-sm bg-sky-600 text-white flex items-center justify-center font-bold text-xs shadow-2xs">
-                  +
-                </div>
+              <div className="w-[50px] h-[50px] rounded-full overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <img 
+                  src="/assets/pillar-icon-2.png" 
+                  alt="Y tế – Sức khỏe cộng đồng" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="space-y-0.5">
-                <h4 className="font-bold text-slate-900 text-sm group-hover:text-[#00875a] transition-colors">
+                <h4 className="font-bold text-[#0f294a] text-[14px] sm:text-[14.5px] leading-snug group-hover:text-[#00875a] transition-colors">
                   Y tế – Sức khỏe cộng đồng
                 </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-[12px] text-slate-500 leading-relaxed font-normal">
                   Kết nối bác sĩ, chuyên gia chăm sóc sức khỏe toàn diện
                 </p>
               </div>
@@ -323,16 +329,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             {/* Thẻ 3: Du lịch trải nghiệm */}
             <div 
               onClick={() => onNavigate('tourism')}
-              className="flex items-start gap-3.5 pt-3 sm:pt-0 lg:pl-6 cursor-pointer group hover:opacity-90 transition-opacity"
+              className="relative flex items-center gap-3.5 lg:pl-6 pr-4 cursor-pointer group hover:opacity-90 transition-opacity lg:after:content-[''] lg:after:absolute lg:after:right-0 lg:after:top-1/2 lg:after:-translate-y-1/2 lg:after:h-10 lg:after:w-[1px] lg:after:bg-slate-200/90"
             >
-              <div className="w-12 h-12 rounded-full bg-amber-100/80 text-amber-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Users className="w-6 h-6" />
+              <div className="w-[50px] h-[50px] rounded-full overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <img 
+                  src="/assets/pillar-icon-3.png" 
+                  alt="Du lịch trải nghiệm" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="space-y-0.5">
-                <h4 className="font-bold text-slate-900 text-sm group-hover:text-[#00875a] transition-colors">
+                <h4 className="font-bold text-[#0f294a] text-[14px] sm:text-[14.5px] leading-snug group-hover:text-[#00875a] transition-colors">
                   Du lịch trải nghiệm
                 </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-[12px] text-slate-500 leading-relaxed font-normal">
                   Phát triển sản phẩm du lịch sinh thái gắn với văn hóa địa phương
                 </p>
               </div>
@@ -341,16 +351,20 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             {/* Thẻ 4: Hợp tác & Đổi mới sáng tạo */}
             <div 
               onClick={() => onNavigate('projects')}
-              className="flex items-start gap-3.5 pt-3 sm:pt-0 lg:pl-6 cursor-pointer group hover:opacity-90 transition-opacity"
+              className="flex items-center gap-3.5 lg:pl-6 cursor-pointer group hover:opacity-90 transition-opacity"
             >
-              <div className="w-12 h-12 rounded-full bg-purple-100/80 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
-                <Users className="w-6 h-6" />
+              <div className="w-[50px] h-[50px] rounded-full overflow-hidden shrink-0 group-hover:scale-105 transition-transform shadow-2xs">
+                <img 
+                  src="/assets/pillar-icon-4.png" 
+                  alt="Hợp tác & Đổi mới sáng tạo" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <div className="space-y-0.5">
-                <h4 className="font-bold text-slate-900 text-sm group-hover:text-[#00875a] transition-colors">
+                <h4 className="font-bold text-[#0f294a] text-[14px] sm:text-[14.5px] leading-snug group-hover:text-[#00875a] transition-colors">
                   Hợp tác & Đổi mới sáng tạo
                 </h4>
-                <p className="text-xs text-slate-500 leading-relaxed">
+                <p className="text-[12px] text-slate-500 leading-relaxed font-normal">
                   Kết nối sinh viên, chuyên gia, doanh nghiệp và cộng đồng
                 </p>
               </div>
