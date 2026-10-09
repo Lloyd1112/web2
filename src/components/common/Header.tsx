@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
-import { 
-  Search, 
-  Menu, 
-  X, 
-  ChevronDown, 
-  HeartHandshake, 
-  Stethoscope, 
+import {
+  Search,
+  Menu,
+  X,
+  ChevronDown,
+  HeartHandshake,
+  Stethoscope,
   HeartPulse,
-  GraduationCap, 
-  Lightbulb, 
-  Globe2, 
+  GraduationCap,
+  Lightbulb,
+  Globe2,
   Sparkles,
   ArrowRight,
   Sprout,
@@ -67,13 +67,13 @@ export const Header: React.FC<HeaderProps> = ({
 
   // Check if current tab is any of the projects / pillar pages
   const isProjectActive = [
-    'projects', 
+    'projects',
     'agriculture',
-    'health-models', 
+    'health-models',
     'tourism',
-    'training', 
-    'consulting', 
-    'international', 
+    'training',
+    'consulting',
+    'international',
     'doctors'
   ].includes(activeTab);
 
@@ -112,16 +112,15 @@ export const Header: React.FC<HeaderProps> = ({
   ];
 
   return (
-    <header className={`sticky top-0 z-50 transition-all duration-200 ${
-      isScrolled 
-        ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-slate-200/90' 
+    <header className={`sticky top-0 z-50 transition-all duration-200 ${isScrolled
+        ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-slate-200/90'
         : 'bg-white border-b border-slate-200 shadow-2xs'
-    }`}>
+      }`}>
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[72px] gap-4">
-          
-          {/* Brand Logo (LÀNG SV ĐỔI MỚI SÁNG TẠO BÌNH MỸ) */}
-          <a 
+
+          {/* Brand Logo (Globe with green leaves/river) */}
+          <a
             href={getPathForTab('home')}
             onClick={(e) => {
               e.preventDefault();
@@ -129,24 +128,35 @@ export const Header: React.FC<HeaderProps> = ({
             }}
             className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0 group"
           >
-            {/* Green Sprout Leaf Icon */}
-            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shadow-2xs group-hover:scale-105 transition-transform duration-200">
-              <Sprout className="w-6 h-6 text-[#00875a]" />
+            {/* Globe & Leaf Stylized Circular Badge */}
+            <div className="w-10 h-10 rounded-full bg-[#eef7f2] border border-emerald-200/80 p-1 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform flex-shrink-0">
+              <svg className="w-7 h-7" viewBox="0 0 32 32" fill="none">
+                {/* Globe */}
+                <circle cx="16" cy="16" r="14" fill="#e0f2fe" />
+                <circle cx="16" cy="16" r="13" stroke="#0284c7" strokeWidth="1.2" />
+                <ellipse cx="16" cy="16" rx="6" ry="13" stroke="#0284c7" strokeWidth="1" strokeDasharray="2 1" />
+                <line x1="3" y1="16" x2="29" y2="16" stroke="#0284c7" strokeWidth="1" />
+                {/* Green Leaf & Sprout */}
+                <path d="M12 24C12 18 17 12 24 10C24 17 19 22 12 24Z" fill="#10b981" />
+                <path d="M16 19C17 16 20 14 24 13C23 17 20 19 16 19Z" fill="#34d399" />
+                {/* Blue Waves */}
+                <path d="M7 21C11 19 14 23 18 21C22 19 25 21 27 20" stroke="#0369a1" strokeWidth="1.5" strokeLinecap="round" />
+              </svg>
             </div>
             <div className="flex flex-col justify-center select-none">
-              <span className="text-[14px] xl:text-[15px] font-black tracking-tight text-[#00684a] uppercase leading-none">
-                LÀNG SV
+              <span className="text-[13px] xl:text-[14px] font-black tracking-tight text-[#0f294a] uppercase leading-none">
+                LÀNG SINH VIÊN
               </span>
-              <span className="text-[9.5px] xl:text-[10px] font-extrabold tracking-wider text-[#00875a] uppercase leading-tight mt-0.5">
+              <span className="text-[9px] xl:text-[9.5px] font-extrabold tracking-wider text-[#00875a] uppercase leading-tight mt-1">
                 ĐỔI MỚI SÁNG TẠO BÌNH MỸ
               </span>
             </div>
           </a>
 
-          {/* ================= 6 MENU ITEMS MATCHING MOCKUP ================= */}
-          {/* Trang chủ | Bài toán thực tế | Dự án | Cộng đồng | Tin tức | Giới thiệu */}
-          <nav className="hidden lg:flex items-center space-x-6 xl:space-x-8 h-full">
-            
+          {/* ================= EXACT 5 MENU ITEMS AS USER IMAGE ================= */}
+          {/* Trang chủ | Dự án ⌄ | Thông tin về chúng tôi | Sự kiện | Liên hệ */}
+          <nav className="hidden lg:flex items-center space-x-8 xl:space-x-10 h-full">
+
             {/* 1. Trang chủ */}
             <a
               href={getPathForTab('home')}
@@ -154,33 +164,16 @@ export const Header: React.FC<HeaderProps> = ({
                 e.preventDefault();
                 handleNavClick('home');
               }}
-              className={`h-full inline-flex items-center text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                activeTab === 'home'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-700 hover:text-[#00875a]'
-              }`}
+              className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'home'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
+                }`}
             >
-              Trang chủ
+              {language === 'vi' ? 'Trang chủ' : 'Home'}
             </a>
 
-            {/* 2. Bài toán thực tế */}
-            <a
-              href={getPathForTab('real-problems')}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavClick('real-problems');
-              }}
-              className={`h-full inline-flex items-center text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                activeTab === 'real-problems'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-700 hover:text-[#00875a]'
-              }`}
-            >
-              Bài toán thực tế
-            </a>
-
-            {/* 3. Dự án */}
-            <div 
+            {/* 2. Dự án ⌄ */}
+            <div
               className="relative h-full flex items-center"
               onMouseEnter={handleMouseEnterProjects}
               onMouseLeave={handleMouseLeaveProjects}
@@ -191,23 +184,25 @@ export const Header: React.FC<HeaderProps> = ({
                   e.preventDefault();
                   handleNavClick('health-models');
                 }}
-                className={`h-full inline-flex items-center gap-1 text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                  isProjectActive
-                    ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                    : 'text-slate-700 hover:text-[#00875a]'
-                }`}
+                className={`h-full inline-flex items-center gap-1.5 text-[15px] xl:text-[16px] transition-colors relative font-semibold ${isProjectActive
+                    ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                    : 'text-slate-800 hover:text-[#00875a]'
+                  }`}
               >
-                <span>Dự án</span>
-                <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${
-                  isProjectsDropdownOpen ? 'rotate-180 text-[#00875a]' : 'text-slate-500'
-                }`} />
+                <span>{language === 'vi' ? 'Dự án' : 'Projects'}</span>
+                <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${isProjectsDropdownOpen ? 'rotate-180 text-[#00875a]' : 'text-slate-500'
+                  }`} />
               </a>
 
               {/* Mega Dropdown for Dự án */}
               {isProjectsDropdownOpen && (
-                <div 
-                  className="absolute top-full left-1/2 -translate-x-1/2 w-88 bg-white rounded-2xl shadow-xl border border-slate-200 p-2.5 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
+                <div
+                  className="absolute top-full left-1/2 -translate-x-1/2 w-96 bg-white rounded-2xl shadow-xl border border-slate-200/90 p-3 z-50 animate-in fade-in slide-in-from-top-2 duration-150"
                 >
+                  <div className="text-[11px] font-extrabold uppercase tracking-widest text-[#00875a] px-3 py-1.5 border-b border-slate-100 mb-1 flex items-center justify-between">
+                    <span>{language === 'vi' ? 'Hệ thống dự án & mô hình' : 'Pillars & Models'}</span>
+                    <span className="text-[10px] text-slate-400 font-semibold">{language === 'vi' ? 'Chọn lĩnh vực' : 'Select'}</span>
+                  </div>
                   <div className="flex flex-col gap-1">
                     {projectSubItems.map((item) => {
                       const IconComp = item.icon;
@@ -220,18 +215,20 @@ export const Header: React.FC<HeaderProps> = ({
                             e.preventDefault();
                             handleNavClick(item.id);
                           }}
-                          className={`p-2.5 rounded-xl cursor-pointer transition-all flex items-center gap-3 group/sub ${
-                            isSubActive 
-                              ? 'bg-emerald-50 text-[#00875a]' 
-                              : 'hover:bg-slate-50 text-slate-800'
-                          }`}
+                          className={`p-3 rounded-xl cursor-pointer transition-all flex items-start gap-3 group/sub ${isSubActive
+                              ? 'bg-pum-lightGreen/40 border border-pum-green/20'
+                              : 'hover:bg-slate-50'
+                            }`}
                         >
-                          <div className={`w-8 h-8 rounded-lg ${item.bgColor} flex items-center justify-center flex-shrink-0`}>
-                            <IconComp className="w-4 h-4" />
+                          <div className={`w-9 h-9 rounded-xl ${item.bgColor} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs transition-colors`}>
+                            <IconComp className="w-5 h-5" />
                           </div>
                           <div>
-                            <p className="text-xs font-bold leading-snug">
-                              {item.titleVi}
+                            <p className="text-sm font-bold text-slate-900 group-hover/sub:text-[#00875a] leading-snug">
+                              {language === 'vi' ? item.titleVi : item.titleEn}
+                            </p>
+                            <p className="text-xs text-slate-500 leading-tight mt-0.5">
+                              {language === 'vi' ? item.descVi : item.descEn}
                             </p>
                           </div>
                         </a>
@@ -242,82 +239,109 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            {/* 4. Cộng đồng */}
+            {/* 3. Bài toán thực tế */}
+            <a
+              href={getPathForTab('real-problems')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick('real-problems');
+              }}
+              className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'real-problems'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
+                }`}
+            >
+              {language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}
+            </a>
+
+            {/* 4. Thông tin về chúng tôi */}
             <a
               href={getPathForTab('about')}
               onClick={(e) => {
                 e.preventDefault();
                 handleNavClick('about');
               }}
-              className={`h-full inline-flex items-center text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                activeTab === 'community'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-700 hover:text-[#00875a]'
-              }`}
+              className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'about'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
+                }`}
             >
-              Cộng đồng
+              {language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}
             </a>
 
-            {/* 5. Tin tức */}
+            {/* 4. Sự kiện */}
             <a
               href={getPathForTab('events')}
               onClick={(e) => {
                 e.preventDefault();
                 handleNavClick('events');
               }}
-              className={`h-full inline-flex items-center text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                activeTab === 'events'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-700 hover:text-[#00875a]'
-              }`}
+              className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'events'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
+                }`}
             >
-              Tin tức
+              {language === 'vi' ? 'Sự kiện' : 'Events'}
             </a>
 
-            {/* 6. Giới thiệu */}
+            {/* 5. Liên hệ */}
             <a
-              href={getPathForTab('about')}
+              href={getPathForTab('contact')}
               onClick={(e) => {
                 e.preventDefault();
-                handleNavClick('about');
+                handleNavClick('contact');
               }}
-              className={`h-full inline-flex items-center text-[14.5px] xl:text-[15px] transition-colors relative font-semibold ${
-                activeTab === 'about'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-700 hover:text-[#00875a]'
-              }`}
+              className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'contact' || activeTab === 'news-contact'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
+                }`}
             >
-              Giới thiệu
+              {language === 'vi' ? 'Liên hệ' : 'Contact'}
             </a>
 
           </nav>
 
-          {/* Right Action Controls: Search + Đăng nhập + Đăng ký */}
+          {/* Right Action Controls: Search + Language Switcher + Prominent CTA */}
           <div className="hidden lg:flex items-center gap-3 flex-shrink-0">
-            
+
             {/* Search Trigger */}
             <button
               onClick={onOpenSearch}
-              className="w-9 h-9 rounded-full bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-[#00875a] flex items-center justify-center transition-colors border border-slate-200"
-              title="Tìm kiếm"
+              className="w-9 h-9 rounded-full bg-slate-100 hover:bg-pum-lightGreen/60 text-slate-600 hover:text-pum-green flex items-center justify-center transition-colors shadow-2xs"
+              title={language === 'vi' ? 'Tìm kiếm' : 'Search'}
             >
               <Search className="w-4 h-4" />
             </button>
 
-            {/* Button Đăng nhập */}
-            <button
-              onClick={() => handleNavClick('admin-login')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold text-[#00875a] border border-[#00875a] bg-white hover:bg-emerald-50 transition-all shadow-2xs active:scale-95"
-            >
-              Đăng nhập
-            </button>
+            {/* Language Switcher Pill */}
+            <div className="flex items-center bg-slate-100 p-1 rounded-full text-xs font-bold text-slate-600 border border-slate-200/80">
+              <button
+                onClick={() => setLanguage('vi')}
+                className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${language === 'vi'
+                    ? 'bg-[#00875a] text-white shadow-2xs'
+                    : 'hover:text-[#00875a]'
+                  }`}
+              >
+                VI
+              </button>
+              <button
+                onClick={() => setLanguage('en')}
+                className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${language === 'en'
+                    ? 'bg-[#00875a] text-white shadow-2xs'
+                    : 'hover:text-[#00875a]'
+                  }`}
+              >
+                EN
+              </button>
+            </div>
 
-            {/* Button Đăng ký */}
+            {/* Signature Orange CTA Button */}
             <button
               onClick={() => onOpenCollaboration('general', '')}
-              className="px-4 py-1.5 rounded-full text-xs font-bold text-white bg-[#00684a] hover:bg-[#005238] transition-all shadow-2xs active:scale-95"
+              className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded-full text-white bg-[#f97316] hover:bg-[#ea580c] transition-all text-xs tracking-wide shadow-sm hover:shadow-md active:scale-95 cursor-pointer"
             >
-              Đăng ký
+              <HeartHandshake className="w-4 h-4" />
+              <span>{language === 'vi' ? 'Đề xuất hợp tác' : 'Collaborate'}</span>
             </button>
 
           </div>
@@ -331,7 +355,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Search className="w-4 h-4" />
             </button>
-            
+
             <button
               onClick={() => setLanguage(language === 'vi' ? 'en' : 'vi')}
               className="px-2.5 py-1 rounded-full bg-slate-100 text-xs font-bold text-slate-700"
@@ -355,7 +379,7 @@ export const Header: React.FC<HeaderProps> = ({
       {mobileMenuOpen && (
         <div className="lg:hidden bg-white border-b border-slate-200 px-4 pt-4 pb-6 shadow-xl animate-in slide-in-from-top duration-200">
           <nav className="flex flex-col gap-1.5">
-            
+
             {/* 1. Trang chủ */}
             <a
               href={getPathForTab('home')}
@@ -363,11 +387,10 @@ export const Header: React.FC<HeaderProps> = ({
                 e.preventDefault();
                 handleNavClick('home');
               }}
-              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                activeTab === 'home' 
-                  ? 'bg-pum-green text-white shadow-xs' 
+              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'home'
+                  ? 'bg-pum-green text-white shadow-xs'
                   : 'text-slate-800 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <span>{language === 'vi' ? 'Trang chủ' : 'Home'}</span>
               <ArrowRight className="w-4 h-4 opacity-70" />
@@ -377,11 +400,10 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <button
                 onClick={() => setMobileProjectsOpen(!mobileProjectsOpen)}
-                className={`w-full px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                  isProjectActive 
-                    ? 'bg-pum-lightGreen/60 text-pum-green font-extrabold' 
+                className={`w-full px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${isProjectActive
+                    ? 'bg-pum-lightGreen/60 text-pum-green font-extrabold'
                     : 'text-slate-800 hover:bg-slate-100'
-                }`}
+                  }`}
               >
                 <span>{language === 'vi' ? 'Dự án' : 'Projects'}</span>
                 <ChevronDown className={`w-4 h-4 transition-transform duration-200 ${mobileProjectsOpen ? 'rotate-180' : ''}`} />
@@ -399,11 +421,10 @@ export const Header: React.FC<HeaderProps> = ({
                           e.preventDefault();
                           handleNavClick(item.id);
                         }}
-                        className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-colors flex items-center gap-2.5 ${
-                          activeTab === item.id 
-                            ? 'bg-pum-green text-white' 
+                        className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-colors flex items-center gap-2.5 ${activeTab === item.id
+                            ? 'bg-pum-green text-white'
                             : 'text-slate-700 hover:bg-slate-100'
-                        }`}
+                          }`}
                       >
                         <IconComp className={`w-4 h-4 ${activeTab === item.id ? 'text-white' : item.color}`} />
                         <span>{language === 'vi' ? item.titleVi : item.titleEn}</span>
@@ -414,35 +435,33 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-              {/* 3. Bài toán thực tế */}
-              <a
-                href={getPathForTab('real-problems')}
-                onClick={(e) => {
-                  e.preventDefault();
-                  handleNavClick('real-problems');
-                }}
-                className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                  activeTab === 'real-problems' 
-                    ? 'bg-pum-green text-white shadow-xs' 
-                    : 'text-slate-800 hover:bg-slate-100'
+            {/* 3. Bài toán thực tế */}
+            <a
+              href={getPathForTab('real-problems')}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavClick('real-problems');
+              }}
+              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'real-problems'
+                  ? 'bg-pum-green text-white shadow-xs'
+                  : 'text-slate-800 hover:bg-slate-100'
                 }`}
-              >
-                <span>{language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}</span>
-                <ArrowRight className="w-4 h-4 opacity-70" />
-              </a>
+            >
+              <span>{language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}</span>
+              <ArrowRight className="w-4 h-4 opacity-70" />
+            </a>
 
-              {/* 4. Thông tin về chúng tôi */}
+            {/* 4. Thông tin về chúng tôi */}
             <a
               href={getPathForTab('about')}
               onClick={(e) => {
                 e.preventDefault();
                 handleNavClick('about');
               }}
-              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                activeTab === 'about' 
-                  ? 'bg-pum-green text-white shadow-xs' 
+              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'about'
+                  ? 'bg-pum-green text-white shadow-xs'
                   : 'text-slate-800 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <span>{language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}</span>
               <ArrowRight className="w-4 h-4 opacity-70" />
@@ -455,11 +474,10 @@ export const Header: React.FC<HeaderProps> = ({
                 e.preventDefault();
                 handleNavClick('events');
               }}
-              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                activeTab === 'events' 
-                  ? 'bg-pum-green text-white shadow-xs' 
+              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'events'
+                  ? 'bg-pum-green text-white shadow-xs'
                   : 'text-slate-800 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <span>{language === 'vi' ? 'Sự kiện' : 'Events'}</span>
               <ArrowRight className="w-4 h-4 opacity-70" />
@@ -472,11 +490,10 @@ export const Header: React.FC<HeaderProps> = ({
                 e.preventDefault();
                 handleNavClick('contact');
               }}
-              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${
-                activeTab === 'contact' || activeTab === 'news-contact'
-                  ? 'bg-pum-green text-white shadow-xs' 
+              className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'contact' || activeTab === 'news-contact'
+                  ? 'bg-pum-green text-white shadow-xs'
                   : 'text-slate-800 hover:bg-slate-100'
-              }`}
+                }`}
             >
               <span>{language === 'vi' ? 'Liên hệ' : 'Contact'}</span>
               <ArrowRight className="w-4 h-4 opacity-70" />
