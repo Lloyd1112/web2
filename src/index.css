@@ -13,7 +13,7 @@
 @keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -22,12 +22,29 @@
 }
 
 .animate-fade-in {
-  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  animation: fadeIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* PUM Signature Buttons */
+.pum-btn-primary {
+  @apply inline-flex items-center justify-center font-semibold px-6 py-3.5 rounded-full transition-all duration-300 text-white bg-pum-green hover:bg-pum-greenAlt active:scale-95 shadow-sm hover:shadow-md;
+}
+
+.pum-btn-orange {
+  @apply inline-flex items-center justify-center font-semibold px-6 py-3.5 rounded-full transition-all duration-300 text-white bg-pum-orange hover:bg-pum-orangeHover active:scale-95 shadow-sm hover:shadow-md;
+}
+
+.pum-btn-outline {
+  @apply inline-flex items-center justify-center font-semibold px-6 py-3.5 rounded-full transition-all duration-300 border-2 border-pum-green text-pum-green hover:bg-pum-green hover:text-white active:scale-95;
+}
+
+.pum-btn-outline-white {
+  @apply inline-flex items-center justify-center font-semibold px-6 py-3.5 rounded-full transition-all duration-300 border-2 border-white text-white hover:bg-white hover:text-pum-green active:scale-95;
 }
 
 /* Glassmorphism effects */
 .glass-nav {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.96);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
@@ -36,6 +53,11 @@
   background: rgba(255, 255, 255, 0.15);
   backdrop-filter: blur(10px);
   border: 1px solid rgba(255, 255, 255, 0.25);
+}
+
+/* PUM Card styling */
+.pum-card {
+  @apply bg-white rounded-2xl border border-slate-100 transition-all duration-300 hover:shadow-xl hover:-translate-y-1;
 }
 
 /* Custom scrollbar */
@@ -53,5 +75,5 @@
   transition: background-color 0.2s ease;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #00875a;
+  background: #265454;
 }

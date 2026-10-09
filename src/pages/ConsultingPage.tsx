@@ -31,6 +31,7 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
   const { language } = useLanguage();
   const [activeTab, setActiveTab] = useState<'core' | 'economic' | 'brand'>('core');
   const [selectedBranchId, setSelectedBranchId] = useState<string | null>(null);
+  const [economicFilter, setEconomicFilter] = useState<'all' | 'health' | 'tourism' | 'agriculture'>('all');
 
   const renderGroupIcon = (name: string) => {
     if (name.includes('Nông nghiệp')) return <Sprout className="w-5 h-5 text-emerald-600" />;
@@ -41,8 +42,9 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
 
   const renderPillarIcon = (iconName: string) => {
     if (iconName === 'HeartPulse') return <HeartPulse className="w-5 h-5 text-emerald-600" />;
-    if (iconName === 'Sparkles') return <Sparkles className="w-5 h-5 text-amber-500" />;
-    return <Palmtree className="w-5 h-5 text-sky-600" />;
+    if (iconName === 'Palmtree') return <Palmtree className="w-5 h-5 text-sky-600" />;
+    if (iconName === 'Sprout') return <Sprout className="w-5 h-5 text-emerald-600" />;
+    return <Sparkles className="w-5 h-5 text-amber-500" />;
   };
 
   return (
@@ -51,23 +53,29 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
         
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-100 text-amber-800 text-xs font-bold tracking-wide uppercase">
-            <Lightbulb className="w-3.5 h-3.5" />
-            <span>Chuyên Gia & Giải Pháp Toàn Diện</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pum-lightGreen text-pum-green text-xs font-bold tracking-wide uppercase border border-pum-green/20">
+            <Lightbulb className="w-3.5 h-3.5 text-pum-orange" />
+            <span>{language === 'vi' ? 'Chuyên Gia & Giải Pháp Toàn Diện' : 'Expertise & Integrated Solutions'}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Trung Tâm Tư Vấn & Phát Triển Dự Án
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+            {language === 'vi' ? 'Trung Tâm Tư Vấn & Phát Triển Dự Án' : 'Project Advisory & Incubation Center'}
           </h1>
-          <p className="text-base text-slate-600 font-medium leading-relaxed">
-            Đồng hành cùng địa phương, bệnh viện và doanh nghiệp tư vấn khả thi, thiết kế mô hình hoạt động và chuyển giao 3 dự án y tế trụ cột cùng 12 mô hình kinh tế phụ trợ bền vững.
+          <p className="text-base text-slate-600 font-normal leading-relaxed">
+            {language === 'vi'
+              ? 'Đồng hành cùng địa phương, bệnh viện và doanh nghiệp tư vấn khả thi, thiết kế mô hình hoạt động và chuyển giao 3 dự án y tế trụ cột cùng 12 mô hình kinh tế phụ trợ bền vững.'
+              : 'Partnering with local authorities, hospitals, and enterprises to evaluate feasibility, design operational models, and transfer 3 healthcare pillars & 12 auxiliary economic models.'}
           </p>
         </div>
 
         {/* 5.3. QUY TRÌNH TIẾP NHẬN DỰ ÁN 6 BƯỚC */}
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-xs">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-2xs">
           <div className="text-center max-w-2xl mx-auto mb-8">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-amber-600">Quy Trình Chuẩn Hóa</span>
-            <h2 className="text-2xl font-bold mt-1 text-slate-900">Lộ Trình Tiếp Nhận & Triển Khai 6 Giai Đoạn</h2>
+            <span className="text-xs font-black uppercase tracking-widest text-pum-green">
+              {language === 'vi' ? 'Quy Trình Chuẩn Hóa' : 'Standard Workflow'}
+            </span>
+            <h2 className="text-2xl font-black mt-1 text-slate-900">
+              {language === 'vi' ? 'Lộ Trình Tiếp Nhận & Triển Khai 6 Giai Đoạn' : '6-Phase Project Intake & Deployment'}
+            </h2>
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
@@ -81,10 +89,10 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
             ].map((st, idx) => (
               <div
                 key={idx}
-                className="bg-amber-50/40 hover:bg-amber-50 rounded-2xl p-4 border border-amber-200/60 transition-all flex flex-col justify-between text-center group"
+                className="bg-pum-lightGreen/20 hover:bg-pum-lightGreen/40 rounded-2xl p-4 border border-pum-green/15 transition-all flex flex-col justify-between text-center group"
               >
                 <div>
-                  <div className="w-8 h-8 rounded-full bg-amber-500 text-white font-black text-xs flex items-center justify-center mx-auto mb-2 shadow-xs group-hover:scale-110 transition-transform">
+                  <div className="w-8 h-8 rounded-full bg-pum-green text-white font-black text-xs flex items-center justify-center mx-auto mb-2 shadow-2xs group-hover:scale-110 transition-transform">
                     {st.step}
                   </div>
                   <h4 className="font-bold text-xs text-slate-800">{st.name}</h4>
@@ -97,10 +105,10 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
           <div className="mt-8 text-center">
             <button
               onClick={() => onOpenCollaboration('consulting', 'Gửi yêu cầu tư vấn theo quy trình')}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm shadow-md shadow-amber-500/25 active:scale-95 transition-all"
+              className="inline-flex items-center gap-2 px-7 py-3.5 rounded-full bg-pum-orange hover:bg-pum-orangeHover text-white font-bold text-xs sm:text-sm shadow-md active:scale-95 transition-all"
             >
               <Send className="w-4 h-4" />
-              <span>Gửi yêu cầu tư vấn ngay</span>
+              <span>{language === 'vi' ? 'Gửi yêu cầu tư vấn ngay' : 'Submit Consultation Request'}</span>
             </button>
           </div>
         </div>
@@ -110,41 +118,41 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
           <div className="max-w-5xl lg:max-w-6xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-8">
             <button
               onClick={() => setActiveTab('core')}
-              className={`w-full py-3.5 px-3 sm:px-4 rounded-2xl text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[58px] ${
+              className={`w-full py-3.5 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[52px] ${
                 activeTab === 'core'
-                  ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25 ring-2 ring-amber-500/20'
-                  : 'bg-white text-slate-700 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 shadow-2xs'
+                  ? 'bg-pum-green text-white shadow-md'
+                  : 'bg-white text-slate-700 hover:bg-pum-lightGreen/40 border border-slate-200'
               }`}
             >
-              <span className="leading-snug">Tư vấn 3 Dự Án Y Tế Trụ Cột</span>
+              <span className="leading-snug">{language === 'vi' ? 'Tư vấn 3 Dự Án Y Tế Trụ Cột' : '3 Core Healthcare Projects'}</span>
               <span className="whitespace-nowrap text-[11px] sm:text-xs xl:text-sm font-medium xl:font-bold opacity-90 xl:opacity-100 xl:ml-1 mt-0.5 xl:mt-0">
-                (10 Gói Dịch Vụ)
+                (10 Gói)
               </span>
             </button>
             <button
               onClick={() => setActiveTab('economic')}
-              className={`w-full py-3.5 px-3 sm:px-4 rounded-2xl text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[58px] ${
+              className={`w-full py-3.5 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[52px] ${
                 activeTab === 'economic'
-                  ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25 ring-2 ring-amber-500/20'
-                  : 'bg-white text-slate-700 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 shadow-2xs'
+                  ? 'bg-pum-green text-white shadow-md'
+                  : 'bg-white text-slate-700 hover:bg-pum-lightGreen/40 border border-slate-200'
               }`}
             >
-              <span className="leading-snug">Tư vấn 12 Mô Hình Kinh Tế Phụ Trợ</span>
+              <span className="leading-snug">{language === 'vi' ? 'Tư vấn 12 Mô Hình Kinh Tế' : '12 Economic Models'}</span>
               <span className="whitespace-nowrap text-[11px] sm:text-xs xl:text-sm font-medium xl:font-bold opacity-90 xl:opacity-100 xl:ml-1 mt-0.5 xl:mt-0">
                 (4 Nhóm)
               </span>
             </button>
             <button
               onClick={() => setActiveTab('brand')}
-              className={`w-full py-3.5 px-3 sm:px-4 rounded-2xl text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[58px] ${
+              className={`w-full py-3.5 px-3 sm:px-4 rounded-full text-xs sm:text-sm font-bold transition-all text-center flex flex-col xl:flex-row items-center justify-center min-h-[52px] ${
                 activeTab === 'brand'
-                  ? 'bg-amber-500 text-white shadow-md shadow-amber-500/25 ring-2 ring-amber-500/20'
-                  : 'bg-white text-slate-700 hover:bg-amber-50 hover:text-amber-900 border border-slate-200 shadow-2xs'
+                  ? 'bg-pum-green text-white shadow-md'
+                  : 'bg-white text-slate-700 hover:bg-pum-lightGreen/40 border border-slate-200'
               }`}
             >
-              <span className="leading-snug">Chiến lược thương hiệu</span>
+              <span className="leading-snug">{language === 'vi' ? 'Hệ thống 3 Trụ Cột: Y tế – Du lịch – Nông nghiệp' : '3-Pillar: Health – Tourism – Agri'}</span>
               <span className="whitespace-nowrap text-[11px] sm:text-xs xl:text-sm font-medium xl:font-bold opacity-90 xl:opacity-100 xl:ml-1 mt-0.5 xl:mt-0">
-                (3 Nhánh)
+                (3 Trụ Cột)
               </span>
             </button>
           </div>
@@ -217,66 +225,111 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
             </div>
           )}
 
-          {/* TAB 2: 12 ECONOMIC MODELS IN 4 GROUPS */}
+          {/* TAB 2: 12 ECONOMIC MODELS IN 4 GROUPS WITH 3-PILLAR FILTER */}
           {activeTab === 'economic' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {mockEconomicGroups.map((grp, idx) => (
-                <div
-                  key={idx}
-                  className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs hover:shadow-lg transition-all"
-                >
-                  <div className="flex items-center gap-3 pb-4 mb-4 border-b border-slate-100">
-                    <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
-                      {renderGroupIcon(grp.groupName)}
-                    </div>
-                    <h3 className="text-base font-bold text-slate-900">
-                      {grp.groupName}
-                    </h3>
-                  </div>
-
-                  <div className="space-y-4">
-                    {grp.models.map((m, mIdx) => (
-                      <div key={mIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-100/80">
-                        <h4 className="font-bold text-xs text-slate-800 flex items-center gap-2">
-                          <CheckCircle2 className="w-3.5 h-3.5 text-amber-500" />
-                          <span>{m.title}</span>
-                        </h4>
-                        <p className="text-xs text-slate-600 mt-1.5 leading-relaxed pl-5.5">
-                          {m.description}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-4 mt-4 border-t border-slate-100">
-                    <button
-                      onClick={() => onOpenCollaboration('consulting', grp.groupName)}
-                      className="w-full py-2.5 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
-                    >
-                      <span>Tư vấn phát triển nhóm mô hình này</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
+            <div className="space-y-6 animate-fade-in">
+              {/* 3-Pillar Filter Bar */}
+              <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                    {language === 'vi' ? 'Phân loại theo 3 Trụ Cột:' : 'Filter by 3 Pillars:'}
+                  </span>
                 </div>
-              ))}
+                <div className="flex flex-wrap items-center gap-2">
+                  {[
+                    { id: 'all', labelVi: 'Tất cả (12 Mô hình)', labelEn: 'All (12 Models)' },
+                    { id: 'health', labelVi: '🏥 Trụ cột Y tế', labelEn: '🏥 Healthcare Pillar' },
+                    { id: 'tourism', labelVi: '🌴 Trụ cột Du lịch', labelEn: '🌴 Tourism Pillar' },
+                    { id: 'agriculture', labelVi: '🌾 Trụ cột Nông nghiệp', labelEn: '🌾 Agriculture Pillar' }
+                  ].map((f) => (
+                    <button
+                      key={f.id}
+                      onClick={() => setEconomicFilter(f.id as any)}
+                      className={`px-3.5 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
+                        economicFilter === f.id
+                          ? 'bg-pum-green text-white shadow-xs'
+                          : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                      }`}
+                    >
+                      {language === 'vi' ? f.labelVi : f.labelEn}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Grid of groups */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {mockEconomicGroups
+                  .filter((grp) => economicFilter === 'all' || grp.pillar === economicFilter)
+                  .map((grp, idx) => (
+                    <div
+                      key={idx}
+                      className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs hover:shadow-lg transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center">
+                              {renderGroupIcon(grp.groupName)}
+                            </div>
+                            <div>
+                              <h3 className="text-base font-bold text-slate-900 leading-snug">
+                                {grp.groupName}
+                              </h3>
+                              <span className="text-[11px] font-bold text-pum-green">
+                                {language === 'vi' ? grp.pillarBadgeVi : grp.pillarBadgeEn}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="space-y-3.5">
+                          {grp.models.map((m, mIdx) => (
+                            <div key={mIdx} className="bg-slate-50/70 p-4 rounded-2xl border border-slate-100/80">
+                              <h4 className="font-bold text-xs text-slate-800 flex items-center gap-2">
+                                <CheckCircle2 className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                                <span>{m.title}</span>
+                              </h4>
+                              <p className="text-xs text-slate-600 mt-1.5 leading-relaxed pl-5.5">
+                                {m.description}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="pt-4 mt-4 border-t border-slate-100">
+                        <button
+                          onClick={() => onOpenCollaboration('consulting', grp.groupName)}
+                          className="w-full py-2.5 rounded-xl bg-amber-50 hover:bg-amber-500 text-amber-800 hover:text-white font-bold text-xs flex items-center justify-center gap-2 transition-all cursor-pointer"
+                        >
+                          <span>{language === 'vi' ? 'Tư vấn phát triển nhóm mô hình này' : 'Consult on this group'}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+              </div>
             </div>
           )}
 
-          {/* TAB 3: CHIẾN LƯỢC THƯƠNG HIỆU */}
+          {/* TAB 3: CHIẾN LƯỢC THƯƠNG HIỆU 3 TRỤ CỘT */}
           {activeTab === 'brand' && (
             <div className="space-y-10 animate-fade-in">
               {/* SƠ ĐỒ TRỰC QUAN: MÔ HÌNH CHIẾN LƯỢC THƯƠNG HIỆU */}
               <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-xs">
                 <div className="text-center max-w-3xl mx-auto mb-10">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-800 text-xs font-extrabold uppercase tracking-wider">
-                    <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                    Sơ Đồ Cấu Trúc Chiến Lược Thương Hiệu
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-extrabold uppercase tracking-wider">
+                    <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                    {language === 'vi' ? 'Hệ Thống Chiến Lược 3 Trụ Cột' : '3-Pillar Strategic Framework'}
                   </span>
                   <h2 className="text-2xl sm:text-3xl font-extrabold text-slate-900 mt-2 tracking-tight">
-                    Hệ Thống Chuyển Hóa & Sản Phẩm Trải Nghiệm Bình Mỹ
+                    {language === 'vi' ? 'Mô Hình Tích Hợp: Y Tế – Du Lịch – Nông Nghiệp Bình Mỹ' : 'Integrated Model: Health – Tourism – Agriculture of Binh My'}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed font-medium">
-                    Từ 3 trụ cột phát triển ban đầu, chuyển hóa thành 3 không gian trải nghiệm bản địa đặc sắc và cùng hội tụ kiến tạo nên Hệ sinh thái Sản phẩm trải nghiệm Bình Mỹ độc bản.
+                    {language === 'vi'
+                      ? 'Từ 3 trụ cột phát triển cốt lõi (Y tế – Du lịch – Nông nghiệp), chuyển hóa thành 3 không gian trải nghiệm bản địa đặc sắc và cùng hội tụ kiến tạo nên Hệ sinh thái Sản phẩm trải nghiệm Bình Mỹ độc bản.'
+                      : 'From 3 core strategic pillars (Healthcare – Tourism – Agriculture), translating into 3 native experiential zones and converging to create the unique Binh My Experience Ecosystem.'}
                   </p>
                 </div>
 
@@ -445,7 +498,9 @@ export const ConsultingPage: React.FC<ConsultingPageProps> = ({ onOpenCollaborat
                       Hệ Sinh Thái Sản Phẩm Trải Nghiệm Bình Mỹ
                     </h3>
                     <p className="text-xs sm:text-sm text-slate-600 mt-1.5 font-medium">
-                      4 nhóm sản phẩm – dịch vụ đặc trưng kết tinh từ Y tế xanh, Văn hóa sáng tạo và Nông nghiệp sinh thái.
+                      {language === 'vi' 
+                        ? '4 nhóm sản phẩm – dịch vụ đặc trưng kết tinh từ Y tế cộng đồng, Du lịch nghỉ dưỡng và Nông nghiệp sinh thái Bình Mỹ.' 
+                        : '4 signature product-service categories crystallizing from Community Healthcare, Wellness Tourism, and Eco-Agriculture of Binh My.'}
                     </p>
                   </div>
                   <button

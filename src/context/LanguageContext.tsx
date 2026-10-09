@@ -175,10 +175,40 @@ export const translations: Translations = {
     en: 'Submit Inquiry'
   },
 
+  // PUM Section Titles
+  joinUsTitle: {
+    vi: 'Đồng hành cùng chúng tôi',
+    en: 'Join us'
+  },
+  joinUsSubtitle: {
+    vi: 'Kết nối nguồn lực, chia sẻ tri thức và chung tay kiến tạo giá trị cho cộng đồng',
+    en: 'Connecting resources, sharing knowledge and building a better future together'
+  },
+  featuredProjectsTitle: {
+    vi: 'Dự án trọng điểm',
+    en: 'Featured Projects'
+  },
+  featuredProjectsSubtitle: {
+    vi: 'Những mô hình thực nghiệm và giải pháp đã và đang triển khai thực tế',
+    en: 'Pioneering living lab models and real-world impact solutions'
+  },
+  testimonialsTitle: {
+    vi: 'Góc nhìn & Cảm nhận',
+    en: 'Perspectives & Stories'
+  },
+  testimonialsSubtitle: {
+    vi: 'Chia sẻ từ các chuyên gia, sinh viên và đối tác đồng hành tại Bình Mỹ',
+    en: 'Reflections from international experts, students, and community partners'
+  },
+  pumMotto: {
+    vi: 'Cùng nhau phát triển – Together we grow',
+    en: 'Together we grow'
+  },
+
   // Footer
   footerCopyright: {
-    vi: '© 2025 Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ. Tất cả quyền được bảo lưu.',
-    en: '© 2025 Binh My Innovative Student Village. All rights reserved.'
+    vi: '© 2026 Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ. Tất cả quyền được bảo lưu.',
+    en: '© 2026 Binh My Innovative Student Village. All rights reserved.'
   }
 };
 
@@ -191,7 +221,20 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('vi');
+  const [language, setLanguageState] = useState<Language>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('site_language');
+      if (saved === 'vi' || saved === 'en') return saved;
+    }
+    return 'en';
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('site_language', lang);
+    }
+  };
 
   const t = (key: string): string => {
     if (translations[key] && translations[key][language]) {
