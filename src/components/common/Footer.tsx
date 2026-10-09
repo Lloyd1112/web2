@@ -8,7 +8,8 @@ import {
   MapPin, 
   ShieldCheck, 
   CheckCircle2, 
-  HeartHandshake 
+  HeartHandshake,
+  Sprout
 } from 'lucide-react';
 import hutechLogo from '../../assets/hutech-logo.png';
 import { getPathForTab } from '../../routes';
@@ -36,303 +37,183 @@ export const Footer: React.FC<FooterProps> = ({ setActiveTab }) => {
   };
 
   return (
-    <footer className="bg-pum-greenDark text-slate-300 border-t border-pum-green/30 pt-16 pb-12">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
+    <footer className="bg-[#063124] text-slate-300 relative overflow-hidden pt-12 pb-10 border-t border-emerald-900/60">
+      
+      {/* Organic curved subtle top highlight */}
+      <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-emerald-600 via-teal-400 to-emerald-600 opacity-60" />
+
+      <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
         
-        {/* Top Grid: Brand & Mission + 3 Nav Columns + Newsletter Box */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8 pb-14 border-b border-white/10">
+        {/* Main 4 Columns Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10 pb-10 border-b border-emerald-800/40">
           
-          {/* Column 1: Brand story & Accreditation (4 cols) */}
-          <div className="lg:col-span-4">
+          {/* Column 1: Brand & Slogan (4 cols) */}
+          <div className="lg:col-span-4 space-y-4">
             <a 
               href={getPathForTab('home')}
               onClick={(e) => {
                 e.preventDefault();
                 handleNav('home');
               }}
-              className="flex items-center gap-3 cursor-pointer group mb-5 inline-flex"
+              className="flex items-center gap-3 cursor-pointer group inline-flex"
             >
-              <div className="h-12 w-auto bg-white p-1 rounded-xl flex items-center justify-center flex-shrink-0 shadow-md">
-                <img 
-                  src={hutechLogo} 
-                  alt="HUTECH University Logo" 
-                  className="h-10 w-auto object-contain"
-                />
+              <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white border border-white/20">
+                <Sprout className="w-6 h-6 text-emerald-400" />
               </div>
               <div className="flex flex-col">
-                <span className="text-sm font-black tracking-tight text-white uppercase leading-none">
-                  {language === 'vi' ? 'LÀNG SINH VIÊN' : 'STUDENT VILLAGE'}
+                <span className="text-base font-black tracking-tight text-white uppercase leading-none">
+                  LÀNG SV
                 </span>
-                <span className="text-xs font-bold tracking-wider text-pum-orange uppercase leading-tight mt-1">
-                  {language === 'vi' ? 'ĐỔI MỚI SÁNG TẠO BÌNH MỸ' : 'BINH MY INNOVATION CAMPUS'}
+                <span className="text-[10px] font-bold tracking-wider text-emerald-400 uppercase leading-tight mt-1">
+                  ĐỔI MỚI SÁNG TẠO BÌNH MỸ
                 </span>
               </div>
             </a>
 
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed mb-6 max-w-sm">
-              {language === 'vi'
-                ? 'Hệ sinh thái campus mở liên kết đào tạo, nghiên cứu ứng dụng, chuyển giao công nghệ và hợp tác quốc tế vì sức khỏe cộng đồng và nông nghiệp sinh thái bền vững.'
-                : 'An open campus ecosystem linking education, applied research, technology transfer and international cooperation for community health and sustainable agriculture.'}
+            <p className="text-xs text-slate-300/90 leading-relaxed max-w-sm">
+              Kết nối tri thức - Kiến tạo giá trị - Phát triển Bình Mỹ bền vững.
             </p>
+          </div>
 
-            {/* Accreditation Badge & PUM Standard */}
-            <div className="flex items-center gap-4 pt-2">
-              <div className="flex items-center gap-2 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                <ShieldCheck className="w-4 h-4 text-pum-orange" />
-                <span className="text-[11px] font-bold text-white tracking-wide">
-                  Standardized Living Lab Model
-                </span>
-              </div>
-              <img 
-                src="/assets/pum/anbi-logo.png" 
-                alt="ANBI Certification Standard" 
-                className="h-7 w-auto object-contain brightness-125 opacity-80"
-              />
+          {/* Column 2: Liên kết nhanh (2.5 cols) */}
+          <div className="lg:col-span-3">
+            <h4 className="text-sm font-bold text-white mb-3.5">
+              Liên kết nhanh
+            </h4>
+            <div className="grid grid-cols-2 gap-2 text-xs text-slate-300">
+              <a 
+                href={getPathForTab('home')}
+                onClick={(e) => { e.preventDefault(); handleNav('home'); }} 
+                className="hover:text-emerald-400 transition-colors block py-0.5"
+              >
+                Trang chủ
+              </a>
+              <a 
+                href={getPathForTab('events')}
+                onClick={(e) => { e.preventDefault(); handleNav('events'); }} 
+                className="hover:text-emerald-400 transition-colors block py-0.5"
+              >
+                Tin tức
+              </a>
+              <a 
+                href={getPathForTab('real-problems')}
+                onClick={(e) => { e.preventDefault(); handleNav('real-problems'); }} 
+                className="hover:text-emerald-400 transition-colors block py-0.5"
+              >
+                Bài toán thực tế
+              </a>
+              <a 
+                href={getPathForTab('about')}
+                onClick={(e) => { e.preventDefault(); handleNav('about'); }} 
+                className="hover:text-emerald-400 transition-colors block py-0.5"
+              >
+                Giới thiệu
+              </a>
+              <a 
+                href={getPathForTab('health-models')}
+                onClick={(e) => { e.preventDefault(); handleNav('health-models'); }} 
+                className="hover:text-emerald-400 transition-colors block py-0.5"
+              >
+                Dự án
+              </a>
             </div>
           </div>
 
-          {/* Column 2: 3 Mô hình Y tế & Đào tạo (2 cols) */}
+          {/* Column 3: Hỗ trợ (2.5 cols) */}
           <div className="lg:col-span-2">
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-4">
-              {language === 'vi' ? 'Mô hình & Đào tạo' : 'Models & Training'}
+            <h4 className="text-sm font-bold text-white mb-3.5">
+              Hỗ trợ
             </h4>
-            <ul className="space-y-2.5 text-xs text-slate-300">
+            <ul className="space-y-2 text-xs text-slate-300">
               <li>
-                <a 
-                  href={getPathForTab('health-models')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('health-models');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Y tế cộng đồng & Living Lab' : 'Community Health & Lab'}
-                </a>
+                <span className="hover:text-emerald-400 cursor-pointer transition-colors block">
+                  Hướng dẫn sử dụng
+                </span>
               </li>
               <li>
-                <a 
-                  href={getPathForTab('health-models')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('health-models');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Chăm sóc người cao tuổi' : 'Elderly Care Center'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('health-models')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('health-models');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Health & Wellness Farm' : 'Health & Wellness Farm'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('training')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('training');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Đào tạo điều dưỡng & KTV' : 'Workforce & Nursing'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('training')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('training');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Quản trị y tế & Chăm sóc số' : 'Healthcare Management'}
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          {/* Column 3: Tư vấn & Quốc tế (2 cols) */}
-          <div className="lg:col-span-2">
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-4">
-              {language === 'vi' ? 'Tư vấn & Quốc tế' : 'Consulting & Global'}
-            </h4>
-            <ul className="space-y-2.5 text-xs text-slate-300">
-              <li>
-                <a 
-                  href={getPathForTab('real-problems')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('real-problems');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block font-bold text-amber-400"
-                >
-                  {language === 'vi' ? '✦ Bài toán thực tế Bình Mỹ' : '✦ Real-World Problems'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('about')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('about');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('consulting')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('consulting');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? '3 Dự án y tế trụ cột' : '3 Pillar Health Projects'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('consulting')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('consulting');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? '12 Mô hình kinh tế' : '12 Economic Models'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('doctors')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('doctors');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Bác sĩ xuyên biên giới' : 'Doctors Across Borders'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('international')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('international');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Hợp tác quốc tế' : 'International Cooperation'}
-                </a>
-              </li>
-              <li>
-                <a 
-                  href={getPathForTab('events')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('events');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
-                >
-                  {language === 'vi' ? 'Sự kiện & Tin tức' : 'Events & News'}
-                </a>
+                <span className="hover:text-emerald-400 cursor-pointer transition-colors block">
+                  Câu hỏi thường gặp
+                </span>
               </li>
               <li>
                 <a 
                   href={getPathForTab('contact')}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    handleNav('contact');
-                  }} 
-                  className="hover:text-pum-orange transition-colors block"
+                  onClick={(e) => { e.preventDefault(); handleNav('contact'); }}
+                  className="hover:text-emerald-400 transition-colors block"
                 >
-                  {language === 'vi' ? 'Liên hệ & Tiếp nhận hợp tác' : 'Contact & Inquiries'}
+                  Liên hệ
                 </a>
+              </li>
+              <li>
+                <span className="hover:text-emerald-400 cursor-pointer transition-colors block">
+                  Chính sách bảo mật
+                </span>
               </li>
             </ul>
           </div>
 
-          {/* Column 4: Newsletter Box & Contact (4 cols) */}
-          <div className="lg:col-span-4">
-            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-4">
-              {language === 'vi' ? 'Bản tin Đổi Mới Sáng Tạo' : 'Innovation Newsletter'}
+          {/* Column 4: Kết nối với chúng tôi (3 cols) */}
+          <div className="lg:col-span-3">
+            <h4 className="text-sm font-bold text-white mb-3.5">
+              Kết nối với chúng tôi
             </h4>
-            <p className="text-xs text-slate-300 mb-4 leading-relaxed">
-              {language === 'vi'
-                ? 'Đăng ký để nhận các báo cáo nghiên cứu, lời mời hội thảo y khoa quốc tế và cơ hội hợp tác mới nhất.'
-                : 'Subscribe to receive the latest clinical research briefs, global symposium invitations, and collaboration calls.'}
-            </p>
+            
+            {/* Social Icons matching mockup */}
+            <div className="flex items-center gap-2.5 pt-1">
+              {/* Facebook */}
+              <a 
+                href="#facebook" 
+                className="w-9 h-9 rounded-full bg-[#1877f2] hover:opacity-90 flex items-center justify-center text-white transition-transform active:scale-95 shadow-sm"
+                title="Facebook"
+              >
+                <span className="font-black text-sm">f</span>
+              </a>
 
-            <form onSubmit={handleSubscribe} className="space-y-2">
-              <div className="relative">
-                <input
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder={language === 'vi' ? 'Địa chỉ email của bạn...' : 'Your email address...'}
-                  className="w-full bg-white/10 border border-white/20 rounded-full px-4 py-3 text-xs text-white placeholder-slate-400 focus:outline-hidden focus:border-pum-orange transition-colors pr-12"
-                />
-                <button
-                  type="submit"
-                  className="absolute right-1.5 top-1.5 w-8 h-8 rounded-full bg-pum-orange hover:bg-pum-orangeHover text-white flex items-center justify-center transition-transform active:scale-95 shadow-sm"
-                  aria-label="Subscribe"
-                >
-                  <Send className="w-3.5 h-3.5" />
-                </button>
-              </div>
-              {subscribed && (
-                <p className="text-[11px] font-semibold text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  {language === 'vi' ? 'Cảm ơn bạn đã đăng ký nhận tin!' : 'Thank you for subscribing!'}
-                </p>
-              )}
-            </form>
+              {/* YouTube */}
+              <a 
+                href="#youtube" 
+                className="w-9 h-9 rounded-full bg-[#ff0000] hover:opacity-90 flex items-center justify-center text-white transition-transform active:scale-95 shadow-sm"
+                title="YouTube"
+              >
+                <span className="text-xs">▶</span>
+              </a>
 
-            <div className="mt-6 pt-5 border-t border-white/10 space-y-2 text-xs text-slate-300">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-pum-orange flex-shrink-0" />
-                <span>Xã Bình Mỹ, Huyện Củ Chi, TP. Hồ Chí Minh</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-pum-orange flex-shrink-0" />
-                <span>contact@langsinhvienbinhmy.edu.vn</span>
-              </div>
+              {/* Zalo / Chat */}
+              <a 
+                href="#zalo" 
+                className="w-9 h-9 rounded-full bg-[#0068ff] hover:opacity-90 flex items-center justify-center text-white text-[11px] font-black transition-transform active:scale-95 shadow-sm"
+                title="Zalo"
+              >
+                <span>Zalo</span>
+              </a>
+
+              {/* TikTok */}
+              <a 
+                href="#tiktok" 
+                className="w-9 h-9 rounded-full bg-slate-900 border border-slate-700 hover:opacity-90 flex items-center justify-center text-white text-xs font-bold transition-transform active:scale-95 shadow-sm"
+                title="TikTok"
+              >
+                <span>d</span>
+              </a>
             </div>
 
+            <p className="text-[11px] text-slate-400 mt-4 leading-normal">
+              Email: contact@langsinhvienbinhmy.edu.vn<br />
+              Ấp 1, Xã Bình Mỹ, Huyện Củ Chi, TP. Hồ Chí Minh
+            </p>
           </div>
 
         </div>
 
-        {/* Bottom Bar: Copyright & Ethics */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+        {/* Bottom Copyright */}
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
           <p>
-            {language === 'vi'
-              ? '© 2026 Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ. Chuẩn mực hợp tác quốc tế.'
-              : '© 2026 Binh My Innovative Student Village. International standards.'}
+            © 2026 Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ. Phát triển bền vững cùng cộng đồng.
           </p>
-
-          <div className="flex flex-wrap items-center gap-4 text-[11px]">
-            <span className="hover:text-white cursor-pointer">Code of Conduct</span>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <span className="hover:text-white cursor-pointer">Điều khoản sử dụng</span>
             <span>•</span>
-            <span className="hover:text-white cursor-pointer">Privacy Statement</span>
-            <span>•</span>
-            <span className="hover:text-white cursor-pointer">Ethics & Compliance</span>
-            <span>•</span>
-            <span className="hover:text-white cursor-pointer">Living Lab Policy</span>
+            <span className="hover:text-white cursor-pointer">Bảo mật thông tin</span>
           </div>
         </div>
 
