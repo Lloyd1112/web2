@@ -113,42 +113,34 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-200 ${isScrolled
-        ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-slate-200/90'
-        : 'bg-white border-b border-slate-200 shadow-2xs'
+      ? 'bg-white/98 backdrop-blur-md shadow-md border-b border-slate-200/90'
+      : 'bg-white border-b border-slate-200 shadow-2xs'
       }`}>
       <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-[72px] gap-4">
 
-          {/* Brand Logo (Globe with green leaves/river) */}
+          {/* Brand Logo (HUTECH & Làng Sinh Viên Bình Mỹ) */}
           <a
             href={getPathForTab('home')}
             onClick={(e) => {
               e.preventDefault();
               handleNavClick('home');
             }}
-            className="flex items-center gap-3 cursor-pointer select-none flex-shrink-0 group"
+            className="flex items-center gap-3.5 cursor-pointer select-none flex-shrink-0 group"
           >
-            {/* Globe & Leaf Stylized Circular Badge */}
-            <div className="w-10 h-10 rounded-full bg-[#eef7f2] border border-emerald-200/80 p-1 flex items-center justify-center shadow-2xs group-hover:scale-105 transition-transform flex-shrink-0">
-              <svg className="w-7 h-7" viewBox="0 0 32 32" fill="none">
-                {/* Globe */}
-                <circle cx="16" cy="16" r="14" fill="#e0f2fe" />
-                <circle cx="16" cy="16" r="13" stroke="#0284c7" strokeWidth="1.2" />
-                <ellipse cx="16" cy="16" rx="6" ry="13" stroke="#0284c7" strokeWidth="1" strokeDasharray="2 1" />
-                <line x1="3" y1="16" x2="29" y2="16" stroke="#0284c7" strokeWidth="1" />
-                {/* Green Leaf & Sprout */}
-                <path d="M12 24C12 18 17 12 24 10C24 17 19 22 12 24Z" fill="#10b981" />
-                <path d="M16 19C17 16 20 14 24 13C23 17 20 19 16 19Z" fill="#34d399" />
-                {/* Blue Waves */}
-                <path d="M7 21C11 19 14 23 18 21C22 19 25 21 27 20" stroke="#0369a1" strokeWidth="1.5" strokeLinecap="round" />
-              </svg>
+            <div className="h-10 w-10 flex items-center justify-center flex-shrink-0">
+              <img
+                src="/logo.png"
+                alt="LÀNG SINH VIÊN ĐỔI MỚI SÁNG TẠO BÌNH MỸ"
+                className="h-10 w-10 object-contain drop-shadow-2xs group-hover:scale-105 transition-transform duration-200"
+              />
             </div>
             <div className="flex flex-col justify-center select-none">
               <span className="text-[13px] xl:text-[14px] font-black tracking-tight text-[#0f294a] uppercase leading-none">
-                LÀNG SINH VIÊN
+                {language === 'vi' ? 'LÀNG SINH VIÊN' : 'STUDENT VILLAGE'}
               </span>
               <span className="text-[9px] xl:text-[9.5px] font-extrabold tracking-wider text-[#00875a] uppercase leading-tight mt-1">
-                ĐỔI MỚI SÁNG TẠO BÌNH MỸ
+                {language === 'vi' ? 'ĐỔI MỚI SÁNG TẠO BÌNH MỸ' : 'BINH MY INNOVATION CAMPUS'}
               </span>
             </div>
           </a>
@@ -165,8 +157,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('home');
               }}
               className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'home'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-800 hover:text-[#00875a]'
+                ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
               {language === 'vi' ? 'Trang chủ' : 'Home'}
@@ -185,8 +177,8 @@ export const Header: React.FC<HeaderProps> = ({
                   handleNavClick('health-models');
                 }}
                 className={`h-full inline-flex items-center gap-1.5 text-[15px] xl:text-[16px] transition-colors relative font-semibold ${isProjectActive
-                    ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                    : 'text-slate-800 hover:text-[#00875a]'
+                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                  : 'text-slate-800 hover:text-[#00875a]'
                   }`}
               >
                 <span>{language === 'vi' ? 'Dự án' : 'Projects'}</span>
@@ -216,8 +208,8 @@ export const Header: React.FC<HeaderProps> = ({
                             handleNavClick(item.id);
                           }}
                           className={`p-3 rounded-xl cursor-pointer transition-all flex items-start gap-3 group/sub ${isSubActive
-                              ? 'bg-pum-lightGreen/40 border border-pum-green/20'
-                              : 'hover:bg-slate-50'
+                            ? 'bg-pum-lightGreen/40 border border-pum-green/20'
+                            : 'hover:bg-slate-50'
                             }`}
                         >
                           <div className={`w-9 h-9 rounded-xl ${item.bgColor} flex items-center justify-center flex-shrink-0 mt-0.5 shadow-2xs transition-colors`}>
@@ -247,8 +239,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('real-problems');
               }}
               className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'real-problems'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-800 hover:text-[#00875a]'
+                ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
               {language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}
@@ -262,8 +254,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('about');
               }}
               className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'about'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-800 hover:text-[#00875a]'
+                ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
               {language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}
@@ -277,8 +269,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('events');
               }}
               className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'events'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-800 hover:text-[#00875a]'
+                ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
               {language === 'vi' ? 'Sự kiện' : 'Events'}
@@ -292,8 +284,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('contact');
               }}
               className={`h-full inline-flex items-center text-[15px] xl:text-[16px] transition-colors relative font-semibold ${activeTab === 'contact' || activeTab === 'news-contact'
-                  ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
-                  : 'text-slate-800 hover:text-[#00875a]'
+                ? 'text-[#00875a] font-bold after:content-[\'\'] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[3.5px] after:bg-[#00875a] after:rounded-t-full'
+                : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
               {language === 'vi' ? 'Liên hệ' : 'Contact'}
@@ -317,28 +309,28 @@ export const Header: React.FC<HeaderProps> = ({
             <div className="flex items-center bg-slate-100 p-1 rounded-full text-xs font-bold text-slate-600 border border-slate-200/80">
               <button
                 onClick={() => setLanguage('vi')}
-                className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${language === 'vi'
-                    ? 'bg-[#00875a] text-white shadow-2xs'
-                    : 'hover:text-[#00875a]'
+                className={`px-2.5 py-1 rounded-full transition-all ${language === 'vi'
+                  ? 'bg-pum-green text-white shadow-2xs'
+                  : 'hover:text-pum-green'
                   }`}
               >
                 VI
               </button>
               <button
                 onClick={() => setLanguage('en')}
-                className={`px-2.5 py-1 rounded-full transition-all cursor-pointer ${language === 'en'
-                    ? 'bg-[#00875a] text-white shadow-2xs'
-                    : 'hover:text-[#00875a]'
+                className={`px-2.5 py-1 rounded-full transition-all ${language === 'en'
+                  ? 'bg-pum-green text-white shadow-2xs'
+                  : 'hover:text-pum-green'
                   }`}
               >
                 EN
               </button>
             </div>
 
-            {/* Signature Orange CTA Button */}
+            {/* Signature PUM Orange CTA Button */}
             <button
               onClick={() => onOpenCollaboration('general', '')}
-              className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded-full text-white bg-[#f97316] hover:bg-[#ea580c] transition-all text-xs tracking-wide shadow-sm hover:shadow-md active:scale-95 cursor-pointer"
+              className="inline-flex items-center gap-2 font-bold px-5 py-2.5 rounded-full text-white bg-pum-orange hover:bg-pum-orangeHover transition-all text-xs tracking-wide shadow-sm hover:shadow-md active:scale-95 cursor-pointer"
             >
               <HeartHandshake className="w-4 h-4" />
               <span>{language === 'vi' ? 'Đề xuất hợp tác' : 'Collaborate'}</span>
@@ -388,8 +380,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('home');
               }}
               className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'home'
-                  ? 'bg-pum-green text-white shadow-xs'
-                  : 'text-slate-800 hover:bg-slate-100'
+                ? 'bg-pum-green text-white shadow-xs'
+                : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
               <span>{language === 'vi' ? 'Trang chủ' : 'Home'}</span>
@@ -401,8 +393,8 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => setMobileProjectsOpen(!mobileProjectsOpen)}
                 className={`w-full px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${isProjectActive
-                    ? 'bg-pum-lightGreen/60 text-pum-green font-extrabold'
-                    : 'text-slate-800 hover:bg-slate-100'
+                  ? 'bg-pum-lightGreen/60 text-pum-green font-extrabold'
+                  : 'text-slate-800 hover:bg-slate-100'
                   }`}
               >
                 <span>{language === 'vi' ? 'Dự án' : 'Projects'}</span>
@@ -422,8 +414,8 @@ export const Header: React.FC<HeaderProps> = ({
                           handleNavClick(item.id);
                         }}
                         className={`px-3 py-2.5 rounded-xl text-left text-xs font-bold transition-colors flex items-center gap-2.5 ${activeTab === item.id
-                            ? 'bg-pum-green text-white'
-                            : 'text-slate-700 hover:bg-slate-100'
+                          ? 'bg-pum-green text-white'
+                          : 'text-slate-700 hover:bg-slate-100'
                           }`}
                       >
                         <IconComp className={`w-4 h-4 ${activeTab === item.id ? 'text-white' : item.color}`} />
@@ -443,8 +435,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('real-problems');
               }}
               className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'real-problems'
-                  ? 'bg-pum-green text-white shadow-xs'
-                  : 'text-slate-800 hover:bg-slate-100'
+                ? 'bg-pum-green text-white shadow-xs'
+                : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
               <span>{language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}</span>
@@ -459,8 +451,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('about');
               }}
               className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'about'
-                  ? 'bg-pum-green text-white shadow-xs'
-                  : 'text-slate-800 hover:bg-slate-100'
+                ? 'bg-pum-green text-white shadow-xs'
+                : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
               <span>{language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}</span>
@@ -475,8 +467,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('events');
               }}
               className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'events'
-                  ? 'bg-pum-green text-white shadow-xs'
-                  : 'text-slate-800 hover:bg-slate-100'
+                ? 'bg-pum-green text-white shadow-xs'
+                : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
               <span>{language === 'vi' ? 'Sự kiện' : 'Events'}</span>
@@ -491,8 +483,8 @@ export const Header: React.FC<HeaderProps> = ({
                 handleNavClick('contact');
               }}
               className={`px-4 py-3 rounded-2xl text-left font-bold text-sm transition-colors flex items-center justify-between ${activeTab === 'contact' || activeTab === 'news-contact'
-                  ? 'bg-pum-green text-white shadow-xs'
-                  : 'text-slate-800 hover:bg-slate-100'
+                ? 'bg-pum-green text-white shadow-xs'
+                : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
               <span>{language === 'vi' ? 'Liên hệ' : 'Contact'}</span>
