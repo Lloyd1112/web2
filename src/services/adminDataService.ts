@@ -1,0 +1,725 @@
+import { RealProblem, ProblemStatus, ProblemCategory } from '../types';
+import { initialRealProblems } from '../data/mockProblems';
+
+// ================= TYPES CHO ADMIN =================
+
+export type ExtendedProblemStatus = 
+  | 'pending'           // Chờ xác minh
+  | 'reviewing'         // Đang xác minh
+  | 'needs_update'      // Yêu cầu bổ sung
+  | 'verified'          // Đã xác minh (sẵn sàng duyệt công khai)
+  | 'published'         // Đã công khai trên website
+  | 'seeking_support'   // Đang tìm người hỗ trợ
+  | 'in_progress'       // Đang triển khai
+  | 'rejected'          // Từ chối
+  | 'archived';         // Đã lưu trữ
+
+export type ProposalStatus =
+  | 'new'               // Mới tiếp nhận
+  | 'reviewing'         // Đang xem xét
+  | 'needs_info'        // Cần bổ sung thông tin
+  | 'contacted'         // Đã liên hệ
+  | 'connecting'        // Đang kết nối các bên
+  | 'connected'         // Đã kết nối thành công
+  | 'unsuitable'        // Không phù hợp
+  | 'closed';           // Đã đóng
+
+export type ProjectImplementationStatus =
+  | 'seeking_resources' // Đang tìm kiếm nguồn lực
+  | 'recruiting'        // Đang tuyển thành viên/đối tác
+  | 'in_progress'       // Đang triển khai
+  | 'testing'           // Đang thử nghiệm
+  | 'completed'         // Đã hoàn thành
+  | 'paused';           // Tạm dừng
+
+export type ProjectPublishStatus =
+  | 'draft'             // Bản nháp
+  | 'published'         // Đã xuất bản (hiển thị công khai)
+  | 'hidden'            // Đã ẩn
+  | 'archived';         // Đã lưu trữ
+
+export interface AdminProposal {
+  id: string;
+  problemId?: string;
+  problemCode?: string;
+  problemTitle?: string;
+  projectId?: string;
+  projectTitle?: string;
+  role: 'Sinh viên' | 'Chuyên gia' | 'Doanh nghiệp' | 'Đơn vị hỗ trợ / Tổ chức' | 'Khác';
+  fullName: string;
+  phone: string;
+  email?: string;
+  organization?: string;
+  selectedFields: string[];
+  solutionContent: string;
+  availability: string;
+  fileName?: string | null;
+  status: ProposalStatus;
+  statusHistory?: {
+    status: ProposalStatus;
+    note?: string;
+    updatedAt: string;
+    updatedBy?: string;
+  }[];
+  internalNotes?: string;
+  assignedTo?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminProject {
+  id: string;
+  code: string;
+  title: string;
+  titleEn?: string;
+  thumbnail: string;
+  gallery?: string[];
+  summary: string;
+  summaryEn?: string;
+  content: string;
+  objectives?: string[];
+  problemId?: string;       // Liên kết bài toán nguồn
+  problemTitle?: string;
+  category: ProblemCategory | string;
+  categoryName: string;
+  location: string;
+  organization: string;     // Đơn vị thực hiện
+  teamMembers?: string[];
+  neededResources?: string;
+  milestones?: { date: string; title: string; completed?: boolean }[];
+  expectedOutcomes?: string;
+  actualImpact?: string;
+  implementationPeriod?: string;
+  status: ProjectImplementationStatus;
+  publishStatus: ProjectPublishStatus;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AdminNewsItem {
+  id: string;
+  title: string;
+  category: 'Tin tức' | 'Sự kiện' | 'Thông báo' | 'Dự án';
+  summary: string;
+  content: string;
+  image: string;
+  author: string;
+  publishedDate: string;
+  isPublished: boolean;
+  views: number;
+}
+
+export interface AdminUser {
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  role: 'superadmin' | 'moderator' | 'editor';
+  avatar: string;
+}
+
+// ================= DỮ LIỆU KHỞI TẠO MẪU =================
+
+const STORAGE_KEYS = {
+  PROBLEMS: 'binhmy_real_problems_v3',
+  PROPOSALS: 'binhmy_solution_proposals',
+  PROJECTS: 'binhmy_admin_projects_v1',
+  NEWS: 'binhmy_admin_news_v1',
+  AUTH: 'binhmy_admin_auth_user'
+};
+
+// Bài toán bổ sung cho Admin duyệt
+const additionalMockProblems: (RealProblem & { moderationNote?: string })[] = [
+  {
+    id: 'prob-7',
+    submitterType: 'Nông dân / Hộ sản xuất',
+    contactName: 'Trần Văn Ba (Ba Phi)',
+    organizationName: 'Hộ trồng lúa Ấp 1, Xã Bình Mỹ',
+    phoneNumber: '0903 111 222',
+    email: 'baphi.binhmy@gmail.com',
+    location: 'Ấp 1, Xã Bình Mỹ, Củ Chi, TP.HCM',
+    locationEn: 'Hamlet 1, Binh My Commune, Cu Chi, HCMC',
+    title: 'Xử lý phế phụ phẩm rơm rạ sau vụ đông xuân tránh đốt đồng gây khói mù',
+    titleEn: 'Rice straw post-harvest processing to prevent smoke pollution from open field burning',
+    category: 'agriculture',
+    categoryDetail: 'Nông nghiệp tuần hoàn',
+    categoryDetailEn: 'Circular Agriculture',
+    description: 'Sau mỗi vụ thu hoạch lúa đông xuân, lượng rơm rạ tồn đọng trên ruộng rất lớn. Nông dân thường đốt đồng gây ô nhiễm không khí và lãng phí sinh khối hữu cơ quý giá.',
+    descriptionEn: 'After the winter-spring harvest, large amounts of rice straw remain on fields. Open burning causes air pollution and wastes valuable organic biomass.',
+    occurredTime: 'Trên 1 năm',
+    affectedAudience: 'Cộng đồng địa phương',
+    cause: 'Thiếu máy cuộn rơm cơ giới hóa và thiếu liên kết thu mua làm nấm rơm hoặc ủ phân vi sinh.',
+    causeEn: 'Lack of motorized balers and procurement linkages for mushroom cultivation or compost.',
+    triedSolutions: 'Tự cày vùi rơm vào đất nhưng thời gian ngâm phân hủy chậm gây ngộ độc hữu cơ cho vụ sau.',
+    damages: 'Khói bụi ảnh hưởng đường giao thông ven Tỉnh Lộ 9, suy giảm vi sinh vật có ích trong đất.',
+    desiredOutcome: 'Có giải pháp thu gom, ủ men vi sinh phân hủy nhanh hoặc mô hình liên kết trồng nấm rơm công nghệ cao mang lại thêm thu nhập.',
+    desiredOutcomeEn: 'Introduce rapid microbial decomposition or high-tech straw mushroom cultivation cooperatives.',
+    supportNeeded: ['Công nghệ sinh học', 'Thiết bị máy móc', 'Kết nối doanh nghiệp tiêu thụ'],
+    readyToCoordinate: 'Có',
+    canSupportTesting: 'Có',
+    images: ['/assets/problems/card1.jpg'],
+    status: 'pending', // Chờ Admin kiểm duyệt
+    createdAt: '08/10/2026',
+    isPublic: false
+  },
+  {
+    id: 'prob-8',
+    submitterType: 'Đại diện đơn vị địa phương',
+    contactName: 'BS. Lê Thị Thu Hằng',
+    organizationName: 'Trạm Y tế Xã Bình Mỹ',
+    phoneNumber: '0988 333 444',
+    email: 'tramyte.binhmy@tphcm.gov.vn',
+    location: 'Ấp 3, Xã Bình Mỹ, Củ Chi, TP.HCM',
+    locationEn: 'Hamlet 3, Binh My Commune, Cu Chi, HCMC',
+    title: 'Tầm soát và theo dõi đường huyết cộng đồng cho người cao tuổi khó tiếp cận y tế',
+    titleEn: 'Community blood sugar screening and remote monitoring for elderly with limited healthcare access',
+    category: 'health',
+    categoryDetail: 'Y tế cộng đồng',
+    categoryDetailEn: 'Community Health',
+    description: 'Tại các ấp vùng sâu ven rạch, người cao tuổi mắc đái tháo đường và tăng huyết áp gặp nhiều khó khăn khi di chuyển đến trung tâm y tế để kiểm tra chỉ số định kỳ.',
+    descriptionEn: 'Elderly residents in riverside hamlets face mobility challenges traveling to medical centers for diabetes and hypertension checkups.',
+    occurredTime: 'Từ 6 tháng đến 1 năm',
+    affectedAudience: 'Người cao tuổi và gia đình',
+    cause: 'Thiếu thiết bị đo lưu động và thiếu phần mềm theo dõi chỉ số sức khỏe liên tục tại nhà.',
+    desiredOutcome: 'Xây dựng mạng lưới đo lưu động kết hợp sinh viên y khoa tình nguyện định kỳ cuối tuần.',
+    supportNeeded: ['Nhân lực y tế tình nguyện', 'Thiết bị y tế mini', 'Ứng dụng ghi nhận chỉ số'],
+    readyToCoordinate: 'Có',
+    canSupportTesting: 'Có',
+    images: ['/assets/problems/card6.jpg'],
+    status: 'pending', // Chờ Admin kiểm duyệt
+    createdAt: '07/10/2026',
+    isPublic: false
+  },
+  {
+    id: 'prob-9',
+    submitterType: 'Cơ sở kinh doanh',
+    contactName: 'Nguyễn Thị Mai',
+    organizationName: 'Vườn sinh thái Bờ Sông Mai Garden',
+    phoneNumber: '0918 555 666',
+    email: 'maigarden.binhmy@gmail.com',
+    location: 'Ấp 5, Xã Bình Mỹ, Củ Chi, TP.HCM',
+    locationEn: 'Hamlet 5, Binh My Commune, Cu Chi, HCMC',
+    title: 'Phát triển mô hình vườn hoa cánh bướm ven đê kết hợp điểm dừng chân du lịch cộng đồng',
+    titleEn: 'Developing cosmos flower garden stopover combined with community eco-tourism',
+    category: 'tourism',
+    categoryDetail: 'Du lịch nông nghiệp',
+    categoryDetailEn: 'Agri-tourism',
+    description: 'Cơ sở có 12.000m² đất ven sông nhưng chưa biết cách quy hoạch cảnh quan và tổ chức dịch vụ trải nghiệm cho du khách gia đình cuối tuần.',
+    descriptionEn: '12,000 sqm riverside site lacks landscape planning and family experiential service design.',
+    occurredTime: 'Dưới 6 tháng',
+    affectedAudience: 'Cơ sở kinh doanh và người làm vườn',
+    desiredOutcome: 'Được hỗ trợ thiết kế cảnh quan sinh thái và đào tạo kỹ năng tiếp đón du khách.',
+    supportNeeded: ['Thiết kế kiến trúc cảnh quan', 'Marketing du lịch'],
+    readyToCoordinate: 'Có, nếu được hướng dẫn',
+    canSupportTesting: 'Có',
+    images: ['/assets/problems/card3.jpg'],
+    status: 'seeking_support',
+    createdAt: '01/10/2026',
+    isPublic: true
+  }
+];
+
+// Danh sách đề xuất hợp tác mẫu
+const initialProposals: AdminProposal[] = [
+  {
+    id: 'prop-101',
+    problemId: 'prob-1',
+    problemCode: 'BM-001',
+    problemTitle: 'Rau ăn lá thủy canh nhanh héo sau thu hoạch và thiếu giải pháp bảo quản sơ chế',
+    role: 'Sinh viên',
+    fullName: 'Nguyễn Thị Minh Thư',
+    phone: '0912 345 678',
+    email: 'thu.nguyen@hutech.edu.vn',
+    organization: 'Khoa Công nghệ Sinh học - ĐH HUTECH',
+    selectedFields: ['Marketing / Truyền thông', 'Công nghệ / CNTT', 'Kinh doanh / Phát triển thị trường'],
+    solutionContent: 'Nhóm nghiên cứu sinh viên chúng tôi đã thử nghiệm thành công chế phẩm màng bọc sinh học từ vỏ tôm (Chitosan) giúp rau thủy canh giữ tươi lâu hơn 5-7 ngày trong điều kiện tự nhiên. Chúng tôi có thể xuống trực tiếp Ấp 4A chuyển giao miễn phí và cùng hộ dân thử nghiệm.',
+    availability: 'Tham gia thường xuyên',
+    fileName: 'de_xuat_mang_sinh_hoc_chitosan.pdf',
+    status: 'new',
+    internalNotes: 'Ý tưởng rất tiềm năng, phù hợp với định hướng Living Lab nông nghiệp sạch. Cần liên hệ chủ nhiệm khoa để xác nhận bảo trợ chuyên môn.',
+    createdAt: '08/10/2026',
+    updatedAt: '08/10/2026'
+  },
+  {
+    id: 'prop-102',
+    problemId: 'prob-2',
+    problemCode: 'BM-002',
+    problemTitle: 'Người cao tuổi làm nông bị thoái hóa khớp gối nặng và thiếu kiến thức phục hồi chức năng',
+    role: 'Chuyên gia',
+    fullName: 'ThS. BS. Trần Hoàng Quân',
+    phone: '0983 888 999',
+    email: 'quan.tran@medvn.org',
+    organization: 'Hội Bác sĩ Gia đình & Phục hồi chức năng TP.HCM',
+    selectedFields: ['Y tế', 'Nghiên cứu / Khảo sát'],
+    solutionContent: 'Chúng tôi có thể cử đoàn 6 y bác sĩ chuyên khoa cơ xương khớp xuống tổ chức khám sàng lọc miễn phí cho 120 hội viên cao tuổi tại Ấp 2 vào sáng Chủ nhật hàng tháng, đồng thời in cẩm nang bài tập vật lý trị liệu hướng dẫn tận tay người dân.',
+    availability: 'Tư vấn / hỗ trợ theo từng dự án',
+    fileName: 'ke_hoach_kham_sang_loc_khop_binh_my.docx',
+    status: 'reviewing',
+    internalNotes: 'Đã trao đổi sơ bộ với Trạm Y tế xã Bình Mỹ, các bên đều ủng hộ. Đang lên lịch phối hợp địa điểm Hội trường Ấp 2.',
+    createdAt: '06/10/2026',
+    updatedAt: '07/10/2026'
+  },
+  {
+    id: 'prop-103',
+    problemId: 'prob-5',
+    problemCode: 'BM-005',
+    problemTitle: 'Sản phẩm mật ong hoa dược liệu thiếu giải pháp dán nhãn, truy xuất nguồn gốc OCOP',
+    role: 'Doanh nghiệp',
+    fullName: 'Lê Hoàng Phong',
+    phone: '0909 234 567',
+    email: 'phong.lh@ecotrace.vn',
+    organization: 'Công ty Cổ phần Giải pháp Truy xuất Nguồn gốc EcoTrace',
+    selectedFields: ['Công nghệ / CNTT', 'Thiết kế', 'Kinh doanh / Phát triển thị trường'],
+    solutionContent: 'EcoTrace tài trợ miễn phí 1.000 tem QR Code truy xuất nguồn gốc chống giả và hỗ trợ thiết kế lại bộ bao bì chuẩn OCOP 3 sao cho Cơ sở mật ong Ấp 3.',
+    availability: 'Tư vấn / hỗ trợ theo từng dự án',
+    fileName: 'ho_so_nang_luc_ecotrace.pdf',
+    status: 'contacted',
+    internalNotes: 'Đã kết nối điện thoại giữa anh Phong và chủ cơ sở mật ong. Đang gửi mẫu mật ong để thiết kế tem nhãn thử nghiệm.',
+    createdAt: '03/10/2026',
+    updatedAt: '05/10/2026'
+  },
+  {
+    id: 'prop-104',
+    problemId: 'prob-3',
+    problemCode: 'BM-003',
+    problemTitle: 'Nhà vườn ven sông Sài Gòn thiếu kỹ năng đóng gói tour và tiếp thị du lịch trải nghiệm',
+    role: 'Sinh viên',
+    fullName: 'Phạm Minh Trang',
+    phone: '0937 456 789',
+    email: 'trang.pm@tourism-edu.vn',
+    organization: 'CLB Du lịch Sinh thái Trẻ',
+    selectedFields: ['Marketing / Truyền thông', 'Du lịch', 'Thiết kế'],
+    solutionContent: 'Nhóm sinh viên chuyên ngành Du lịch - Khách sạn có thể thiết kế trọn gói lịch trình tour trải nghiệm 1 ngày "Một ngày làm nông dân ven sông Sài Gòn" và xây dựng kênh TikTok quảng bá miễn phí.',
+    availability: 'Tham gia bán thời gian',
+    fileName: null,
+    status: 'connected',
+    internalNotes: 'Đã hoàn tất kết nối! Đang triển khai thử nghiệm tour đầu tiên vào ngày 25/10/2026.',
+    createdAt: '29/09/2026',
+    updatedAt: '04/10/2026'
+  }
+];
+
+// Danh sách dự án mẫu
+const initialProjects: AdminProject[] = [
+  {
+    id: 'proj-1',
+    code: 'DA-BM01',
+    title: 'Màng bọc sinh học Chitosan bảo quản nông sản sạch Bình Mỹ',
+    titleEn: 'Chitosan Bio-coating for Preserving Fresh Produce in Binh My',
+    thumbnail: '/assets/problems/card1.jpg',
+    summary: 'Dự án nghiên cứu và chuyển giao công nghệ bảo quản rau thủy canh bằng màng sinh học an toàn sinh học từ phụ phẩm tôm cua, kéo dài thời gian tươi từ 2 ngày lên 7 ngày.',
+    summaryEn: 'Research and transfer of edible bio-coating from chitosan for hydroponic vegetables, extending shelf life from 2 to 7 days.',
+    content: 'Dự án hình thành trực tiếp từ Bài toán thực tế BM-001 của Tổ hợp tác Rau an toàn Ấp 4A. Nhóm sinh viên Công nghệ Sinh học cùng chuyên gia bảo quản sau thu hoạch đã tiến hành thử nghiệm trên 300kg rau cải xà lách và cải ngọt với kết quả tỷ lệ thối hỏng giảm dưới 4%.',
+    problemId: 'prob-1',
+    problemTitle: 'Rau ăn lá thủy canh nhanh héo sau thu hoạch và thiếu giải pháp bảo quản sơ chế',
+    category: 'agriculture',
+    categoryName: 'Nông nghiệp tuần hoàn',
+    location: 'Ấp 4A, Xã Bình Mỹ, Củ Chi',
+    organization: 'Khoa Công nghệ Sinh học HUTECH & Tổ hợp tác Rau an toàn Ấp 4A',
+    teamMembers: ['TS. Lê Văn Hải (Cố vấn)', 'Nguyễn Thị Minh Thư (Chủ nhiệm dự án)', 'Lê Văn An (Đại diện nông dân)'],
+    neededResources: 'Máy phun phủ sương màng bọc mini, kho lạnh mini 15m3',
+    milestones: [
+      { date: '10/2026', title: 'Khảo sát thực tế và lấy mẫu rau', completed: true },
+      { date: '11/2026', title: 'Thử nghiệm công thức phối trộn màng sinh học', completed: false },
+      { date: '12/2026', title: 'Đánh giá vi sinh và chuyển giao hộ nông dân', completed: false }
+    ],
+    expectedOutcomes: 'Giảm 70% lượng rau hỏng sau thu hoạch, nâng doanh thu hộ gia đình thêm 25%.',
+    status: 'in_progress',
+    publishStatus: 'published',
+    createdAt: '01/10/2026',
+    updatedAt: '08/10/2026'
+  },
+  {
+    id: 'proj-2',
+    code: 'DA-BM02',
+    title: 'Câu lạc bộ Bác sĩ gia đình và phục hồi chức năng xương khớp người cao tuổi',
+    titleEn: 'Family Doctor & Joint Rehabilitation Club for Rural Elderly',
+    thumbnail: '/assets/problems/card2.jpg',
+    summary: 'Chương trình chăm sóc sức khỏe chủ động tại chỗ kết hợp đo khám định kỳ và tập luyện vật lý trị liệu cho người cao tuổi làm nông tại vùng nông thôn.',
+    summaryEn: 'Community-based proactive healthcare and physical therapy program for rural farming seniors.',
+    content: 'Được chuyển giao từ Bài toán BM-002, dự án tạo mạng lưới theo dõi sức khỏe giữa Trạm Y tế, Chi hội Người cao tuổi và đoàn Bác sĩ tình nguyện. Tổ chức các buổi tư vấn dinh dưỡng cơ xương khớp và bài tập thực hành giảm tải khớp gối trong lao động.',
+    problemId: 'prob-2',
+    problemTitle: 'Người cao tuổi làm nông bị thoái hóa khớp gối nặng và thiếu kiến thức phục hồi chức năng',
+    category: 'health',
+    categoryName: 'Y tế cộng đồng',
+    location: 'Ấp 2, Xã Bình Mỹ, Củ Chi',
+    organization: 'Hội Bác sĩ Gia đình TP.HCM & Trạm Y tế Xã Bình Mỹ',
+    teamMembers: ['ThS. BS. Trần Hoàng Quân', 'BS. Lê Thị Thu Hằng', 'Bác Hai Cảnh (Trưởng ấp 2)'],
+    neededResources: 'Dụng cụ tập vật lý trị liệu cơ bản, máy đo mật độ xương lưu động',
+    status: 'in_progress',
+    publishStatus: 'published',
+    createdAt: '28/09/2026',
+    updatedAt: '05/10/2026'
+  },
+  {
+    id: 'proj-3',
+    code: 'DA-BM03',
+    title: 'Cổng thông tin và bản đồ số du lịch sinh thái trải nghiệm ven sông Bình Mỹ',
+    titleEn: 'Digital Map & Portal for Riverside Eco-Tourism in Binh My',
+    thumbnail: '/assets/problems/card3.jpg',
+    summary: 'Số hóa 15 điểm nhà vườn ven sông, xây dựng mã QR tại bến đò Rạch Tra và kết nối tour trải nghiệm hái bưởi, bắt cá giải trí cho du khách thành phố.',
+    summaryEn: 'Digitizing 15 riverside orchards, establishing QR points at Rach Tra ferry and connecting experiential fruit picking tours.',
+    content: 'Dự án kết nối nhà vườn nông nghiệp ven sông với các trường đại học để đón các đoàn sinh viên học tập ngoại khóa và du khách gia đình cuối tuần.',
+    problemId: 'prob-3',
+    problemTitle: 'Nhà vườn ven sông Sài Gòn thiếu kỹ năng đóng gói tour và tiếp thị du lịch trải nghiệm',
+    category: 'tourism',
+    categoryName: 'Du lịch cộng đồng',
+    location: 'Bến đò Rạch Tra, Ấp 5, Xã Bình Mỹ',
+    organization: 'CLB Khởi nghiệp Du lịch & HTX Nông nghiệp Du lịch Bình Mỹ',
+    status: 'seeking_resources',
+    publishStatus: 'published',
+    createdAt: '25/09/2026',
+    updatedAt: '02/10/2026'
+  }
+];
+
+// Danh sách tin tức mẫu
+const initialNews: AdminNewsItem[] = [
+  {
+    id: 'news-1',
+    title: 'Khởi động chương trình kết nối Bài toán thực tế tại Làng Sinh Viên Bình Mỹ tháng 10/2026',
+    category: 'Sự kiện',
+    summary: 'Ban quản lý Làng SV chính thức tiếp nhận và công bố 6 bài toán thực tế đầu tiên về nông nghiệp, y tế và du lịch trải nghiệm sinh thái.',
+    content: 'Chương trình thu hút hơn 30 nhóm sinh viên và nhà khoa học đăng ký tham gia khảo sát thực địa. Các bài toán tập trung vào giải quyết nỗi đau thực tế của nông dân và hộ sản xuất địa phương.',
+    image: '/assets/problems/banner-clean.png',
+    author: 'Ban Quản Lý Làng SV',
+    publishedDate: '05/10/2026',
+    isPublished: true,
+    views: 342
+  },
+  {
+    id: 'news-2',
+    title: 'Hợp tác chuyển giao mô hình Nấm thảo dược đối kháng Trichoderma tại Ấp 1 Bình Mỹ',
+    category: 'Dự án',
+    summary: 'Nhóm nghiên cứu Sinh học ứng dụng đã hoàn thành việc chuyển giao quy trình ủ phân vi sinh đối kháng sâu bệnh cho 10 hộ trồng sả chanh.',
+    content: 'Mô hình giúp bà con giảm 80% chi phí thuốc trừ sâu hóa học, nâng cao chất lượng tinh dầu thảo dược đạt chuẩn OCOP.',
+    image: '/assets/problems/card4.jpg',
+    author: 'Tổ Truyền Thông',
+    publishedDate: '02/10/2026',
+    isPublished: true,
+    views: 189
+  }
+];
+
+// Tài khoản Admin mặc định
+const DEFAULT_ADMIN: AdminUser = {
+  id: 'admin-01',
+  username: 'admin',
+  fullName: 'Ban Quản Trị Làng SV',
+  email: 'admin@binhmy.edu.vn',
+  role: 'superadmin',
+  avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+};
+
+// ================= ADMIN DATA SERVICE =================
+
+export class AdminDataService {
+  
+  // 1. Quản lý Bài toán thực tế
+  static getProblems(): RealProblem[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading problems:', e);
+    }
+
+    // Kết hợp initial + additional problems
+    const allInitial = [...initialRealProblems, ...additionalMockProblems];
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(allInitial));
+    return allInitial;
+  }
+
+  static getProblemById(id: string): RealProblem | null {
+    const list = this.getProblems();
+    return list.find(p => p.id === id) || null;
+  }
+
+  static saveProblem(problem: RealProblem): void {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === problem.id);
+    if (index >= 0) {
+      list[index] = problem;
+    } else {
+      list.unshift(problem);
+    }
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+  }
+
+  static updateProblemStatus(
+    id: string, 
+    newStatus: ProblemStatus | string, 
+    moderationNote?: string
+  ): boolean {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === id);
+    if (index < 0) return false;
+
+    const prob = list[index];
+    const isPublic = newStatus === 'verified' || newStatus === 'seeking_support' || newStatus === 'in_progress';
+    
+    list[index] = {
+      ...prob,
+      status: newStatus as ProblemStatus,
+      isPublic
+    };
+
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+    return true;
+  }
+
+  static deleteProblem(id: string): boolean {
+    const list = this.getProblems();
+    const filtered = list.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(filtered));
+    return true;
+  }
+
+  // 2. Quản lý Đơn đề xuất hợp tác
+  static getProposals(): AdminProposal[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PROPOSALS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading proposals:', e);
+    }
+
+    localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(initialProposals));
+    return initialProposals;
+  }
+
+  static getProposalById(id: string): AdminProposal | null {
+    const list = this.getProposals();
+    return list.find(p => p.id === id) || null;
+  }
+
+  static saveProposal(proposal: AdminProposal): void {
+    const list = this.getProposals();
+    const index = list.findIndex(p => p.id === proposal.id);
+    if (index >= 0) {
+      list[index] = proposal;
+    } else {
+      list.unshift(proposal);
+    }
+    localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(list));
+  }
+
+  static updateProposalStatus(
+    id: string, 
+    newStatus: ProposalStatus, 
+    internalNotes?: string,
+    assignedTo?: string
+  ): boolean {
+    const list = this.getProposals();
+    const index = list.findIndex(p => p.id === id);
+    if (index < 0) return false;
+
+    const current = list[index];
+    const history = current.statusHistory || [];
+    history.push({
+      status: newStatus,
+      note: internalNotes,
+      updatedAt: new Date().toLocaleDateString('vi-VN'),
+      updatedBy: 'Admin'
+    });
+
+    list[index] = {
+      ...current,
+      status: newStatus,
+      internalNotes: internalNotes !== undefined ? internalNotes : current.internalNotes,
+      assignedTo: assignedTo !== undefined ? assignedTo : current.assignedTo,
+      statusHistory: history,
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(list));
+    return true;
+  }
+
+  // 3. Quản lý Dự án
+  static getProjects(): AdminProject[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.PROJECTS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading projects:', e);
+    }
+
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(initialProjects));
+    return initialProjects;
+  }
+
+  static getProjectById(id: string): AdminProject | null {
+    const list = this.getProjects();
+    return list.find(p => p.id === id) || null;
+  }
+
+  static saveProject(project: AdminProject): void {
+    const list = this.getProjects();
+    const index = list.findIndex(p => p.id === project.id);
+    if (index >= 0) {
+      list[index] = { ...project, updatedAt: new Date().toLocaleDateString('vi-VN') };
+    } else {
+      list.unshift({ ...project, createdAt: new Date().toLocaleDateString('vi-VN'), updatedAt: new Date().toLocaleDateString('vi-VN') });
+    }
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(list));
+  }
+
+  static deleteProject(id: string): boolean {
+    const list = this.getProjects();
+    const filtered = list.filter(p => p.id !== id);
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(filtered));
+    return true;
+  }
+
+  // 4. Quản lý Tin tức
+  static getNews(): AdminNewsItem[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.NEWS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.error('Error reading news:', e);
+    }
+
+    localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(initialNews));
+    return initialNews;
+  }
+
+  static saveNews(item: AdminNewsItem): void {
+    const list = this.getNews();
+    const index = list.findIndex(n => n.id === item.id);
+    if (index >= 0) {
+      list[index] = item;
+    } else {
+      list.unshift(item);
+    }
+    localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(list));
+  }
+
+  static deleteNews(id: string): boolean {
+    const list = this.getNews();
+    const filtered = list.filter(n => n.id !== id);
+    localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(filtered));
+    return true;
+  }
+
+  // 5. Thống kê Dashboard
+  static getDashboardStats() {
+    const problems = this.getProblems();
+    const proposals = this.getProposals();
+    const projects = this.getProjects();
+
+    const totalProblems = problems.length;
+    const pendingProblems = problems.filter(p => p.status === 'pending').length;
+    const verifiedProblems = problems.filter(p => p.status === 'verified').length;
+    const seekingSupportProblems = problems.filter(p => p.status === 'seeking_support').length;
+    const publicProblems = problems.filter(p => p.isPublic || p.status === 'verified' || p.status === 'seeking_support' || p.status === 'in_progress').length;
+
+    const totalProposals = proposals.length;
+    const newProposals = proposals.filter(p => p.status === 'new').length;
+    const connectingProposals = proposals.filter(p => p.status === 'connecting' || p.status === 'reviewing' || p.status === 'contacted').length;
+    const connectedProposals = proposals.filter(p => p.status === 'connected').length;
+
+    const totalProjects = projects.length;
+    const publishedProjects = projects.filter(p => p.publishStatus === 'published').length;
+    const inProgressProjects = projects.filter(p => p.status === 'in_progress').length;
+
+    return {
+      totalProblems,
+      pendingProblems,
+      verifiedProblems,
+      seekingSupportProblems,
+      publicProblems,
+      totalProposals,
+      newProposals,
+      connectingProposals,
+      connectedProposals,
+      totalProjects,
+      publishedProjects,
+      inProgressProjects
+    };
+  }
+
+  // 6. Xác thực & Tài khoản Admin
+  static isAuthenticated(): boolean {
+    if (typeof window === 'undefined') return false;
+    const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
+    return Boolean(auth);
+  }
+
+  static getCurrentUser(): AdminUser | null {
+    if (typeof window === 'undefined') return null;
+    try {
+      const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
+      return auth ? JSON.parse(auth) : null;
+    } catch {
+      return null;
+    }
+  }
+
+  static login(username: string, password: string): { success: boolean; user?: AdminUser; error?: string } {
+    // Cho phép tài khoản admin / admin123 hoặc bất kỳ email admin@binhmy.edu.vn
+    if ((username === 'admin' || username === 'admin@binhmy.edu.vn') && (password === 'admin123' || password === 'admin' || password === '123456')) {
+      const user = { ...DEFAULT_ADMIN };
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
+      return { success: true, user };
+    }
+
+    if (username.trim() && password.length >= 6) {
+      // Demo authentication mode
+      const user: AdminUser = {
+        id: `admin-${Date.now()}`,
+        username: username.split('@')[0],
+        fullName: username.includes('@') ? username.split('@')[0].toUpperCase() : username,
+        email: username.includes('@') ? username : `${username}@binhmy.edu.vn`,
+        role: 'moderator',
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
+      };
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
+      return { success: true, user };
+    }
+
+    return {
+      success: false,
+      error: 'Tài khoản hoặc mật khẩu không chính xác. (Gợi ý tài khoản: admin / admin123)'
+    };
+  }
+
+  static logout(): void {
+    if (typeof window !== 'undefined') {
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+    }
+  }
+
+  // 7. Khôi phục dữ liệu mẫu
+  static resetToSampleData(): void {
+    localStorage.removeItem(STORAGE_KEYS.PROBLEMS);
+    localStorage.removeItem(STORAGE_KEYS.PROPOSALS);
+    localStorage.removeItem(STORAGE_KEYS.PROJECTS);
+    localStorage.removeItem(STORAGE_KEYS.NEWS);
+    this.getProblems();
+    this.getProposals();
+    this.getProjects();
+    this.getNews();
+  }
+}

@@ -24,98 +24,103 @@ export const InternationalPage: React.FC<InternationalPageProps> = ({ onOpenColl
   const [activeTab, setActiveTab] = useState<'training' | 'research' | 'academic' | 'partners'>('training');
 
   return (
-    <div className="w-full bg-[#f8fafc] py-10 lg:py-16">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+    <div className="w-full bg-[#F8FAF9] py-10 lg:py-16">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
 
         {/* Header Title */}
         <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-100 text-purple-800 text-xs font-bold tracking-wide uppercase">
-            <Globe className="w-3.5 h-3.5" />
-            <span>Mạng Lưới Toàn Cầu</span>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-pum-lightGreen text-pum-green text-xs font-bold tracking-wide uppercase border border-pum-green/20">
+            <Globe className="w-3.5 h-3.5 text-pum-orange" />
+            <span>{language === 'vi' ? 'Mạng Lưới Toàn Cầu' : 'Global Partnership'}</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-            Hợp Tác Quốc Tế & Kết Nối Tri Thức Y Khoa
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight">
+            {language === 'vi' ? 'Hợp Tác Quốc Tế & Kết Nối Tri Thức Y Khoa' : 'International Collaboration & Medical Knowledge'}
           </h1>
-          <p className="text-base text-slate-600 font-medium leading-relaxed">
-            Kết nối các trường đại học, bệnh viện uy tín, viện nghiên cứu và chuyên gia y tế trên toàn thế giới nhằm đồng xây dựng chương trình, nghiên cứu lâm sàng và chuyển giao công nghệ.
+          <p className="text-base text-slate-600 font-normal leading-relaxed">
+            {language === 'vi'
+              ? 'Kết nối các trường đại học, bệnh viện uy tín, viện nghiên cứu và chuyên gia y tế trên toàn thế giới nhằm đồng xây dựng chương trình, nghiên cứu lâm sàng và chuyển giao công nghệ.'
+              : 'Connecting prestigious universities, research institutes, hospitals, and medical experts globally to co-design curricula, conduct multi-center research, and transfer healthcare innovation.'}
           </p>
         </div>
 
-        {/* 4 Action Buttons Bar */}
-        <div className="flex flex-wrap items-center justify-center gap-3 bg-white p-4 rounded-3xl border border-slate-200/80 shadow-xs max-w-4xl mx-auto">
+        {/* 4 Action Buttons Bar (Rule s.md) */}
+        <div className="flex flex-wrap items-center justify-center gap-3 bg-white p-4 rounded-3xl border border-slate-200/80 shadow-2xs max-w-4xl mx-auto">
           <button
             onClick={() => onOpenCollaboration('partner', 'Đề xuất hợp tác quốc tế')}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-purple-600 text-white hover:bg-purple-700 transition-colors shadow-sm"
+            className="px-6 py-3 rounded-full text-xs font-bold bg-pum-green text-white hover:bg-pum-greenAlt transition-all shadow-sm active:scale-95"
           >
-            Đề xuất hợp tác
+            {language === 'vi' ? 'Đề xuất hợp tác' : 'Propose Collaboration'}
           </button>
           <button
             onClick={() => onOpenCollaboration('consulting', 'Đề xuất nghiên cứu đa trung tâm')}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-sky-600 text-white hover:bg-sky-700 transition-colors shadow-sm"
+            className="px-6 py-3 rounded-full text-xs font-bold bg-pum-orange text-white hover:bg-pum-orangeHover transition-all shadow-sm active:scale-95"
           >
-            Đề xuất nghiên cứu
+            {language === 'vi' ? 'Đề xuất nghiên cứu' : 'Propose Research'}
           </button>
           <button
             onClick={() => onOpenCollaboration('general', 'Đăng cai tổ chức hội thảo quốc tế')}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white hover:bg-emerald-700 transition-colors shadow-sm"
+            className="px-6 py-3 rounded-full text-xs font-bold bg-white text-pum-green border-2 border-pum-green hover:bg-pum-lightGreen/30 transition-all active:scale-95"
           >
-            Đăng cai hội thảo
+            {language === 'vi' ? 'Đăng cai hội thảo' : 'Host a Symposium'}
           </button>
           <button
             onClick={() => onOpenCollaboration('partner', 'Trở thành đối tác chiến lược quốc tế')}
-            className="px-5 py-2.5 rounded-xl text-xs font-bold bg-slate-900 text-white hover:bg-slate-800 transition-colors shadow-sm"
+            className="px-6 py-3 rounded-full text-xs font-bold bg-slate-100 text-slate-800 hover:bg-slate-200 transition-all active:scale-95"
           >
-            Trở thành đối tác quốc tế
+            {language === 'vi' ? 'Trở thành đối tác quốc tế' : 'Become Global Partner'}
           </button>
         </div>
 
         {/* 4 Pillars Navigation Tabs */}
-        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 no-scrollbar">
+        <div className="flex items-center justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
           {[
-            { id: 'training', label: '6.1. Hợp tác đào tạo', icon: <GraduationCap className="w-4 h-4" /> },
-            { id: 'research', label: '6.2. Hợp tác nghiên cứu', icon: <Microscope className="w-4 h-4" /> },
-            { id: 'academic', label: '6.3. Trao đổi học thuật', icon: <MessageSquareShare className="w-4 h-4" /> },
-            { id: 'partners', label: '6.4. Đối tượng hợp tác', icon: <Building2 className="w-4 h-4" /> },
+            { id: 'training', labelVi: '6.1. Hợp tác đào tạo', labelEn: 'Training Collaboration', icon: <GraduationCap className="w-4 h-4" /> },
+            { id: 'research', labelVi: '6.2. Hợp tác nghiên cứu', labelEn: 'Research Partnerships', icon: <Microscope className="w-4 h-4" /> },
+            { id: 'academic', labelVi: '6.3. Trao đổi học thuật', labelEn: 'Academic Exchange', icon: <MessageSquareShare className="w-4 h-4" /> },
+            { id: 'partners', labelVi: '6.4. Đối tượng hợp tác', labelEn: 'Partner Profiles', icon: <Building2 className="w-4 h-4" /> },
           ].map(tab => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`flex items-center gap-2 px-5 py-3 rounded-2xl text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${activeTab === tab.id
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-600/30'
-                  : 'bg-white text-slate-700 hover:bg-purple-50 border border-slate-200'
-                }`}
+              className={`flex items-center gap-2 px-5 py-3 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap transition-all ${
+                activeTab === tab.id
+                  ? 'bg-pum-green text-white shadow-md'
+                  : 'bg-white text-slate-700 hover:bg-pum-lightGreen/40 border border-slate-200'
+              }`}
             >
               {tab.icon}
-              <span>{tab.label}</span>
+              <span>{language === 'vi' ? tab.labelVi : tab.labelEn}</span>
             </button>
           ))}
         </div>
 
         {/* TAB CONTENTS */}
-        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/80 shadow-card">
+        <div className="bg-white rounded-3xl p-6 sm:p-10 border border-slate-200/90 shadow-2xs">
 
           {/* 6.1. HỢP TÁC ĐÀO TẠO */}
           {activeTab === 'training' && (
             <div className="space-y-6">
               <div className="max-w-2xl">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">Trụ Cột 1</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">Hợp Tác Đào Tạo Quốc Tế Toàn Diện</h3>
-                <p className="text-xs text-slate-500 mt-1">Đồng xây dựng chương trình đạt chuẩn kiểm định và cấp chứng nhận song phương</p>
+                <span className="text-xs font-black uppercase tracking-wider text-pum-green">Education Mobility</span>
+                <h3 className="text-xl font-bold text-slate-900 mt-1">Đồng Xây Dựng & Trao Đổi Đào Tạo Quốc Tế</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2">
+                  Phát triển các chương trình cấp chứng nhận kép, luân chuyển giảng viên - sinh viên và đào tạo theo đặt hàng từ cơ sở y tế nước ngoài.
+                </p>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
                 {[
-                  { title: 'Đồng xây dựng chương trình', desc: 'Thiết kế giáo trình điều dưỡng lão khoa, y tế số và quản trị bệnh viện cùng các trường y danh tiếng.' },
-                  { title: 'Trao đổi sinh viên & giảng viên', desc: 'Học kỳ trao đổi quốc tế, chương trình thực tập lâm sàng ngắn hạn tại Nhật Bản, Hoa Kỳ, Úc.' },
-                  { title: 'Đào tạo ngắn hạn & Kết hợp (Blended)', desc: 'Các khóa học kết hợp trực tuyến (E-learning) và thực hành chuyên sâu tại Living Lab Bình Mỹ.' },
-                  { title: 'Đào tạo theo đơn đặt hàng', desc: 'Đào tạo nguồn nhân lực đạt chuẩn ngoại ngữ và kỹ năng hành nghề cho các tập đoàn y tế nước ngoài.' },
-                  { title: 'Chương trình cấp chứng nhận chung', desc: 'Liên kết cấp chứng chỉ hành nghề và tín chỉ chuyển đổi tương đương giữa các tổ chức giáo dục.' },
-                  { title: 'Đào tạo Tiếng Anh / Tiếng Nhật Y khoa', desc: 'Chương trình ngoại ngữ chuyên sâu giúp học viên sẵn sàng thi chứng chỉ OET, JLPT N2 Y tế.' },
+                  { title: 'Đồng xây dựng chương trình', desc: 'Thiết kế khung chương trình chuẩn quốc tế, công nhận tín chỉ lẫn nhau với các viện đào tạo hàng đầu.' },
+                  { title: 'Trao đổi sinh viên & giảng viên', desc: 'Học kỳ thực tập quốc tế tại Living Lab Bình Mỹ và các bệnh viện đối tác tại Nhật Bản, Hàn Quốc, Châu Âu.' },
+                  { title: 'Đào tạo trực tuyến & hỗn hợp', desc: 'Kết hợp e-learning, bài giảng của chuyên gia thế giới và thực hành lâm sàng thực tế tại Việt Nam.' },
+                  { title: 'Đào tạo theo đơn đặt hàng', desc: 'Chương trình đào tạo theo yêu cầu cụ thể của bệnh viện quốc tế và tập đoàn chăm sóc sức khỏe.' },
+                  { title: 'Cấp chứng chỉ hành nghề chuẩn hóa', desc: 'Cung cấp chứng chỉ hoàn thành khóa đào tạo được thẩm định bởi hội đồng chuyên gia quốc tế.' },
+                  { title: 'Đào tạo tiếng Anh & tiếng Nhật y khoa', desc: 'Bồi dưỡng năng lực ngoại ngữ chuyên sâu, kỹ năng giao tiếp lâm sàng và làm việc đa văn hóa.' },
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-purple-50/40 p-5 rounded-2xl border border-purple-100 hover:border-purple-300 transition-colors">
-                    <CheckCircle2 className="w-5 h-5 text-purple-600 mb-2" />
-                    <h4 className="font-bold text-sm text-slate-800">{item.title}</h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">{item.desc}</p>
+                  <div key={idx} className="p-5 rounded-2xl bg-[#F8FAF9] border border-slate-200/80 hover:border-pum-green transition-colors">
+                    <CheckCircle2 className="w-5 h-5 text-pum-orange mb-3" />
+                    <h4 className="font-bold text-sm text-slate-800 mb-1">{item.title}</h4>
+                    <p className="text-xs text-slate-600 leading-relaxed">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -126,25 +131,27 @@ export const InternationalPage: React.FC<InternationalPageProps> = ({ onOpenColl
           {activeTab === 'research' && (
             <div className="space-y-6">
               <div className="max-w-2xl">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">Trụ Cột 2</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">Nghiên Cứu Ứng Dụng & Đa Trung Tâm</h3>
-                <p className="text-xs text-slate-500 mt-1">Đồng nghiên cứu, xuất bản quốc tế và ứng dụng thực tiễn tại Living Lab</p>
+                <span className="text-xs font-black uppercase tracking-wider text-pum-orange">Applied Research</span>
+                <h3 className="text-xl font-bold text-slate-900 mt-1">Đề Tài Đa Trung Tâm & Thử Nghiệm Living Lab</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2">
+                  Mở rộng đề tài nghiên cứu từ sức khỏe ban đầu, chuyển đổi số y tế đến y học cổ truyền và nông nghiệp dinh dưỡng.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
                 {[
-                  'Nghiên cứu sức khỏe cộng đồng & dịch tễ học',
-                  'Mô hình chăm sóc người cao tuổi thích ứng',
+                  'Nghiên cứu sức khỏe cộng đồng & dịch tễ',
+                  'Chăm sóc & can thiệp lão khoa toàn diện',
                   'Y tế số, AI và giải pháp Telehealth cơ sở',
-                  'Health & Wellness và can thiệp lối sống',
-                  'Dinh dưỡng y học và nông nghiệp dược liệu',
-                  'Nghiên cứu đa trung tâm (Multi-center trials)',
+                  'Health & Wellness và dinh dưỡng sinh thái',
+                  'Nông nghiệp sức khỏe & dược liệu địa phương',
+                  'Nghiên cứu thử nghiệm đa trung tâm quốc tế',
                   'Công bố khoa học chung trên tạp chí ISI/Scopus',
                   'Thử nghiệm giải pháp công nghệ tại Living Lab',
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-purple-600 flex-shrink-0 mt-0.5" />
-                    <span className="text-xs font-semibold text-slate-800">{item}</span>
+                  <div key={idx} className="p-4 rounded-2xl bg-pum-lightGreen/20 border border-pum-green/15 flex items-start gap-2.5">
+                    <Sparkles className="w-4 h-4 text-pum-orange flex-shrink-0 mt-0.5" />
+                    <span className="text-xs font-bold text-slate-800">{item}</span>
                   </div>
                 ))}
               </div>
@@ -155,29 +162,43 @@ export const InternationalPage: React.FC<InternationalPageProps> = ({ onOpenColl
           {activeTab === 'academic' && (
             <div className="space-y-6">
               <div className="max-w-2xl">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">Trụ Cột 3</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">Diễn Đàn Học Thuật & Grand Rounds Quốc Tế</h3>
-                <p className="text-xs text-slate-500 mt-1">Nơi trao đổi kinh nghiệm lâm sàng đỉnh cao và công bố tri thức mới</p>
+                <span className="text-xs font-black uppercase tracking-wider text-pum-green">Academic Forum</span>
+                <h3 className="text-xl font-bold text-slate-900 mt-1">Diễn Đàn Chuyên Môn, Webinar & Grand Rounds</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2">
+                  Cầu nối tri thức học thuật định kỳ giữa đội ngũ y tế Việt Nam và các chuyên gia đầu ngành trên thế giới.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 pt-2">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
                 {[
-                  { title: 'Hội thảo quốc tế thường niên', count: '4 kỳ / năm' },
-                  { title: 'Webinar chuyên đề trực tuyến', count: 'Hàng tháng' },
-                  { title: 'International Grand Rounds', count: 'Hàng tuần' },
-                  { title: 'Câu lạc bộ học thuật sinh viên', count: 'Đa quốc gia' },
-                  { title: 'Hội nghị Bác sĩ trẻ & Nhà nghiên cứu', count: 'Hàng năm' },
-                  { title: 'Báo cáo ca bệnh lâm sàng hiếm', count: 'Thường xuyên' },
-                  { title: 'Kêu gọi đề tài (Call for Papers)', count: 'Mở liên tục' },
-                  { title: 'Kỷ yếu & Thư viện Video học thuật', count: 'Truy cập mở' },
+                  {
+                    title: 'Hội nghị & Hội thảo Quốc tế',
+                    desc: 'Tổ chức các sự kiện học thuật thường niên, đón tiếp hàng trăm diễn giả, bác sĩ và nhà khoa học tham dự.',
+                    action: 'Đăng cai tổ chức'
+                  },
+                  {
+                    title: 'Webinar & Grand Rounds',
+                    desc: 'Các buổi báo cáo ca bệnh khó, cập nhật tiến bộ y khoa trực tuyến liên trường viện định kỳ hàng tháng.',
+                    action: 'Đăng ký tham gia'
+                  },
+                  {
+                    title: 'Câu lạc bộ Học thuật & Video Library',
+                    desc: 'Kho tư liệu video bài giảng, kỷ yếu hội thảo và diễn đàn chia sẻ kinh nghiệm thực hành lâm sàng.',
+                    action: 'Khám phá thư viện'
+                  }
                 ].map((item, idx) => (
-                  <div key={idx} className="bg-purple-50/50 p-4 rounded-2xl border border-purple-100 flex flex-col justify-between">
+                  <div key={idx} className="p-6 rounded-2xl bg-[#F8FAF9] border border-slate-200/80 flex flex-col justify-between">
                     <div>
-                      <h4 className="font-bold text-xs text-slate-800">{item.title}</h4>
+                      <h4 className="font-bold text-sm text-slate-800 mb-2">{item.title}</h4>
+                      <p className="text-xs text-slate-600 leading-relaxed mb-4">{item.desc}</p>
                     </div>
-                    <span className="text-[10px] font-bold text-purple-700 bg-white px-2 py-1 rounded-md mt-3 inline-block self-start border border-purple-200">
-                      {item.count}
-                    </span>
+                    <button
+                      onClick={() => onOpenCollaboration('general', item.title)}
+                      className="text-xs font-bold text-pum-green hover:text-pum-orange flex items-center gap-1 self-start"
+                    >
+                      <span>{item.action}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
                 ))}
               </div>
@@ -188,39 +209,32 @@ export const InternationalPage: React.FC<InternationalPageProps> = ({ onOpenColl
           {activeTab === 'partners' && (
             <div className="space-y-6">
               <div className="max-w-2xl">
-                <span className="text-xs font-extrabold uppercase tracking-widest text-purple-600">Trụ Cột 4</span>
-                <h3 className="text-2xl font-bold text-slate-900 mt-1">Mạng Lưới Đối Tác Chiến Lược Quốc Tế</h3>
-                <p className="text-xs text-slate-500 mt-1">Chào đón sự đồng hành từ các tổ chức y tế và viện nghiên cứu trên toàn cầu</p>
+                <span className="text-xs font-black uppercase tracking-wider text-pum-orange">Ecosystem Network</span>
+                <h3 className="text-xl font-bold text-slate-900 mt-1">Đối Tượng Đồng Hành & Phát Triển</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2">
+                  Thiết lập mạng lưới đối tác đa phương nhằm tối ưu nguồn lực và tác động xã hội.
+                </p>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
                 {[
-                  { name: 'Trường Đại học Y Dược & Khoa học Sức khỏe', desc: 'Hợp tác chuyển giao chương trình, trao đổi giảng viên và học bổng sinh viên.' },
-                  { name: 'Bệnh viện & Hệ thống Chăm sóc Y tế', desc: 'Chương trình quan sát chuyên môn (observership) và hội chẩn trực tuyến.' },
-                  { name: 'Viện Nghiên cứu Khoa học Y Sinh', desc: 'Thực hiện các đề tài đa trung tâm và kiểm nghiệm lâm sàng tại Living Lab.' },
-                  { name: 'Hội Nghề nghiệp & Hiệp hội Chuyên ngành', desc: 'Xây dựng tiêu chuẩn thực hành y khoa và chứng chỉ nghề nghiệp.' },
-                  { name: 'Doanh nghiệp Công nghệ Y tế & MedTech', desc: 'Thử nghiệm ứng dụng phần mềm, thiết bị IoT và trí tuệ nhân tạo y tế.' },
-                  { name: 'Chính phủ, Tổ chức Quốc tế & Quỹ Tài trợ', desc: 'Tài trợ các dự án nâng cao năng lực y tế cộng đồng và chăm sóc người yếu thế.' },
-                ].map((p, idx) => (
-                  <div key={idx} className="bg-slate-50 p-5 rounded-2xl border border-slate-200">
-                    <h4 className="font-bold text-sm text-slate-800">{p.name}</h4>
-                    <p className="text-xs text-slate-600 mt-2 leading-relaxed">{p.desc}</p>
+                  { name: 'Trường Đại Học', desc: 'Hợp tác chương trình, trao đổi sinh viên & giảng viên' },
+                  { name: 'Bệnh Viện & Cơ Sở Y Tế', desc: 'Hội chẩn, đào tạo lâm sàng và tiếp nhận nhân lực' },
+                  { name: 'Viện Nghiên Cứu', desc: 'Đồng triển khai đề tài, thử nghiệm Living Lab' },
+                  { name: 'Hội Nghề Nghiệp Y Tế', desc: 'Chuẩn hóa định chế hành nghề và thẩm định năng lực' },
+                  { name: 'Doanh Nghiệp Công Nghệ', desc: 'Thử nghiệm thiết bị y tế số, phần mềm y tế' },
+                  { name: 'Chính Phủ & Địa Phương', desc: 'Quy hoạch chính sách và bảo trợ phát triển mô hình' },
+                  { name: 'Tổ Chức Quốc Tế', desc: 'Tài trợ dự án, hỗ trợ kỹ thuật và chuẩn hóa' },
+                  { name: 'Quỹ Nghiên Cứu', desc: 'Tài trợ học bổng, đầu tư dự án khởi nghiệp y tế' },
+                ].map((item, idx) => (
+                  <div key={idx} className="p-4 rounded-2xl bg-white border border-slate-200/80 shadow-2xs">
+                    <h4 className="font-bold text-xs text-pum-green mb-1">{item.name}</h4>
+                    <p className="text-[11px] text-slate-500 leading-snug">{item.desc}</p>
                   </div>
                 ))}
               </div>
             </div>
           )}
-
-          <div className="pt-6 mt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-xs text-slate-500">Quan tâm đến cơ hội hợp tác quốc tế cùng Campus Bình Mỹ?</span>
-            <button
-              onClick={() => onOpenCollaboration('partner', 'Đề xuất hợp tác quốc tế')}
-              className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white font-bold text-xs shadow-md shadow-purple-600/20 active:scale-95 transition-all"
-            >
-              <span>Gửi thư bày tỏ quan tâm (EOI)</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
 
         </div>
 

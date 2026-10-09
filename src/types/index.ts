@@ -152,3 +152,107 @@ export interface NewsArticle {
   image: string;
   views: number;
 }
+
+export interface PumProject {
+  id: string;
+  title: string;
+  titleEn?: string;
+  category: string;
+  categoryName: string;
+  categoryNameEn?: string;
+  location: string;
+  image: string;
+  summary: string;
+  summaryEn?: string;
+  impactMetrics: string[];
+  description?: string;
+  featured?: boolean;
+}
+
+export interface PumTestimonial {
+  id: string;
+  quote: string;
+  author: string;
+  role: string;
+  organization: string;
+  image: string;
+  tag: string;
+}
+
+export interface PumJoinCard {
+  id: string;
+  tag: string;
+  title: string;
+  description: string;
+  image: string;
+  ctaText: string;
+  targetPage: string;
+  actionType: string;
+}
+
+// ================= BÀI TOÁN THỰC TẾ =================
+export type ProblemCategory = 'agriculture' | 'health' | 'tourism' | 'other';
+
+export type ProblemStatus = 'pending' | 'verified' | 'seeking_support' | 'in_progress';
+
+export interface RealProblem {
+  id: string;
+  // Phần A - Thông tin người đăng
+  submitterType: string; // 'Nông dân / Hộ sản xuất' | 'Doanh nghiệp' | 'Cơ sở kinh doanh' | 'Đại diện đơn vị địa phương' | 'Khác'
+  contactName: string;
+  organizationName?: string;
+  phoneNumber?: string; // KHÔNG hiển thị công khai trên bài viết
+  email?: string;       // KHÔNG hiển thị công khai trên bài viết
+  location: string;
+  locationEn?: string;
+
+  // Phần B - Thông tin bài toán
+  title: string;
+  titleEn?: string;
+  category: ProblemCategory;
+  categoryDetail?: string; // 'Nông nghiệp' | 'Y tế' | 'Du lịch' | 'Công nghệ' | 'Kinh doanh / Thị trường' | 'Môi trường' | 'Khác'
+  categoryDetailEn?: string;
+  description: string;
+  descriptionEn?: string;
+  occurredTime: string; // 'Mới phát sinh' | 'Dưới 6 tháng' | 'Từ 6 tháng đến 1 năm' | 'Trên 1 năm' | 'Khác'
+  occurredTimeEn?: string;
+  affectedAudience: string; // 'Bản thân / hộ sản xuất' | 'Khách hàng' | 'Nhân viên / doanh nghiệp' | 'Cộng đồng địa phương' | 'Khác'
+  affectedAudienceEn?: string;
+  cause?: string;
+  causeEn?: string;
+  triedSolutions?: string;
+  triedSolutionsEn?: string;
+  damages?: string;
+  damagesEn?: string;
+
+  // Phần C - Nhu cầu hỗ trợ
+  desiredOutcome: string;
+  desiredOutcomeEn?: string;
+  supportNeeded: string[];
+  supportNeededEn?: string[];
+  readyToCoordinate: string; // 'Có' | 'Có, nếu được hướng dẫn' | 'Cần trao đổi thêm'
+  canSupportTesting: string; // 'Có' | 'Không' | 'Cần trao đổi thêm'
+
+  // Phần D - Hình ảnh & Tài liệu minh chứng
+  images: string[];
+  evidenceDocName?: string;
+  imageDescription?: string;
+  imageDescriptionEn?: string;
+
+  // Trạng thái & ngày đăng
+  status: ProblemStatus;
+  createdAt: string;
+  isPublic: boolean;
+}
+
+export interface SolutionProposal {
+  id: string;
+  problemId: string;
+  proposerName: string;
+  role: string;
+  phone: string;
+  email: string;
+  proposalContent: string;
+  createdAt: string;
+}
+

@@ -258,6 +258,22 @@ export const mockHealthModels = [
     title: 'Trung tâm Y tế cộng đồng và Living Lab',
     tagline: 'Sàng lọc, quản lý sức khỏe ban đầu & không gian thực nghiệm giải pháp y tế số',
     description: 'Mô hình tiên phong kết nối trạm y tế cơ sở với các công nghệ xét nghiệm nhanh, telehealth và hồ sơ sức khỏe điện tử. Là nơi sinh viên và bác sĩ trẻ trực tiếp thực hành trên các ca bệnh thực tế.',
+    healthAspects: [
+      'Sàng lọc, tư vấn và quản lý sức khỏe cộng đồng toàn diện theo vòng đời.',
+      'Y tế học đường, chăm sóc ban đầu và phòng chống dịch bệnh cơ sở.',
+      'Thực hành lâm sàng, nghiên cứu ứng dụng và thử nghiệm giải pháp tại Living Lab.',
+      'Telehealth kết nối hội chẩn chuyên sâu với bác sĩ tuyến trên và quốc tế.'
+    ],
+    tourismAspects: [
+      'Điểm khám sàng lọc và kiểm tra thể lực trước khi tham gia các tour du lịch nghỉ dưỡng Wellness.',
+      'Tư vấn hành trình trải nghiệm chăm sóc sức khỏe, phục hồi năng lượng phù hợp với từng du khách.',
+      'Trạm hỗ trợ y tế lưu động và sơ cấp cứu an toàn cho toàn bộ du khách tham quan khuôn viên.'
+    ],
+    agricultureAspects: [
+      'Nghiên cứu dinh dưỡng lâm sàng ứng dụng từ nguồn rau củ quả, nông sản sạch địa phương.',
+      'Giám sát an toàn sinh học và hỗ trợ chăm sóc sức khỏe định kỳ cho nông dân vùng nguyên liệu.',
+      'Kết nối dữ liệu dinh dưỡng với chuỗi cung ứng thực phẩm sạch chuẩn nông nghiệp an toàn.'
+    ],
     functions: [
       'Sàng lọc, tư vấn và quản lý sức khỏe cộng đồng toàn diện.',
       'Y tế học đường và chăm sóc sức khỏe ban đầu cho thanh thiếu niên.',
@@ -271,7 +287,7 @@ export const mockHealthModels = [
       'Theo dõi sức khỏe định kỳ cho cộng đồng và người lao động nông nghiệp.'
     ],
     image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&w=1200&q=80',
-    badge: 'Mô hình Trụ cột 1'
+    badge: 'Trụ cột Y tế Cốt lõi'
   },
   {
     id: 'elderly-care',
@@ -279,6 +295,22 @@ export const mockHealthModels = [
     title: 'Trung tâm Chăm sóc người cao tuổi',
     tagline: 'Chăm sóc lão khoa toàn diện, phục hồi chức năng và kết hợp vườn trị liệu tự nhiên',
     description: 'Không gian chăm sóc ban ngày và bán trú hiện đại, kết hợp y học phục hồi, chế độ dinh dưỡng cá nhân hóa và các hoạt động văn hóa tinh thần giúp người cao tuổi sống vui, sống khỏe.',
+    healthAspects: [
+      'Chăm sóc y tế bán trú ban ngày (Daycare) và dịch vụ điều dưỡng tại nhà (Homecare).',
+      'Vật lý trị liệu, phục hồi chức năng sau tai biến và vận động dưỡng sinh chuyên sâu.',
+      'Quản lý huyết áp, đường huyết và các bệnh lý mãn tính của người cao tuổi.',
+      'Đào tạo điều dưỡng lão khoa và chuyển giao kỹ năng chăm sóc cho người nhà.'
+    ],
+    tourismAspects: [
+      'Kỳ nghỉ dưỡng phục hồi sức khỏe (Senior Wellness Retreat) ngắn ngày và dài hạn.',
+      'Không gian vườn trị liệu (Therapeutic Garden) và dạo bộ ven sông đón gió lành.',
+      'Chương trình sống khỏe, sống vui: Giao lưu nghệ thuật, thiền trà và kết nối sinh viên – người cao tuổi.'
+    ],
+    agricultureAspects: [
+      'Chế độ ăn dưỡng sinh 100% hữu cơ từ nông trại sinh thái công nghệ cao Bình Mỹ.',
+      'Liệu pháp làm vườn (Horticultural Therapy): Người cao tuổi tự tay chăm sóc cây cảnh, gieo hạt.',
+      'Sử dụng các loại trà dược liệu và bài thuốc dân gian từ vườn thuốc Nam hữu cơ tại chỗ.'
+    ],
     functions: [
       'Chăm sóc ban ngày (Daycare) và chăm sóc tại nhà (Homecare).',
       'Phục hồi chức năng, vật lý trị liệu và vận động dưỡng sinh.',
@@ -293,7 +325,7 @@ export const mockHealthModels = [
       'Chương trình sống khỏe, sống vui và kết nối đa thế hệ sinh viên – người già.'
     ],
     image: 'https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=1200&q=80',
-    badge: 'Mô hình Trụ cột 2'
+    badge: 'Trụ cột Lão khoa & Dưỡng sinh'
   },
   {
     id: 'health-wellness',
@@ -301,6 +333,21 @@ export const mockHealthModels = [
     title: 'Trung tâm Health and Wellness',
     tagline: 'Hệ sinh thái Wellness Farm, nghỉ dưỡng phục hồi kết hợp nông nghiệp dược liệu',
     description: 'Khu tổ hợp chăm sóc sức khỏe chủ động kết hợp giữa cảnh quan thiên nhiên xanh mát, các liệu trình thanh lọc cơ thể, trải nghiệm nông nghiệp hữu cơ và sản phẩm thảo dược OCOP.',
+    healthAspects: [
+      'Liệu trình thanh lọc cơ thể (Detox), kiểm soát chỉ số sức khỏe và thải độc tự nhiên.',
+      'Yoga trị liệu, thiền định chánh niệm và các phương pháp tái tạo năng lượng tâm thể.',
+      'Tư vấn lối sống lành mạnh phòng ngừa các bệnh rối loạn chuyển hóa và tim mạch.'
+    ],
+    tourismAspects: [
+      'Mô hình Wellness Farmstay và bungalow nghỉ dưỡng sinh thái cao cấp ven sông Sài Gòn.',
+      'Tour du lịch trải nghiệm cuối tuần: Du thuyền sông nước, câu cá thư giãn, đạp xe sinh thái.',
+      'Không gian thưởng trà dưỡng sinh, ngắm hoàng hôn và thưởng thức ẩm thực thực dưỡng miệt vườn.'
+    ],
+    agricultureAspects: [
+      'Khu nông trại thảo dược sạch chuẩn GACP-WHO: Bạc hà, sả chanh, gừng gió, hoa cúc dược liệu.',
+      'Trải nghiệm thực tế: Tự tay thu hái thảo mộc, chưng cất tinh dầu và chế biến món ăn dưỡng sinh.',
+      'Thương mại hóa chuỗi sản phẩm OCOP Bình Mỹ Xanh: Trà thảo dược, mật ong hoa dược liệu, nến thơm.'
+    ],
     functions: [
       'Wellness Farm và trung tâm nghỉ dưỡng phục hồi thể chất & tâm trí.',
       'Các liệu trình dinh dưỡng Detox, yoga, thiền và vận động trị liệu.',
@@ -315,7 +362,7 @@ export const mockHealthModels = [
       'Chương trình nghỉ dưỡng xanh cuối tuần dành cho gia đình và chuyên gia.'
     ],
     image: 'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=1200&q=80',
-    badge: 'Mô hình Trụ cột 3'
+    badge: 'Trụ cột Wellness Farm'
   }
 ];
 
@@ -460,6 +507,9 @@ export const mockConsultingPackages: string[] = [
 export const mockEconomicGroups = [
   {
     groupName: '1. Nông nghiệp và chuỗi cung ứng',
+    pillar: 'agriculture',
+    pillarBadgeVi: 'Trụ cột Nông nghiệp & Dược liệu',
+    pillarBadgeEn: 'Agriculture & Herbal Pillar',
     color: 'emerald',
     models: [
       {
@@ -478,6 +528,9 @@ export const mockEconomicGroups = [
   },
   {
     groupName: '2. Sản phẩm và thị trường',
+    pillar: 'agriculture',
+    pillarBadgeVi: 'Trụ cột Nông nghiệp & OCOP',
+    pillarBadgeEn: 'Agro-Products & OCOP Pillar',
     color: 'amber',
     models: [
       {
@@ -496,6 +549,9 @@ export const mockEconomicGroups = [
   },
   {
     groupName: '3. Du lịch và kinh tế sáng tạo',
+    pillar: 'tourism',
+    pillarBadgeVi: 'Trụ cột Du lịch & Nghỉ dưỡng',
+    pillarBadgeEn: 'Tourism & Wellness Pillar',
     color: 'blue',
     models: [
       {
@@ -517,7 +573,10 @@ export const mockEconomicGroups = [
     ]
   },
   {
-    groupName: '4. Đào tạo và đổi mới',
+    groupName: '4. Đào tạo và đổi mới y tế – sinh thái',
+    pillar: 'health',
+    pillarBadgeVi: 'Trụ cột Y tế & Living Lab',
+    pillarBadgeEn: 'Health & Living Lab Pillar',
     color: 'purple',
     models: [
       {
@@ -533,15 +592,15 @@ export const mockEconomicGroups = [
 ];
 
 export const mockBrandFramework: BrandFrameworkData = {
-  title: 'Hệ Thống Chiến Lược Thương Hiệu & Sản Phẩm Trải Nghiệm Bình Mỹ',
-  description: 'Mô hình chuyển hóa giá trị từ 3 trụ cột phát triển thành 3 không gian trải nghiệm bản địa đặc sắc, cùng hợp lưu kiến tạo nên Sản Phẩm Trải Nghiệm Bình Mỹ độc bản.',
+  title: 'Hệ Thống Chiến Lược 3 Trụ Cột: Y Tế – Du Lịch – Nông Nghiệp',
+  description: 'Mô hình chuyển hóa giá trị từ 3 trụ cột phát triển thành 3 không gian trải nghiệm bản địa đặc sắc, cùng hợp lưu kiến tạo nên Hệ Sinh Thái Sản Phẩm Trải Nghiệm Bình Mỹ độc bản.',
   branches: [
     {
       id: 'health',
-      pillar: 'Y tế – sức khỏe',
+      pillar: 'Trụ cột 1: Y tế – Sức khỏe',
       pillarIcon: 'HeartPulse',
       pillarDesc: 'Nền tảng y học cộng đồng, khám tầm soát sớm, dưỡng sinh phục hồi và Living Lab y tế số.',
-      experience: 'Trải nghiệm sức khỏe xanh',
+      experience: 'Không gian Y tế & Sức khỏe xanh',
       experienceDesc: 'Chăm sóc sức khỏe toàn diện, hòa mình vào không gian sinh thái an lành và tái tạo năng lượng thể chất – tâm hồn.',
       color: 'emerald',
       bgLight: 'bg-emerald-50/70',
@@ -554,44 +613,44 @@ export const mockBrandFramework: BrandFrameworkData = {
       ]
     },
     {
-      id: 'culture',
-      pillar: 'Văn hóa – sáng tạo',
-      pillarIcon: 'Sparkles',
-      pillarDesc: 'Khai phóng tinh thần đổi mới của sinh viên, tôn vinh truyền thống nghĩa tình và văn hóa đất thép ven sông.',
-      experience: 'Câu chuyện và bản sắc địa phương',
-      experienceDesc: 'Khám phá và lan tỏa hồn cốt Bình Mỹ thông qua nghệ thuật kể chuyện thương hiệu, workshop thủ công và giao lưu cộng đồng.',
-      color: 'amber',
-      bgLight: 'bg-amber-50/70',
-      borderLight: 'border-amber-200',
-      badgeColor: 'text-amber-700 bg-amber-100',
-      items: [
-        'Xây dựng câu chuyện thương hiệu (Brand Storytelling) gắn với lịch sử, con người và vùng đất Bình Mỹ.',
-        'Workshop sáng tạo: Làm xà phòng thảo dược, nến thơm tinh dầu OCOP và sản phẩm đan lát truyền thống.',
-        'Không gian văn hóa nghệ thuật mở, diễn đàn giao lưu giữa chuyên gia, sinh viên và cư dân địa phương.'
-      ]
-    },
-    {
       id: 'tourism',
-      pillar: 'Du lịch xanh',
+      pillar: 'Trụ cột 2: Du lịch – Nghỉ dưỡng',
       pillarIcon: 'Palmtree',
-      pillarDesc: 'Khai thác du lịch sinh thái nông nghiệp tuần hoàn, giữ gìn bầu không khí trong lành và cảnh quan sông nước hữu tình.',
-      experience: 'Nông nghiệp và thiên nhiên',
-      experienceDesc: 'Trải nghiệm cuộc sống thuần nông nguyên bản, tự tay gieo trồng thảo dược sạch và thưởng thức ẩm thực thực dưỡng bản địa.',
+      pillarDesc: 'Khai thác du lịch sinh thái nông nghiệp tuần hoàn, Wellness Farmstay và cảnh quan ven sông an lành.',
+      experience: 'Không gian Du lịch & Nghỉ dưỡng',
+      experienceDesc: 'Trải nghiệm du lịch sinh thái miệt vườn, tour nghỉ dưỡng phục hồi năng lượng và thưởng thức ẩm thực thực dưỡng bản địa.',
       color: 'sky',
       bgLight: 'bg-sky-50/70',
       borderLight: 'border-sky-200',
       badgeColor: 'text-sky-700 bg-sky-100',
       items: [
         'Tuyến du lịch nông nghiệp sinh thái miệt vườn ven sông Sài Gòn, trải nghiệm thuyền đạp và câu cá thư giãn.',
-        'Mô hình Edu Farm & Wellness Farm: Tham quan vườn dược liệu chuẩn GACP-WHO, học cách nhận biết cây thuốc Nam.',
+        'Mô hình Edu Farm & Wellness Farm: Kỳ nghỉ phục hồi sức khỏe, tham quan vườn dược liệu chuẩn GACP-WHO.',
         'Không gian thiền trà dưỡng tâm, yoga đón bình minh và thưởng thức các món ăn thực dưỡng hữu cơ miệt vườn.'
+      ]
+    },
+    {
+      id: 'agriculture',
+      pillar: 'Trụ cột 3: Nông nghiệp – OCOP',
+      pillarIcon: 'Sprout',
+      pillarDesc: 'Nông nghiệp thông minh – tuần hoàn, bảo tồn dược liệu sạch và chuỗi giá trị OCOP Bình Mỹ Xanh.',
+      experience: 'Không gian Nông nghiệp & Chuỗi giá trị',
+      experienceDesc: 'Trải nghiệm nông nghiệp hữu cơ, tự tay thu hái thảo dược, chế biến trà dược liệu và tham gia chuỗi sản phẩm OCOP.',
+      color: 'amber',
+      bgLight: 'bg-amber-50/70',
+      borderLight: 'border-amber-200',
+      badgeColor: 'text-amber-700 bg-amber-100',
+      items: [
+        'Xây dựng vùng nguyên liệu dược liệu chuẩn GACP-WHO và mô hình hợp tác xã nông nghiệp hữu cơ bền vững.',
+        'Quy trình chế biến nông sản sạch, tinh dầu, trà thảo dược OCOP Bình Mỹ Xanh và trạm sơ chế logistics.',
+        'Workshop sinh viên và nông dân: Canh tác nông nghiệp tuần hoàn, bảo vệ đất và đa dạng sinh học ven sông.'
       ]
     }
   ],
   targetProduct: {
-    title: 'Sản phẩm trải nghiệm Bình Mỹ',
-    tagline: 'Điểm hội tụ giá trị thương hiệu – Chuỗi sản phẩm & dịch vụ trải nghiệm độc bản',
-    description: 'Kết tinh từ Y tế xanh, Bản sắc văn hóa và Nông nghiệp sinh thái để tạo nên những gói sản phẩm trải nghiệm hoàn chỉnh, mang lại giá trị bền vững cho người thụ hưởng và nâng tầm thương hiệu địa phương.',
+    title: 'Hệ Sinh Thái Sản Phẩm Trải Nghiệm Bình Mỹ',
+    tagline: 'Điểm hội tụ giá trị 3 trụ cột: Y tế – Du lịch – Nông nghiệp',
+    description: 'Kết tinh từ Y tế xanh, Du lịch sinh thái và Nông nghiệp tuần hoàn tạo nên chuỗi sản phẩm & dịch vụ trải nghiệm độc bản, mang lại giá trị bền vững cho người thụ hưởng và nâng tầm thương hiệu địa phương.',
     offerings: [
       {
         title: 'Kỳ nghỉ Dưỡng sinh & Tái tạo năng lượng Bình Mỹ (1–3 ngày)',
@@ -996,4 +1055,159 @@ export const mockEventItems = [
 export const mockEvents = mockEventsData;
 export const mockActivityFields = mockActivityFieldsData;
 export const mockStats = mockStatsData;
+
+export const mockPumJoinCards = [
+  {
+    id: 'sme',
+    tag: 'Dành cho Sinh viên & Học viên',
+    tagEn: 'For Students & Trainees',
+    title: 'Thực tập & Khởi nghiệp tại Living Lab',
+    titleEn: 'Internship & Innovation at Living Lab',
+    description: 'Học tập trên bài toán thật, trực tiếp tham gia chuỗi dự án Y tế, Nông nghiệp thông minh và Du lịch trị liệu tại Bình Mỹ.',
+    descriptionEn: 'Hands-on practice on real community challenges in health, smart agritech, and wellness tourism.',
+    image: '/assets/pum/JoinUs_entrepreneurs-e1707830937654-1200x670.jpg',
+    ctaText: 'Khám phá chương trình',
+    ctaTextEn: 'Explore Programs',
+    targetPage: 'training',
+    actionType: 'training'
+  },
+  {
+    id: 'expert',
+    tag: 'Dành cho Bác sĩ & Chuyên gia',
+    tagEn: 'For Doctors & Experts',
+    title: 'Mạng lưới Bác sĩ Xuyên Biên Giới',
+    titleEn: 'Doctors Across Borders Network',
+    description: 'Tham gia giảng dạy thỉnh giảng, hội chẩn từ xa quốc tế, nghiên cứu đa trung tâm và phục vụ cộng đồng y tế.',
+    descriptionEn: 'Join visiting lectures, remote international grand rounds, multi-center research, and community healthcare.',
+    image: '/assets/pum/JoinUs_experts-1200x800.jpg',
+    ctaText: 'Đăng ký Chuyên gia',
+    ctaTextEn: 'Join as Expert',
+    targetPage: 'doctors',
+    actionType: 'expert'
+  },
+  {
+    id: 'partner',
+    tag: 'Dành cho Doanh nghiệp & Địa phương',
+    tagEn: 'For Enterprises & Local Partners',
+    title: 'Hợp tác Dự án & 12 Mô hình Kinh tế',
+    titleEn: 'Project Partnership & 12 Economic Models',
+    description: 'Cùng xây dựng hệ sinh thái chuỗi giá trị OCOP, Edu Farm, Wellness Farm và chuyển giao công nghệ y tế bền vững.',
+    descriptionEn: 'Collaborate to build OCOP supply chains, Edu/Wellness Farms, and sustainable healthcare models.',
+    image: '/assets/pum/hero_partner-e1731941595732-1200x916.jpg',
+    ctaText: 'Đề xuất Hợp tác',
+    ctaTextEn: 'Propose Partnership',
+    targetPage: 'consulting',
+    actionType: 'partner'
+  }
+];
+
+export const mockPumProjects = [
+  {
+    id: 'proj-1',
+    title: 'Trung tâm Y tế Cộng đồng & Sức khỏe Ban đầu Living Lab',
+    titleEn: 'Community Health Center & Primary Living Lab',
+    category: 'healthcare',
+    categoryName: 'Y tế cộng đồng',
+    categoryNameEn: 'Community Health',
+    location: 'Xã Bình Mỹ, Huyện Củ Chi, TP.HCM',
+    image: '/assets/pum/hero_visual2-e1710851129461-1200x836.jpg',
+    summary: 'Mô hình kết nối bác sĩ tuyến trên với y tế cơ sở qua Telehealth và hồ sơ sức khỏe điện tử đồng bộ cho hơn 5.000 hộ gia đình.',
+    summaryEn: 'Connecting tertiary physicians with grassroots clinic via Telehealth and integrated EHR for 5,000+ local families.',
+    impactMetrics: ['5.000+ Hồ sơ quản lý', '100% Khám sàng lọc ban đầu', '12 Bác sĩ quốc tế bảo trợ'],
+    featured: true
+  },
+  {
+    id: 'proj-2',
+    title: 'Mô hình Edu Farm & Wellness Farm Dược liệu Bản địa',
+    titleEn: 'Indigenous Herbal Edu & Wellness Farm',
+    category: 'wellness',
+    categoryName: 'Health & Wellness',
+    categoryNameEn: 'Health & Wellness',
+    location: 'Phân khu Nông nghiệp Xanh Bình Mỹ',
+    image: '/assets/pum/Uganda_Fruit_Vegetables_processing_006-e1706769474884-1200x771.jpg',
+    summary: 'Kết hợp nông nghiệp hữu cơ tuần hoàn, vườn dược liệu trị liệu và du lịch trải nghiệm phục hồi sức khỏe cuối tuần cho người cao tuổi.',
+    summaryEn: 'Combining circular organic farming, healing herbal gardens, and weekend health recuperation retreat for seniors.',
+    impactMetrics: ['25ha Vùng nguyên liệu', '18 Sản phẩm OCOP chuẩn hóa', '1.200 Lượt khách/tháng'],
+    featured: true
+  },
+  {
+    id: 'proj-3',
+    title: 'Trung tâm Phục hồi Chức năng & Dưỡng lão Ban ngày',
+    titleEn: 'Daycare & Geriatric Rehabilitation Center',
+    category: 'elderly',
+    categoryName: 'Chăm sóc người cao tuổi',
+    categoryNameEn: 'Elderly Care',
+    location: 'Khuôn viên Làng Sinh Viên Bình Mỹ',
+    image: '/assets/pum/AboutUs_headerphoto-1-e1710851068894-1200x788.jpg',
+    summary: 'Không gian vận động trị liệu, thực dưỡng sạch và giao lưu văn hóa giúp người cao tuổi sống vui, khỏe, gắn kết thế hệ trẻ.',
+    summaryEn: 'Therapeutic physical therapy, clean nutrition, and generational community activities for healthy, joyful aging.',
+    impactMetrics: ['120 Giường bán trú', '30 Điều dưỡng đào tạo chuẩn', '98% Hài lòng'],
+    featured: true
+  },
+  {
+    id: 'proj-4',
+    title: 'Hệ thống Quản lý Chuỗi Cung ứng Nông sản Dược liệu OCOP',
+    titleEn: 'Traceable OCOP Herbal Agriculture Supply Chain',
+    category: 'agriculture',
+    categoryName: 'Kinh tế phụ trợ',
+    categoryNameEn: 'Auxiliary Economy',
+    location: 'Hợp tác xã Nông nghiệp Bình Mỹ Xanh',
+    image: '/assets/pum/Jordan_Al-Bayrouty_002-1200x800.jpg',
+    summary: 'Ứng dụng công nghệ truy xuất nguồn gốc số, sàn giao dịch nông sản và kho sơ chế bảo quản lạnh đạt tiêu chuẩn VietGAP.',
+    summaryEn: 'Digital traceability, direct trading platform, and VietGAP post-harvest cold storage network.',
+    impactMetrics: ['45 Xã viên liên kết', '300 Tấn/năm tiêu thụ', '+35% Thu nhập nông dân'],
+    featured: false
+  },
+  {
+    id: 'proj-5',
+    title: 'Hội chẩn Quốc tế Xuyên Biên Giới – Telehealth Grand Rounds',
+    titleEn: 'Cross-Border Telehealth Grand Rounds',
+    category: 'international',
+    categoryName: 'Bác sĩ xuyên biên giới',
+    categoryNameEn: 'Doctors Across Borders',
+    location: 'Trực tuyến đa điểm cầu Quốc tế & Bình Mỹ',
+    image: '/assets/pum/PUM-sfeerbeeld_6-2023_De-Schaapjesfabriek-LR-5-1200x800.jpg',
+    summary: 'Chương trình định kỳ giữa bác sĩ Hà Lan, Nhật Bản, Pháp và đội ngũ y tế Việt Nam thảo luận ca bệnh lão khoa phức tạp.',
+    summaryEn: 'Regular hybrid sessions connecting specialists from Netherlands, Japan, France with local doctors on complex geriatric cases.',
+    impactMetrics: ['24 Buổi hội chẩn/năm', '80 Bác sĩ tham dự/kỳ', '100% Chuyển giao phác đồ'],
+    featured: false
+  }
+];
+
+export const mockPumTestimonials = [
+  {
+    id: 't-1',
+    quote: 'Mô hình Living Lab tại Bình Mỹ tạo môi trường thực hành y tế và nông nghiệp sinh thái vô cùng sống động, kết nối trực tiếp sinh viên với các bài toán thực tế của địa phương.',
+    quoteEn: 'The Living Lab model in Binh My provides an exceptionally vibrant medical and ecological practice ground, directly connecting students with real community solutions.',
+    author: 'TS. BS. Johannes Van Der Berg',
+    role: 'Chuyên gia Cố vấn Y học Gia đình',
+    roleEn: 'Senior Family Medicine Consultant',
+    organization: 'Mạng lưới Bác sĩ Quốc tế PUM (Hà Lan)',
+    image: '/assets/pum/JoinUs_experts-1200x800.jpg',
+    tag: 'Bác sĩ Quốc tế'
+  },
+  {
+    id: 't-2',
+    quote: 'Tham gia các khóa đào tạo điều dưỡng lão khoa và thực hành tại Trung tâm chăm sóc người cao tuổi Bình Mỹ đã mở ra cho tôi cơ hội làm việc với mức lương cao và chứng chỉ chuẩn quốc tế.',
+    quoteEn: 'Joining the geriatric care training and practicing at Binh My center opened high-income career opportunities and internationally recognized certification.',
+    author: 'Nguyễn Thị Hồng Hạnh',
+    role: 'Học viên Khóa Điều dưỡng Cộng đồng K02',
+    roleEn: 'Community Nursing Graduate K02',
+    organization: 'Khoa Y Dược – HUTECH',
+    image: '/assets/pum/DSC8707-1200x800.jpg',
+    tag: 'Sinh viên Tiêu biểu'
+  },
+  {
+    id: 't-3',
+    quote: 'Sự hỗ trợ từ gói tư vấn dự án và chuỗi 12 mô hình kinh tế phụ trợ đã giúp HTX Bình Mỹ chuẩn hóa thành công 4 sản phẩm trà dược liệu OCOP đạt chuẩn 4 sao.',
+    quoteEn: 'Support from project consulting and 12 auxiliary economic models helped our cooperative standardize 4 herbal tea products to 4-star OCOP status.',
+    author: 'Trần Văn Hùng',
+    role: 'Giám đốc Hợp tác xã',
+    roleEn: 'Cooperative Director',
+    organization: 'HTX Nông nghiệp Sinh thái Bình Mỹ',
+    image: '/assets/pum/Jordan_Al-Bayrouty_002-1200x800.jpg',
+    tag: 'Đối tác Doanh nghiệp'
+  }
+];
+
 

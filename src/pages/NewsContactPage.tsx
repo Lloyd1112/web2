@@ -30,6 +30,7 @@ import {
 interface NewsContactPageProps {
   onOpenCollaboration: (type?: string, title?: string) => void;
   onNavigate?: (tab: string) => void;
+  initialViewMode?: 'news-list' | 'events-page' | 'article-detail';
 }
 
 // Social Icons
@@ -47,7 +48,8 @@ const LinkedinIcon = () => (
 
 export const NewsContactPage: React.FC<NewsContactPageProps> = ({ 
   onOpenCollaboration,
-  onNavigate 
+  onNavigate,
+  initialViewMode = 'news-list'
 }) => {
   const { language } = useLanguage();
   
@@ -55,7 +57,7 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
   // - 'news-list': Main News & Contact page (Hình thứ 2 ở ô Tất cả)
   // - 'events-page': The dedicated Events Page matching user reference image
   // - 'article-detail': The full single article story reader view
-  const [viewMode, setViewMode] = useState<'news-list' | 'events-page' | 'article-detail'>('news-list');
+  const [viewMode, setViewMode] = useState<'news-list' | 'events-page' | 'article-detail'>(initialViewMode);
 
   // Active Article Detail State
   const [activeArticle, setActiveArticle] = useState<any | null>(null);
