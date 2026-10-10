@@ -477,6 +477,19 @@ export class AdminDataService {
     const list = this.getProblems();
     const filtered = list.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(filtered));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
+    return true;
+  }
+
+  static deleteMultipleProblems(ids: string[]): boolean {
+    const list = this.getProblems();
+    const filtered = list.filter(p => !ids.includes(p.id));
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(filtered));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
     return true;
   }
 
