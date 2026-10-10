@@ -497,9 +497,9 @@ export class AdminDataService {
   static getProposals(): AdminProposal[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROPOSALS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -525,11 +525,14 @@ export class AdminDataService {
       list.unshift(proposal);
     }
     localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(list));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
   }
 
   static updateProposalStatus(
-    id: string, 
-    newStatus: ProposalStatus, 
+    id: string,
+    newStatus: ProposalStatus,
     internalNotes?: string,
     assignedTo?: string
   ): boolean {
@@ -556,6 +559,9 @@ export class AdminDataService {
     };
 
     localStorage.setItem(STORAGE_KEYS.PROPOSALS, JSON.stringify(list));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
     return true;
   }
 
@@ -563,9 +569,9 @@ export class AdminDataService {
   static getProjects(): AdminProject[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROJECTS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -591,12 +597,28 @@ export class AdminDataService {
       list.unshift({ ...project, createdAt: new Date().toLocaleDateString('vi-VN'), updatedAt: new Date().toLocaleDateString('vi-VN') });
     }
     localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(list));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
   }
 
   static deleteProject(id: string): boolean {
     const list = this.getProjects();
     const filtered = list.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(filtered));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
+    return true;
+  }
+
+  static deleteMultipleProjects(ids: string[]): boolean {
+    const list = this.getProjects();
+    const filtered = list.filter(p => !ids.includes(p.id));
+    localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(filtered));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
     return true;
   }
 
@@ -604,9 +626,9 @@ export class AdminDataService {
   static getNews(): AdminNewsItem[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.NEWS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -627,12 +649,18 @@ export class AdminDataService {
       list.unshift(item);
     }
     localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(list));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
   }
 
   static deleteNews(id: string): boolean {
     const list = this.getNews();
     const filtered = list.filter(n => n.id !== id);
     localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(filtered));
+    try {
+      window.dispatchEvent(new Event('storage'));
+    } catch (_) {}
     return true;
   }
 

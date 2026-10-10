@@ -55,6 +55,8 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
   const [editingProject, setEditingProject] = useState<AdminProject | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [selectedProjectIds, setSelectedProjectIds] = useState<string[]>([]);
+  const [isBulkDeleteOpen, setIsBulkDeleteOpen] = useState(false);
 
   // Form inputs
   const [formCode, setFormCode] = useState('');
@@ -90,9 +92,9 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
 
   const loadData = () => {
     const list = AdminDataService.getProjects();
-    setProjects(list);
+    setProjects([...list]);
     const probList = AdminDataService.getProblems();
-    setProblemsList(probList);
+    setProblemsList([...probList]);
   };
 
   const showToast = (msg: string) => {
@@ -192,7 +194,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
       summaryEn: formSummaryEn.trim() || undefined,
       content: formContent.trim(),
       problemId: formProblemId || undefined,
-      problemTitle: linkedProblem ? linkedProblem.title : (editingProject ? editingProject.problemTitle : undefined),
+      problemTitle: linkedProblem ? linkedProblem.title : (formProblemId ? editingProject?.problemTitle : undefined),
       category: formCategory,
       categoryName: formCategoryName,
       location: formLocation.trim(),
@@ -216,9 +218,34 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
 
   const handleDelete = (id: string) => {
     AdminDataService.deleteProject(id);
-    loadData();
+    setProjects(prev => prev.filter(p => p.id !== id));
+    setSelectedProjectIds(prev => prev.filter(item => item !== id));
     setDeleteConfirmId(null);
     showToast('Đã xóa dự án khỏi hệ thống.');
+  };
+
+  const handleConfirmBulkDelete = () => {
+    if (selectedProjectIds.length === 0) return;
+    const count = selectedProjectIds.length;
+    AdminDataService.deleteMultipleProjects(selectedProjectIds);
+    setProjects(prev => prev.filter(p => !selectedProjectIds.includes(p.id)));
+    setSelectedProjectIds([]);
+    setIsBulkDeleteOpen(false);
+    showToast(`Đã xóa thành công ${count} dự án khỏi hệ thống.`);
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedProjectIds.length === filteredProjects.length) {
+      setSelectedProjectIds([]);
+    } else {
+      setSelectedProjectIds(filteredProjects.map(p => p.id));
+    }
+  };
+
+  const toggleSelect = (id: string) => {
+    setSelectedProjectIds(prev =>
+      prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
+    );
   };
 
   // Status helper badges
@@ -423,12 +450,48 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
         </div>
       </div>
 
+      {/* Thanh thao tác hàng loạt khi có chọn dự án */}
+      {selectedProjectIds.length > 0 && (
+        <div className="bg-rose-50 border border-rose-200 rounded-2xl p-3 px-4 flex items-center justify-between gap-3 animate-in fade-in slide-in-from-top-2">
+          <div className="flex items-center gap-2">
+            <span className="w-2.5 h-2.5 rounded-full bg-rose-600 animate-pulse" />
+            <span className="text-xs font-bold text-rose-950">
+              Đã chọn <strong>{selectedProjectIds.length}</strong> dự án
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setSelectedProjectIds([])}
+              className="px-3 py-1.5 rounded-xl bg-white border border-rose-200 text-xs font-semibold text-rose-700 hover:bg-rose-100 transition-colors cursor-pointer"
+            >
+              Bỏ chọn
+            </button>
+            <button
+              onClick={() => setIsBulkDeleteOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors cursor-pointer flex items-center gap-1.5 shadow-xs"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              <span>Xóa các dự án đã chọn ({selectedProjectIds.length})</span>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Projects Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-2xs overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse text-sm">
             <thead>
               <tr className="bg-slate-50/80 border-b border-slate-200 text-xs font-bold text-slate-500 uppercase tracking-wider">
+                <th className="py-3.5 px-3 w-10 text-center">
+                  <input
+                    type="checkbox"
+                    checked={filteredProjects.length > 0 && selectedProjectIds.length === filteredProjects.length}
+                    onChange={toggleSelectAll}
+                    className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
+                    title="Chọn tất cả"
+                  />
+                </th>
                 <th className="py-3.5 px-4">Dự án</th>
                 <th className="py-3.5 px-4">Bài toán nguồn</th>
                 <th className="py-3.5 px-4">Lĩnh vực & Đơn vị</th>
@@ -441,7 +504,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
             <tbody className="divide-y divide-slate-100">
               {filteredProjects.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="py-12 text-center">
+                  <td colSpan={8} className="py-12 text-center">
                     <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center mx-auto mb-3">
                       <FolderKanban className="w-6 h-6" />
                     </div>
@@ -450,91 +513,102 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                   </td>
                 </tr>
               ) : (
-                filteredProjects.map((p) => (
-                  <tr key={p.id} className="hover:bg-slate-50/70 transition-colors">
-                    
-                    {/* Project thumbnail & title */}
-                    <td className="py-3 px-4">
-                      <div className="flex items-center gap-3 max-w-[280px]">
-                        <img
-                          src={p.thumbnail}
-                          alt={p.title}
-                          className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200"
+                filteredProjects.map((p) => {
+                  const isChecked = selectedProjectIds.includes(p.id);
+                  return (
+                    <tr key={p.id} className={`hover:bg-slate-50/70 transition-colors ${isChecked ? 'bg-rose-50/30' : ''}`}>
+                      <td className="py-3 px-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => toggleSelect(p.id)}
+                          className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-slate-300 cursor-pointer"
                         />
-                        <div>
-                          <div className="font-mono text-[11px] font-bold text-slate-600">{p.code}</div>
-                          <div className="font-bold text-slate-900 text-xs leading-snug line-clamp-2 hover:text-emerald-700">
-                            {p.title}
+                      </td>
+
+                      {/* Project thumbnail & title */}
+                      <td className="py-3 px-4">
+                        <div className="flex items-center gap-3 max-w-[280px]">
+                          <img
+                            src={p.thumbnail}
+                            alt={p.title}
+                            className="w-12 h-12 rounded-xl object-cover shrink-0 border border-slate-200"
+                          />
+                          <div>
+                            <div className="font-mono text-[11px] font-bold text-slate-600">{p.code}</div>
+                            <div className="font-bold text-slate-900 text-xs leading-snug line-clamp-2 hover:text-emerald-700">
+                              {p.title}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Linked Problem */}
-                    <td className="py-3 px-4">
-                      {p.problemTitle ? (
-                        <div className="max-w-[220px]">
-                          <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-sm border border-emerald-200 block mb-0.5 w-fit">
-                            Liên kết bài toán
-                          </span>
-                          <span
-                            onClick={() => p.problemId && onOpenProblemDetail && onOpenProblemDetail(p.problemId)}
-                            className="text-xs font-medium text-slate-800 line-clamp-1 hover:text-emerald-700 cursor-pointer"
-                            title={p.problemTitle}
-                          >
-                            {p.problemTitle}
-                          </span>
+                      {/* Linked Problem */}
+                      <td className="py-3 px-4">
+                        {p.problemTitle ? (
+                          <div className="max-w-[220px]">
+                            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded-sm border border-emerald-200 block mb-0.5 w-fit">
+                              Liên kết bài toán
+                            </span>
+                            <span
+                              onClick={() => p.problemId && onOpenProblemDetail && onOpenProblemDetail(p.problemId)}
+                              className="text-xs font-medium text-slate-800 line-clamp-1 hover:text-emerald-700 cursor-pointer"
+                              title={p.problemTitle}
+                            >
+                              {p.problemTitle}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-xs text-slate-600 italic">Dự án độc lập</span>
+                        )}
+                      </td>
+
+                      {/* Category & Organization */}
+                      <td className="py-3 px-4">
+                        <div className="text-xs font-semibold text-slate-800">{p.categoryName}</div>
+                        <div className="text-[11px] text-slate-600 truncate max-w-[160px]" title={p.organization}>
+                          {p.organization}
                         </div>
-                      ) : (
-                        <span className="text-xs text-slate-600 italic">Dự án độc lập</span>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* Category & Organization */}
-                    <td className="py-3 px-4">
-                      <div className="text-xs font-semibold text-slate-800">{p.categoryName}</div>
-                      <div className="text-[11px] text-slate-600 truncate max-w-[160px]" title={p.organization}>
-                        {p.organization}
-                      </div>
-                    </td>
+                      {/* Implementation status */}
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        {getImplStatusBadge(p.status)}
+                      </td>
 
-                    {/* Implementation status */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {getImplStatusBadge(p.status)}
-                    </td>
+                      {/* Publish status */}
+                      <td className="py-3 px-4 whitespace-nowrap">
+                        {getPublishStatusBadge(p.publishStatus)}
+                      </td>
 
-                    {/* Publish status */}
-                    <td className="py-3 px-4 whitespace-nowrap">
-                      {getPublishStatusBadge(p.publishStatus)}
-                    </td>
+                      {/* Updated date */}
+                      <td className="py-3 px-4 text-xs text-slate-600 whitespace-nowrap">
+                        {p.updatedAt}
+                      </td>
 
-                    {/* Updated date */}
-                    <td className="py-3 px-4 text-xs text-slate-600 whitespace-nowrap">
-                      {p.updatedAt}
-                    </td>
+                      {/* Actions */}
+                      <td className="py-3 px-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-1.5">
+                          <button
+                            onClick={() => handleOpenEdit(p)}
+                            title="Chỉnh sửa dự án"
+                            className="p-1.5 bg-slate-100 hover:bg-emerald-600 hover:text-white rounded-lg text-slate-600 transition-colors cursor-pointer"
+                          >
+                            <Edit className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => setDeleteConfirmId(p.id)}
+                            title="Xóa dự án này"
+                            className="p-1.5 bg-rose-50 hover:bg-rose-600 hover:text-white rounded-lg text-rose-600 border border-rose-200 hover:border-rose-600 transition-colors cursor-pointer"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="py-3 px-4 text-right whitespace-nowrap">
-                      <div className="flex items-center justify-end gap-1.5">
-                        <button
-                          onClick={() => handleOpenEdit(p)}
-                          title="Chỉnh sửa dự án"
-                          className="p-1.5 bg-slate-100 hover:bg-emerald-600 hover:text-white rounded-lg text-slate-600 transition-colors"
-                        >
-                          <Edit className="w-3.5 h-3.5" />
-                        </button>
-                        <button
-                          onClick={() => setDeleteConfirmId(p.id)}
-                          title="Xóa dự án"
-                          className="p-1.5 bg-slate-100 hover:bg-rose-600 hover:text-white rounded-lg text-slate-600 transition-colors"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </td>
-
-                  </tr>
-                ))
+                    </tr>
+                  );
+                })
               )}
             </tbody>
           </table>
@@ -543,29 +617,84 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
 
       {/* Delete confirmation dialog */}
       {deleteConfirmId && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 animate-scale-up space-y-4">
-            <div className="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div 
+            className="bg-white rounded-3xl max-w-sm w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
               <AlertTriangle className="w-6 h-6" />
             </div>
-            <div className="text-center">
-              <h3 className="text-base font-bold text-slate-900">Xác nhận xóa dự án?</h3>
-              <p className="text-xs text-slate-600 mt-1">
-                Dự án này sẽ bị xóa khỏi danh sách quản lý. Hành động này không thể hoàn tác.
-              </p>
-            </div>
-            <div className="flex items-center justify-end gap-2 pt-2">
+            {(() => {
+              const target = projects.find(p => p.id === deleteConfirmId);
+              return (
+                <div className="text-center space-y-2">
+                  <h3 className="text-base font-extrabold text-slate-900">Xác nhận xóa dự án?</h3>
+                  {target && (
+                    <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 text-left">
+                      <span className="font-mono text-[11px] font-bold text-slate-500 block">{target.code}</span>
+                      <p className="font-bold text-slate-900 text-xs mt-0.5 line-clamp-2">{target.title}</p>
+                    </div>
+                  )}
+                  <p className="text-xs text-rose-600 font-medium">
+                    ⚠️ Dự án này sẽ bị xóa vĩnh viễn khỏi hệ thống. Hành động này không thể hoàn tác.
+                  </p>
+                </div>
+              );
+            })()}
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
               <button
                 onClick={() => setDeleteConfirmId(null)}
-                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200"
+                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 cursor-pointer transition-colors"
               >
                 Hủy
               </button>
               <button
                 onClick={() => handleDelete(deleteConfirmId)}
-                className="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-700"
+                className="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-700 cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs"
               >
-                Đồng ý xóa
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Đồng ý xóa</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Delete confirmation dialog */}
+      {isBulkDeleteOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div 
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            <div className="text-center space-y-2">
+              <h3 className="text-base font-extrabold text-slate-900">
+                Xác nhận xóa {selectedProjectIds.length} dự án đã chọn?
+              </h3>
+              <p className="text-xs text-slate-600">
+                Bạn đã chọn {selectedProjectIds.length} dự án để xóa. Toàn bộ dữ liệu của các dự án này sẽ bị xóa vĩnh viễn khỏi hệ thống.
+              </p>
+              <p className="text-[11px] text-rose-600 font-medium pt-1">
+                ⚠️ Hành động này không thể hoàn tác.
+              </p>
+            </div>
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setIsBulkDeleteOpen(false)}
+                className="px-4 py-2 bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl hover:bg-slate-200 cursor-pointer transition-colors"
+              >
+                Hủy
+              </button>
+              <button
+                onClick={handleConfirmBulkDelete}
+                className="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-xl hover:bg-rose-700 cursor-pointer transition-colors flex items-center gap-1.5 shadow-xs"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Đồng ý xóa ({selectedProjectIds.length})</span>
               </button>
             </div>
           </div>
@@ -860,19 +989,35 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
 
             {/* Modal Actions */}
             <div className="p-4 sm:p-6 border-t border-slate-200 bg-slate-50/70 rounded-b-3xl flex items-center justify-between gap-3">
-              <button
-                type="button"
-                onClick={() => setIsFormOpen(false)}
-                className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl transition-colors"
-              >
-                Hủy bỏ
-              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => setIsFormOpen(false)}
+                  className="px-4 py-2 bg-white border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+                >
+                  Hủy bỏ
+                </button>
+                {editingProject && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const idToDelete = editingProject.id;
+                      setIsFormOpen(false);
+                      setDeleteConfirmId(idToDelete);
+                    }}
+                    className="px-4 py-2 bg-white border border-rose-300 hover:bg-rose-50 text-rose-700 text-xs font-bold rounded-xl transition-colors cursor-pointer flex items-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5 text-rose-600" />
+                    <span>Xóa dự án này</span>
+                  </button>
+                )}
+              </div>
 
               <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => handleSaveProject('draft')}
-                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition-colors"
+                  className="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-800 text-xs font-bold rounded-xl transition-colors cursor-pointer"
                 >
                   Lưu bản nháp
                 </button>
@@ -880,7 +1025,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                 <button
                   type="button"
                   onClick={() => handleSaveProject('published')}
-                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-1.5"
+                  className="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow-md transition-colors flex items-center gap-1.5 cursor-pointer"
                 >
                   <Globe className="w-4 h-4" />
                   <span>Xuất bản ngay</span>
