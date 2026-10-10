@@ -22,7 +22,9 @@ import {
   RefreshCw,
   FileText,
   Tag,
-  ArrowRight
+  ArrowRight,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 
 interface AdminProblemsPageProps {
@@ -45,6 +47,7 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
   const [moderationAction, setModerationAction] = useState<'approve' | 'reject' | 'request_update' | null>(null);
   const [reasonInput, setReasonInput] = useState('');
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [problemToDelete, setProblemToDelete] = useState<RealProblem | null>(null);
 
   useEffect(() => {
     loadProblems();
@@ -65,6 +68,16 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
+  };
+
+  const handleDeleteProblem = (id: string) => {
+    AdminDataService.deleteProblem(id);
+    loadProblems();
+    if (activeProblem?.id === id) {
+      setActiveProblem(null);
+    }
+    setProblemToDelete(null);
+    showToast('Đã xóa bài toán thực tế thành công!');
   };
 
   // Filtered list
@@ -288,6 +301,14 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
                               <Check className="w-3.5 h-3.5" />
                             </button>
                           )}
+
+                          <button
+                            onClick={() => setProblemToDelete(p)}
+                            className="p-1.5 rounded-xl bg-slate-100 hover:bg-rose-50 hover:text-rose-600 text-slate-500 transition-all cursor-pointer border border-transparent hover:border-rose-200"
+                            title="Xóa bài toán"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -510,6 +531,15 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
                   <X className="w-3.5 h-3.5" />
                   <span>Từ chối</span>
                 </button>
+
+                <button
+                  onClick={() => setProblemToDelete(activeProblem)}
+                  className="px-3.5 py-2 rounded-xl bg-white border border-rose-200 hover:bg-rose-600 hover:text-white text-rose-600 font-bold text-xs cursor-pointer flex items-center gap-1.5 transition-colors"
+                  title="Xóa bài toán này"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  <span>Xóa bài toán</span>
+                </button>
               </div>
 
               {/* Nút quan trọng: Tạo dự án từ bài toán này */}
@@ -528,6 +558,59 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
 
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL XÁC NHẬN XÓA BÀI TOÁN ================= */}
+      {problemToDelete && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 animate-in fade-in duration-150">
+          <div 
+            className="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-200 space-y-4 animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="w-12 h-12 rounded-2xl bg-rose-100 text-rose-600 flex items-center justify-center mx-auto">
+              <AlertTriangle className="w-6 h-6" />
+            </div>
+            
+            <div className="text-center space-y-2">
+              <h3 className="text-base font-extrabold text-slate-900">
+                Xác nhận xóa bài toán thực tế?
+              </h3>
+              <p className="text-xs text-slate-500">
+                Bạn đang chuẩn bị xóa bài toán:
+              </p>
+              <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-left">
+                <span className="font-mono text-[11px] font-bold text-slate-500 block">
+                  {problemToDelete.id.startsWith('prob-') ? `BM-${problemToDelete.id.replace('prob-', '').padStart(3, '0')}` : problemToDelete.id}
+                </span>
+                <p className="font-bold text-slate-900 text-xs mt-0.5 line-clamp-2">
+                  {problemToDelete.title}
+                </p>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  Người gửi: <span className="font-semibold text-slate-700">{problemToDelete.contactName}</span> ({problemToDelete.location})
+                </p>
+              </div>
+              <p className="text-[11px] text-rose-600 font-medium pt-1">
+                ⚠️ Dữ liệu bài toán sẽ bị xóa vĩnh viễn khỏi hệ thống và không thể khôi phục.
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-2.5 pt-2 border-t border-slate-100">
+              <button
+                onClick={() => setProblemToDelete(null)}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold rounded-xl transition-colors cursor-pointer"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                onClick={() => handleDeleteProblem(problemToDelete.id)}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Xác nhận xóa</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

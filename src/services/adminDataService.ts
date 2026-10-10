@@ -419,9 +419,9 @@ export class AdminDataService {
   static getProblems(): RealProblem[] {
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
-      if (stored) {
+      if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
