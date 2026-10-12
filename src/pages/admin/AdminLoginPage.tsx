@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { AdminDataService } from '../../services/adminDataService';
-import { ShieldCheck, Lock, User, Eye, EyeOff, ArrowLeft, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ShieldCheck, Lock, User, Eye, EyeOff, ArrowLeft, AlertCircle } from 'lucide-react';
 
 interface AdminLoginPageProps {
   onLoginSuccess: () => void;
@@ -11,8 +11,8 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
   onLoginSuccess,
   onBackToHome
 }) => {
-  const [username, setUsername] = useState('admin');
-  const [password, setPassword] = useState('admin123');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -135,17 +135,6 @@ export const AdminLoginPage: React.FC<AdminLoginPageProps> = ({
           </button>
 
         </form>
-
-        {/* Demo credentials hint */}
-        <div className="p-3 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl text-[11px] text-emerald-900 space-y-1">
-          <div className="font-bold flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Tài khoản thử nghiệm sẵn có:</span>
-          </div>
-          <p className="text-emerald-800 pl-5">
-            Tài khoản: <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-emerald-200">admin</code> | Mật khẩu: <code className="font-mono font-bold bg-white px-1.5 py-0.5 rounded border border-emerald-200">admin123</code>
-          </p>
-        </div>
 
         {/* Footer info */}
         <p className="text-center text-[10px] text-slate-400">
