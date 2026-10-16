@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { RealProblem } from '../../types';
+import { AdminDataService, AdminProposal } from '../../services/adminDataService';
 import {
   Home,
   ChevronRight,
@@ -144,30 +145,26 @@ export const ProposeSolutionView: React.FC<ProposeSolutionViewProps> = ({
       return;
     }
 
-    // Lưu vào localStorage
-    try {
-      const stored = localStorage.getItem('binhmy_solution_proposals');
-      const list = stored ? JSON.parse(stored) : [];
-      list.push({
-        id: `prop-${Date.now()}`,
-        problemId: problem.id,
-        problemCode,
-        problemTitle: displayTitle,
-        role,
-        fullName,
-        phone,
-        email,
-        selectedFields,
-        solutionContent,
-        availability,
-        fileName: uploadedFile?.name || null,
-        createdAt: new Date().toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US')
-      });
-      localStorage.setItem('binhmy_solution_proposals', JSON.stringify(list));
-    } catch (err) {
-      console.error(err);
-    }
+    // Lưu bền vững vào hệ thống dữ liệu dùng chung toàn website
+    const newProposal: AdminProposal = {
+      id: `prop-${Date.now()}`,
+      problemId: problem.id,
+      problemCode,
+      problemTitle: displayTitle,
+      role,
+      fullName: fullName.trim(),
+      phone: phone.trim(),
+      email: email.trim() || undefined,
+      selectedFields,
+      solutionContent: solutionContent.trim(),
+      availability,
+      fileName: uploadedFile?.name || null,
+      status: 'new', // Khởi tạo với trạng thái Chờ xem xét
+      createdAt: new Date().toLocaleDateString('vi-VN'),
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
 
+    AdminDataService.saveProposal(newProposal);
     setIsSuccessModalOpen(true);
   };
 
@@ -769,12 +766,12 @@ export const ProposeSolutionView: React.FC<ProposeSolutionViewProps> = ({
 
                 <div className="flex items-center gap-2.5">
                   <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span>09xx xxx xxx</span>
+                  <span>{problem.phoneNumber || '0903 123 456'}</span>
                 </div>
 
                 <div className="flex items-center gap-2.5">
                   <Mail className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span className="text-slate-600 truncate">{problem.email || 'nvana@example.com'}</span>
+                  <span className="text-slate-600 truncate">{problem.email || 'lienhe@binhmy.vn'}</span>
                 </div>
               </div>
 

@@ -40,6 +40,10 @@ export const AdminDashboardPage: React.FC<AdminDashboardPageProps> = ({
 
   useEffect(() => {
     loadData();
+    const unsubscribe = AdminDataService.subscribe(() => {
+      loadData();
+    });
+    return unsubscribe;
   }, []);
 
   const loadData = () => {

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { AdminDataService } from '../services/adminDataService';
 import { 
   MapPin, 
   Phone, 
@@ -42,6 +43,15 @@ export const ContactPage: React.FC<ContactPageProps> = ({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+
+    // Lưu bền vững vào cơ sở dữ liệu hệ thống
+    AdminDataService.saveContactMessage({
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      topic: `${formData.topic} ${formData.organization ? `(${formData.organization})` : ''}`,
+      message: formData.message.trim()
+    });
 
     setTimeout(() => {
       setIsSubmitting(false);

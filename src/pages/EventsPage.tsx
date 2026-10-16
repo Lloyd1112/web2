@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { AdminDataService } from '../services/adminDataService';
 import { mockEventItems, mockEventsData } from '../data/mockData';
 import { 
   Calendar, 
@@ -30,6 +31,14 @@ export const EventsPage: React.FC<EventsPageProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [selectedEvent, setSelectedEvent] = useState<any | null>(null);
+  const [dataVersion, setDataVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = AdminDataService.subscribe(() => {
+      setDataVersion(v => v + 1);
+    });
+    return unsubscribe;
+  }, []);
 
   // Fallback images for events
   const defaultEventImages = [
@@ -41,23 +50,39 @@ export const EventsPage: React.FC<EventsPageProps> = ({
     '/assets/pum/Jordan_Al-Bayrouty_002-1200x800.jpg'
   ];
 
-  // Combine and safely normalize both datasets
-  const allEvents = [
-    ...mockEventItems.map((evt, idx) => ({
-      id: evt.id || `ev-item-${idx}`,
-      day: evt.day || '15',
-      monthYear: evt.monthYear || 'Tháng 10, 2026',
-      dateFull: evt.dateFull || `${evt.day} Tháng 10, 2026`,
-      category: evt.category || 'Hội thảo',
-      title: evt.title || 'Sự kiện Làng Sinh Viên Bình Mỹ',
-      summary: evt.summary || 'Chương trình giao lưu và cập nhật chuyên môn.',
-      location: evt.location || 'Campus Bình Mỹ, Củ Chi, TP.HCM',
-      image: evt.image && !evt.image.startsWith('/') ? `/${evt.image}` : (defaultEventImages[idx % defaultEventImages.length])
-    })),
-    ...mockEventsData.map((evt, idx) => ({
-      id: evt.id || `ev-data-${idx}`,
-      day: evt.day || '20',
-      monthYear: language === 'vi' ? (evt.monthVi || 'Tháng 11') : (evt.monthEn || 'November'),
+  // Combine and safely normalize both datasets + Admin events
+  const allEvents = useMemo(() => {
+    const adminEvents = AdminDataService.getNews()
+      .filter(n => n.category === 'Sự kiện' && n.isPublished !== false)
+      .map((evt, idx) => ({
+        id: evt.id,
+        day: evt.publishedDate.split('/')[0] || '15',
+        monthYear: `Tháng ${evt.publishedDate.split('/')[1] || '10'}, 2026`,
+        dateFull: evt.publishedDate,
+        category: 'Sự kiện',
+        title: evt.title,
+        summary: evt.summary,
+        location: 'Campus Living Lab Bình Mỹ, Củ Chi',
+        image: evt.image || defaultEventImages[idx % defaultEventImages.length]
+      }));
+
+    return [
+      ...adminEvents,
+      ...mockEventItems.map((evt, idx) => ({
+        id: evt.id || `ev-item-${idx}`,
+        day: evt.day || '15',
+        monthYear: evt.monthYear || 'Tháng 10, 2026',
+        dateFull: evt.dateFull || `${evt.day} Tháng 10, 2026`,
+        category: evt.category || 'Hội thảo',
+        title: evt.title || 'Sự kiện Làng Sinh Viên Bình Mỹ',
+        summary: evt.summary || 'Chương trình giao lưu và cập nhật chuyên môn.',
+        location: evt.location || 'Campus Bình Mỹ, Củ Chi, TP.HCM',
+        image: evt.image && !evt.image.startsWith('/') ? `/${evt.image}` : (defaultEventImages[idx % defaultEventImages.length])
+      })),
+      ...mockEventsData.map((evt, idx) => ({
+        id: evt.id || `ev-data-${idx}`,
+        day: evt.day || '20',
+        monthYear: language === 'vi' ? (evt.monthVi || 'Tháng 11') : (evt.monthEn || 'November'),
       dateFull: `${evt.day} ${language === 'vi' ? (evt.monthVi || 'Tháng 11, 2026') : (evt.monthEn || 'November, 2026')}`,
       category: language === 'vi' ? (evt.categoryVi || 'Đào tạo') : (evt.categoryEn || 'Training'),
       title: language === 'vi' ? (evt.titleVi || 'Khóa đào tạo chuyên môn') : (evt.titleEn || 'Specialized Course'),
@@ -66,6 +91,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
       image: defaultEventImages[(idx + 2) % defaultEventImages.length]
     }))
   ];
+  }, [dataVersion, language]);
 
   const categories = [
     { id: 'all', labelVi: 'Tất cả sự kiện', labelEn: 'All Events', icon: Calendar },

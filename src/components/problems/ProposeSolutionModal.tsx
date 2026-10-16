@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { RealProblem } from '../../types';
+import { AdminDataService, AdminProposal } from '../../services/adminDataService';
 import { X, Send, CheckCircle2, User, Phone, Mail, FileText, Sparkles, Building2 } from 'lucide-react';
 
 interface ProposeSolutionModalProps {
@@ -59,27 +60,30 @@ export const ProposeSolutionModal: React.FC<ProposeSolutionModalProps> = ({
     e.preventDefault();
     if (!validate()) return;
 
-    // Lưu proposal vào localStorage
-    try {
-      const stored = localStorage.getItem('binhmy_solution_proposals');
-      const list = stored ? JSON.parse(stored) : [];
-      list.push({
-        id: `prop-${Date.now()}`,
-        problemId: problem.id,
-        problemTitle: (language === 'en' && problem.titleEn) ? problem.titleEn : problem.title,
-        proposerName,
-        role,
-        organization,
-        phone,
-        email,
-        proposalContent,
-        resources,
-        createdAt: new Date().toLocaleDateString(language === 'vi' ? 'vi-VN' : 'en-US')
-      });
-      localStorage.setItem('binhmy_solution_proposals', JSON.stringify(list));
-    } catch (err) {
-      console.error(err);
-    }
+    const probCode = problem.id.startsWith('prob-')
+      ? `BM-${problem.id.replace('prob-', '').padStart(3, '0')}`
+      : 'BM-001';
+
+    // Lưu proposal vào hệ thống tập trung của toàn website
+    const newProposal: AdminProposal = {
+      id: `prop-${Date.now()}`,
+      problemId: problem.id,
+      problemCode: probCode,
+      problemTitle: (language === 'en' && problem.titleEn) ? problem.titleEn : problem.title,
+      role: role as any,
+      fullName: proposerName.trim(),
+      organization: organization.trim() || undefined,
+      phone: phone.trim(),
+      email: email.trim() || undefined,
+      selectedFields: [problem.categoryDetail || problem.category],
+      solutionContent: proposalContent.trim(),
+      availability: resources.trim() || 'Tư vấn / hỗ trợ theo từng dự án',
+      status: 'new',
+      createdAt: new Date().toLocaleDateString('vi-VN'),
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    AdminDataService.saveProposal(newProposal);
 
     setSubmitted(true);
     setTimeout(() => {

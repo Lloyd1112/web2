@@ -5,7 +5,7 @@ import {
   ProjectImplementationStatus,
   ProjectPublishStatus
 } from '../../services/adminDataService';
-import { RealProblem } from '../../types';
+import { RealProblem, AdminPartner } from '../../types';
 import {
   Search,
   Filter,
@@ -45,6 +45,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
 }) => {
   const [projects, setProjects] = useState<AdminProject[]>([]);
   const [problemsList, setProblemsList] = useState<RealProblem[]>([]);
+  const [partnersList, setPartnersList] = useState<AdminPartner[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedImplStatus, setSelectedImplStatus] = useState<string>('all');
@@ -78,9 +79,14 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
   const [formPeriod, setFormPeriod] = useState('2026 - 2027');
   const [formImplStatus, setFormImplStatus] = useState<ProjectImplementationStatus>('in_progress');
   const [formPublishStatus, setFormPublishStatus] = useState<ProjectPublishStatus>('published');
+  const [formPartnerIds, setFormPartnerIds] = useState<string[]>([]);
 
   useEffect(() => {
     loadData();
+    const unsubscribe = AdminDataService.subscribe(() => {
+      loadData();
+    });
+    return unsubscribe;
   }, []);
 
   // Handle prefilled problem coming from "Tạo dự án từ bài toán này"
@@ -95,6 +101,8 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
     setProjects([...list]);
     const probList = AdminDataService.getProblems();
     setProblemsList([...probList]);
+    const partList = AdminDataService.getPartners();
+    setPartnersList([...partList]);
   };
 
   const showToast = (msg: string) => {
@@ -142,6 +150,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
     setFormCategoryName('Nông nghiệp công nghệ cao');
     setFormLocation('Xã Bình Mỹ, Huyện Củ Chi, TP.HCM');
     setFormOrganization('Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ');
+    setFormPartnerIds([]);
     setFormTeamMembers('');
     setFormNeededResources('');
     setFormExpectedOutcomes('');
@@ -166,6 +175,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
     setFormCategoryName(project.categoryName);
     setFormLocation(project.location);
     setFormOrganization(project.organization);
+    setFormPartnerIds(project.partnerIds || []);
     setFormTeamMembers(project.teamMembers ? project.teamMembers.join(', ') : '');
     setFormNeededResources(project.neededResources || '');
     setFormExpectedOutcomes(project.expectedOutcomes || '');
@@ -199,6 +209,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
       categoryName: formCategoryName,
       location: formLocation.trim(),
       organization: formOrganization.trim() || 'Làng Sinh Viên Bình Mỹ',
+      partnerIds: formPartnerIds,
       teamMembers: formTeamMembers ? formTeamMembers.split(',').map(s => s.trim()).filter(Boolean) : [],
       neededResources: formNeededResources.trim() || undefined,
       expectedOutcomes: formExpectedOutcomes.trim() || undefined,
@@ -246,6 +257,22 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
     setSelectedProjectIds(prev =>
       prev.includes(id) ? prev.filter(item => item !== id) : [...prev, id]
     );
+  };
+
+  const handleTogglePublish = (p: AdminProject) => {
+    const nextStatus: ProjectPublishStatus = p.publishStatus === 'published' ? 'hidden' : 'published';
+    AdminDataService.updateProjectPublishStatus(p.id, nextStatus);
+    setProjects(prev => prev.map(item => item.id === p.id ? { ...item, publishStatus: nextStatus } : item));
+    showToast(nextStatus === 'published' ? `Đã xuất bản dự án "${p.title}" lên Trang chủ!` : `Đã ẩn dự án "${p.title}" khỏi Trang chủ.`);
+  };
+
+  const handleCycleImplStatus = (p: AdminProject) => {
+    const flow: ProjectImplementationStatus[] = ['in_progress', 'testing', 'seeking_resources', 'completed'];
+    const currentIdx = flow.indexOf(p.status);
+    const nextStatus = currentIdx >= 0 ? flow[(currentIdx + 1) % flow.length] : 'in_progress';
+    AdminDataService.updateProjectImplStatus(p.id, nextStatus);
+    setProjects(prev => prev.map(item => item.id === p.id ? { ...item, status: nextStatus } : item));
+    showToast(`Đã cập nhật tiến độ dự án "${p.title}"`);
   };
 
   // Status helper badges
@@ -403,6 +430,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
               <option value="agriculture">Nông nghiệp</option>
               <option value="health">Y tế</option>
               <option value="tourism">Du lịch</option>
+              <option value="innovation">Đổi mới sáng tạo</option>
               <option value="education">Giáo dục</option>
               <option value="environment">Môi trường</option>
             </select>
@@ -569,16 +597,37 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                         <div className="text-[11px] text-slate-600 truncate max-w-[160px]" title={p.organization}>
                           {p.organization}
                         </div>
+                        {p.partnerIds && p.partnerIds.length > 0 && (
+                          <div className="flex items-center gap-1 mt-1">
+                            <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200">
+                              {p.partnerIds.length} đối tác tham gia
+                            </span>
+                          </div>
+                        )}
                       </td>
 
                       {/* Implementation status */}
                       <td className="py-3 px-4 whitespace-nowrap">
-                        {getImplStatusBadge(p.status)}
+                        <button
+                          type="button"
+                          onClick={() => handleCycleImplStatus(p)}
+                          title="Bấm để chuyển đổi nhanh tiến độ triển khai"
+                          className="cursor-pointer hover:opacity-80 transition-opacity active:scale-95 text-left inline-block"
+                        >
+                          {getImplStatusBadge(p.status)}
+                        </button>
                       </td>
 
                       {/* Publish status */}
                       <td className="py-3 px-4 whitespace-nowrap">
-                        {getPublishStatusBadge(p.publishStatus)}
+                        <button
+                          type="button"
+                          onClick={() => handleTogglePublish(p)}
+                          title="Bấm để chuyển đổi nhanh Ẩn / Xuất bản công khai lên Trang chủ"
+                          className="cursor-pointer hover:opacity-80 transition-opacity active:scale-95 text-left inline-block"
+                        >
+                          {getPublishStatusBadge(p.publishStatus)}
+                        </button>
                       </td>
 
                       {/* Updated date */}
@@ -836,6 +885,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                         agriculture: 'Nông nghiệp công nghệ cao',
                         health: 'Y tế & Sức khỏe cộng đồng',
                         tourism: 'Du lịch sinh thái & Văn hóa',
+                        innovation: 'Đổi mới sáng tạo',
                         education: 'Đào tạo & Nhân lực',
                         environment: 'Môi trường & Tuần hoàn'
                       };
@@ -846,6 +896,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                     <option value="agriculture">Nông nghiệp công nghệ cao</option>
                     <option value="health">Y tế & Sức khỏe cộng đồng</option>
                     <option value="tourism">Du lịch sinh thái & Văn hóa</option>
+                    <option value="innovation">Đổi mới sáng tạo</option>
                     <option value="education">Đào tạo & Nhân lực</option>
                     <option value="environment">Môi trường & Tuần hoàn</option>
                   </select>
@@ -946,6 +997,59 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-emerald-500 focus:bg-white focus:outline-hidden text-slate-800"
                   />
                 </div>
+              </div>
+
+              {/* Participating Partners Selection (Nghiệp vụ 5 & 6) */}
+              <div className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-800">
+                    Đối tác tham gia dự án (Đồng bộ từ Quản lý đối tác):
+                  </label>
+                  <span className="text-[11px] font-semibold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200">
+                    Đã chọn {formPartnerIds.length} đối tác
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 max-h-48 overflow-y-auto p-2 bg-white rounded-xl border border-slate-200">
+                  {partnersList.length === 0 ? (
+                    <span className="text-xs text-slate-400 italic p-2 col-span-full">Chưa có đối tác nào trong hệ thống</span>
+                  ) : (
+                    partnersList.map((partner) => {
+                      const isSelected = formPartnerIds.includes(partner.id);
+                      return (
+                        <label
+                          key={partner.id}
+                          className={`flex items-center gap-2 p-2 rounded-xl border text-xs cursor-pointer transition-all select-none ${
+                            isSelected
+                              ? 'bg-emerald-50/80 border-emerald-400 text-emerald-950 font-semibold shadow-2xs'
+                              : 'border-slate-200 hover:bg-slate-50 text-slate-700'
+                          }`}
+                        >
+                          <input
+                            type="checkbox"
+                            checked={isSelected}
+                            onChange={() => {
+                              if (isSelected) {
+                                setFormPartnerIds(prev => prev.filter(id => id !== partner.id));
+                              } else {
+                                setFormPartnerIds(prev => [...prev, partner.id]);
+                              }
+                            }}
+                            className="w-3.5 h-3.5 rounded text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                          />
+                          {partner.logoUrl ? (
+                            <img src={partner.logoUrl} alt={partner.nameVi} className="w-5 h-5 object-contain rounded shrink-0 bg-white" />
+                          ) : (
+                            <Building2 className="w-4 h-4 text-slate-400 shrink-0" />
+                          )}
+                          <span className="truncate" title={partner.nameVi}>{partner.nameVi}</span>
+                        </label>
+                      );
+                    })
+                  )}
+                </div>
+                <p className="text-[11px] text-slate-500">
+                  Đối tác được chọn sẽ hiển thị trong trang chi tiết dự án. Nếu đối tác tắt hiển thị ở trang chủ, liên kết với dự án vẫn được bảo toàn.
+                </p>
               </div>
 
               {/* Status Section: Implementation Status & Publish Status */}

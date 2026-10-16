@@ -53,6 +53,10 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
 
   useEffect(() => {
     loadProblems();
+    const unsubscribe = AdminDataService.subscribe(() => {
+      loadProblems();
+    });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {

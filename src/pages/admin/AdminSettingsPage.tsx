@@ -49,7 +49,9 @@ export const AdminSettingsPage: React.FC = () => {
       problems: AdminDataService.getProblems(),
       proposals: AdminDataService.getProposals(),
       projects: AdminDataService.getProjects(),
+      partners: AdminDataService.getPartners(),
       news: AdminDataService.getNews(),
+      contacts: AdminDataService.getContactMessages(),
       exportedAt: new Date().toISOString()
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });

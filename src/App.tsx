@@ -25,6 +25,7 @@ import { AdminDashboardPage } from './pages/admin/AdminDashboardPage';
 import { AdminProblemsPage } from './pages/admin/AdminProblemsPage';
 import { AdminProposalsPage } from './pages/admin/AdminProposalsPage';
 import { AdminProjectsPage } from './pages/admin/AdminProjectsPage';
+import { AdminPartnersPage } from './pages/admin/AdminPartnersPage';
 import { AdminNewsPage } from './pages/admin/AdminNewsPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 import { AdminDataService } from './services/adminDataService';
@@ -219,6 +220,9 @@ export function App() {
                 />
               );
 
+            case 'admin-partners':
+              return <AdminPartnersPage />;
+
             case 'admin-news':
               return <AdminNewsPage />;
 
@@ -285,6 +289,8 @@ export function App() {
       case 'health':
       case 'health-models':
         return <HealthModelsPage initialPillar="health" onOpenCollaboration={handleOpenCollaboration} />;
+      case 'projects':
+        return <HealthModelsPage initialPillar="all" onOpenCollaboration={handleOpenCollaboration} />;
       case 'training':
         return <TrainingPage onOpenCollaboration={handleOpenCollaboration} />;
       case 'consulting':
@@ -340,8 +346,8 @@ export function App() {
           onOpenSearch={() => setIsSearchModalOpen(true)}
         />
 
-        {/* Page Main Content with smooth fade-in */}
-        <main className="flex-1 animate-fade-in">
+        {/* Page Main Content */}
+        <main className="flex-1">
           <ErrorBoundary>
             {renderPublicPage()}
           </ErrorBoundary>

@@ -131,6 +131,13 @@ export const ROUTES: Record<string, RouteConfig> = {
     titleVi: 'Quản lý Dự án | Admin Làng SV',
     titleEn: 'Manage Projects | Admin'
   },
+  'admin-partners': {
+    id: 'admin-partners',
+    path: '/admin/doi-tac',
+    aliases: ['/admin/partners', '/admin/partner'],
+    titleVi: 'Quản lý Đối tác | Admin Làng SV',
+    titleEn: 'Manage Partners | Admin'
+  },
   'admin-news': {
     id: 'admin-news',
     path: '/admin/tin-tuc',
@@ -161,6 +168,7 @@ export function getTabFromPath(pathname: string): string {
     if (cleanPath.startsWith('/admin/bai-toan')) return 'admin-problems';
     if (cleanPath.startsWith('/admin/de-xuat-hop-tac')) return 'admin-proposals';
     if (cleanPath.startsWith('/admin/du-an')) return 'admin-projects';
+    if (cleanPath.startsWith('/admin/doi-tac') || cleanPath.startsWith('/admin/partners') || cleanPath.startsWith('/admin/partner')) return 'admin-partners';
     if (cleanPath.startsWith('/admin/tin-tuc')) return 'admin-news';
     if (cleanPath.startsWith('/admin/cai-dat')) return 'admin-settings';
     return 'admin-dashboard';

@@ -42,6 +42,10 @@ export const AdminNewsPage: React.FC = () => {
 
   useEffect(() => {
     loadNews();
+    const unsubscribe = AdminDataService.subscribe(() => {
+      loadNews();
+    });
+    return unsubscribe;
   }, []);
 
   const loadNews = () => {

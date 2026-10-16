@@ -8,6 +8,7 @@ import { ProposeSolutionModal } from '../components/problems/ProposeSolutionModa
 import { ProblemDetailView } from '../components/problems/ProblemDetailView';
 import { PostProblemView } from '../components/problems/PostProblemView';
 import { ProposeSolutionView } from '../components/problems/ProposeSolutionView';
+import realProblemsBanner from '../assets/problems/banner-clean.png';
 import {
   Search,
   MapPin,
@@ -28,6 +29,8 @@ import {
   Sparkles
 } from 'lucide-react';
 
+import { AdminDataService } from '../services/adminDataService';
+
 interface RealProblemsPageProps {
   onOpenCollaboration?: (type?: string, title?: string) => void;
 }
@@ -35,42 +38,18 @@ interface RealProblemsPageProps {
 export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
   const { language } = useLanguage();
 
-  // Danh sách bài toán thực tế (Merge với initialRealProblems để luôn đồng bộ các trường tiếng Anh)
+  // Danh sách bài toán thực tế lấy trực tiếp từ AdminDataService
   const [problems, setProblems] = useState<(RealProblem & { isSampleData?: boolean })[]>(() => {
-    try {
-      const stored = localStorage.getItem('binhmy_real_problems_v3');
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item: any) => {
-            const initialMatch = initialRealProblems.find(init => init.id === item.id);
-            if (initialMatch) {
-              return {
-                ...initialMatch,
-                ...item,
-                titleEn: initialMatch.titleEn,
-                descriptionEn: initialMatch.descriptionEn,
-                locationEn: initialMatch.locationEn,
-                categoryDetailEn: initialMatch.categoryDetailEn,
-                occurredTimeEn: initialMatch.occurredTimeEn,
-                affectedAudienceEn: initialMatch.affectedAudienceEn,
-                causeEn: initialMatch.causeEn,
-                triedSolutionsEn: initialMatch.triedSolutionsEn,
-                damagesEn: initialMatch.damagesEn,
-                desiredOutcomeEn: initialMatch.desiredOutcomeEn,
-                supportNeededEn: initialMatch.supportNeededEn,
-                imageDescriptionEn: initialMatch.imageDescriptionEn
-              };
-            }
-            return item;
-          });
-        }
-      }
-    } catch (e) {
-      console.error(e);
-    }
-    return initialRealProblems;
+    return AdminDataService.getProblems();
   });
+
+  // Tự động đồng bộ với AdminDataService khi có bất kỳ thay đổi nào từ Admin hoặc người dùng
+  useEffect(() => {
+    const unsubscribe = AdminDataService.subscribe(() => {
+      setProblems(AdminDataService.getProblems());
+    });
+    return unsubscribe;
+  }, []);
 
   // State tìm kiếm & bộ lọc
   const [searchQuery, setSearchQuery] = useState('');
@@ -84,24 +63,16 @@ export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
   const [selectedProblem, setSelectedProblem] = useState<RealProblem | null>(null);
   const [problemForProposal, setProblemForProposal] = useState<RealProblem | null>(null);
 
-  // Sync to localStorage
-  useEffect(() => {
-    try {
-      localStorage.setItem('binhmy_real_problems_v3', JSON.stringify(problems));
-    } catch (e) {
-      console.error(e);
-    }
-  }, [problems]);
-
   // Xử lý mở chi tiết bài toán
   const handleOpenProblemDetail = (problem: RealProblem) => {
     setSelectedProblem(problem);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // Xử lý khi đăng bài mới thành công
+  // Xử lý khi đăng bài mới thành công (Lưu bền vững qua AdminDataService)
   const handleProblemSubmitted = (newProblem: RealProblem) => {
-    setProblems(prev => [newProblem, ...prev]);
+    AdminDataService.saveProblem(newProblem);
+    setProblems(AdminDataService.getProblems());
   };
 
   // Helper lấy status badge theo mockup
@@ -161,9 +132,9 @@ export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
   // Lọc bài toán kết hợp Lĩnh vực, Trạng thái & Từ khóa tìm kiếm (hỗ trợ cả tiếng Việt và tiếng Anh)
   const filteredProblems = useMemo(() => {
     return problems.filter(p => {
-      // ⚠️ QUY TẮC BẮT BUỘC: Ở GIAO DIỆN CHỈ ĐĂNG NHỮNG BÀI TOÁN ĐÃ ĐƯỢC XÁC MINH
-      // Những bài toán đang đợi xác minh (pending) TUYỆT ĐỐI KHÔNG HIỂN THỊ!
-      if (p.status === 'pending') {
+      // ⚠️ QUY TẮC BẮT BUỘC: Ở GIAO DIỆN CHỈ ĐĂNG NHỮNG BÀI TOÁN ĐÃ ĐƯỢC XÁC MINH & CÔNG KHAI
+      // Những bài toán đang đợi xác minh (pending), từ chối hoặc bị ẩn TUYỆT ĐỐI KHÔNG HIỂN THỊ!
+      if (p.status === 'pending' || (p as any).status === 'rejected' || (p as any).isPublic === false) {
         return false;
       }
 
@@ -277,7 +248,7 @@ export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
         {/* ================= 1. BANNER CHÍNH CÓ TRANH PHONG CẢNH BÌNH MỸ ================= */}
         <div className="relative w-full rounded-2xl overflow-hidden border border-slate-200/80 shadow-xs bg-white">
           <img
-            src="/assets/problems/banner-clean.png"
+            src={realProblemsBanner}
             alt={language === 'vi' ? 'BÀI TOÁN THỰC TẾ TẠI BÌNH MỸ - Cùng nhau kiến tạo giải pháp cho Bình Mỹ' : 'REAL-WORLD PROBLEMS IN BINH MY - Co-creating solutions for Binh My'}
             className="w-full h-auto object-cover block"
           />

@@ -77,32 +77,30 @@ export const PumHero: React.FC<PumHeroProps> = ({ onNavigate, onOpenCollaboratio
             </h1>
 
             <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal mb-8 max-w-xl">
-              {language === 'vi'
-                ? 'Mô hình campus mở kết nối nhà trường, bệnh viện, bác sĩ quốc tế, nhà khoa học, doanh nghiệp và cộng đồng nhằm phát triển hệ sinh thái y tế – du lịch – nông nghiệp bền vững.'
-                : 'An open campus model connecting universities, hospitals, international specialists, enterprises and communities to build a sustainable healthcare – tourism – agriculture ecosystem.'}
+              {language === 'vi' ? (
+                <>
+                  <strong className="text-slate-800 font-bold">Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ</strong> là nền tảng kết nối các bài toán thực tế của địa phương với sinh viên, chuyên gia và doanh nghiệp, cùng hợp tác xây dựng và thử nghiệm giải pháp trong lĩnh vực y tế – du lịch – nông nghiệp. Hướng đến biến Bình Mỹ thành <strong className="text-slate-800 font-bold">“phòng thí nghiệm sống”</strong>, nơi tri thức được ứng dụng vào thực tiễn, thúc đẩy đổi mới sáng tạo và phát triển cộng đồng bền vững.
+                </>
+              ) : (
+                <>
+                  <strong className="text-slate-800 font-bold">Binh My Innovative Student Village</strong> is a platform connecting real-world local challenges with students, experts, and enterprises to co-create and test solutions in healthcare – tourism – agriculture. Aiming to transform Binh My into a <strong className="text-slate-800 font-bold">"Living Lab"</strong>, where knowledge is translated into practice, driving innovation and sustainable community development.
+                </>
+              )}
             </p>
 
-            {/* 3 Core Action Buttons in PUM signature design */}
+            {/* Core Action Buttons */}
             <div className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3.5">
 
-              {/* Button 1: Khám phá các mô hình (Primary Green) */}
+              {/* Button 1: Bài toán thực tế */}
               <button
-                onClick={() => onNavigate('health-models')}
+                onClick={() => onNavigate('real-problems')}
                 className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-full text-white bg-pum-green hover:bg-pum-greenAlt transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg cursor-pointer"
               >
-                <span>{language === 'vi' ? 'Khám phá các mô hình' : 'Explore Models'}</span>
+                <span>{language === 'vi' ? 'Bài toán thực tế' : 'Real-world Challenges'}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
 
-              {/* Button 2: Đăng ký chương trình (Outline Green) */}
-              <button
-                onClick={() => onNavigate('training')}
-                className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-full text-pum-green bg-white hover:bg-pum-lightGreen/40 border-2 border-pum-green transition-all duration-200 active:scale-95 shadow-2xs cursor-pointer"
-              >
-                <span>{language === 'vi' ? 'Đăng ký chương trình' : 'Training Programs'}</span>
-              </button>
-
-              {/* Button 3: Đề xuất hợp tác (Signature PUM Orange) */}
+              {/* Button 2: Đề xuất hợp tác */}
               <button
                 onClick={() => onOpenCollaboration('general', language === 'vi' ? 'Đề xuất hợp tác chiến lược' : 'Strategic Collaboration Proposal')}
                 className="inline-flex items-center justify-center gap-2 font-bold px-6 py-3.5 rounded-full text-white bg-pum-orange hover:bg-pum-orangeHover transition-all duration-200 active:scale-95 shadow-md hover:shadow-lg cursor-pointer"

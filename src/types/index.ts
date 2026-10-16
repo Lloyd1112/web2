@@ -29,6 +29,28 @@ export interface UpcomingEvent {
   description?: string;
 }
 
+export type PartnerCategory = 'strategic' | 'university' | 'hospital' | 'enterprise' | 'international' | 'government';
+
+export interface AdminPartner {
+  id: string;
+  nameVi: string;
+  nameEn?: string;
+  subVi?: string;
+  subEn?: string;
+  category: PartnerCategory;
+  type?: 'university' | 'hospital' | 'enterprise' | 'government' | 'international';
+  logoUrl?: string;
+  websiteUrl?: string;
+  badge?: string;
+  roleVi?: string;
+  roleEn?: string;
+  order: number;
+  showOnHomepage: boolean;
+  isActive: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Partner {
   id: string;
   name: string;

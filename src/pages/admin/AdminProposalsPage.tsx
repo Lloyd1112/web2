@@ -53,6 +53,10 @@ export const AdminProposalsPage: React.FC<AdminProposalsPageProps> = ({
 
   useEffect(() => {
     loadProposals();
+    const unsubscribe = AdminDataService.subscribe(() => {
+      loadProposals();
+    });
+    return unsubscribe;
   }, []);
 
   useEffect(() => {

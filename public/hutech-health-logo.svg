@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 120" fill="none">
+  <!-- HUTECH Shield Emblem with Medical/Health Symbolism -->
+  <g transform="translate(10, 10)">
+    <!-- Base Shield -->
+    <path d="M50 4 C76 4 92 18 92 48 C92 78 68 96 50 100 C32 96 8 78 8 48 C8 18 24 4 50 4 Z" fill="#0054a6"/>
+    <path d="M50 8 C72 8 87 20 87 48 C87 74 65 91 50 95 C35 91 13 74 13 48 C13 20 28 8 50 8 Z" fill="#ffffff"/>
+    <path d="M50 12 C70 12 83 22 83 48 C83 71 63 87 50 91 C37 87 17 71 17 48 C17 22 30 12 50 12 Z" fill="#f8fafc"/>
+
+    <!-- Gold/Yellow Torch & Sun -->
+    <circle cx="50" cy="42" r="24" fill="#fbbf24"/>
+    <path d="M42 36 C42 26 50 20 50 20 C50 20 58 26 58 36 C58 44 42 44 42 36 Z" fill="#e11d48"/>
+    <path d="M46 38 C46 32 50 28 50 28 C50 28 54 32 54 38 C54 42 46 42 46 38 Z" fill="#facc15"/>
+
+    <!-- Medical Cross in Center -->
+    <rect x="46" y="52" width="8" height="24" rx="2" fill="#00875a"/>
+    <rect x="38" y="60" width="24" height="8" rx="2" fill="#00875a"/>
+    <circle cx="50" cy="64" r="3" fill="#ffffff"/>
+
+    <!-- Lower Shield Accent -->
+    <path d="M22 60 C26 78 40 88 50 91 C60 88 74 78 78 60 C70 66 60 70 50 70 C40 70 30 66 22 60 Z" fill="#0054a6"/>
+  </g>
+
+  <!-- Typography / Text block -->
+  <g transform="translate(120, 24)">
+    <!-- Brand Name -->
+    <text x="0" y="16" fill="#0054a6" font-family="'Inter', sans-serif, system-ui" font-size="14" font-weight="900" letter-spacing="1.5">
+      HUTECH UNIVERSITY
+    </text>
+    <!-- Faculty / College Title -->
+    <text x="0" y="44" fill="#0f294a" font-family="'Inter', sans-serif, system-ui" font-size="20" font-weight="900" letter-spacing="-0.3">
+      KHOA HỌC SỨC KHỎE
+    </text>
+    <!-- Sub-info -->
+    <text x="0" y="66" fill="#00875a" font-family="'Inter', sans-serif, system-ui" font-size="12.5" font-weight="700">
+      Đại học Y – Khoa học Sức khỏe HUTECH
+    </text>
+  </g>
+</svg>

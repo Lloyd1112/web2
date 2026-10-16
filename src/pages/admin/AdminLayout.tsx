@@ -17,7 +17,8 @@ import {
   CheckCircle2,
   Clock,
   Sparkles,
-  Search
+  Search,
+  Handshake
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -41,10 +42,14 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 
   useEffect(() => {
     setCurrentUser(AdminDataService.getCurrentUser());
-    const interval = setInterval(() => {
-      setStats(AdminDataService.getDashboardStats());
-    }, 2000);
-    return () => clearInterval(interval);
+    const updateStats = () => setStats(AdminDataService.getDashboardStats());
+    updateStats();
+    const unsubscribe = AdminDataService.subscribe(updateStats);
+    const interval = setInterval(updateStats, 3000);
+    return () => {
+      unsubscribe();
+      clearInterval(interval);
+    };
   }, []);
 
   const navItems = [
@@ -74,6 +79,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       icon: FolderKanban,
       badge: stats.totalProjects > 0 ? stats.totalProjects : null,
       badgeColor: 'bg-slate-200 text-slate-700'
+    },
+    {
+      id: 'admin-partners',
+      label: 'Quản lý đối tác',
+      icon: Handshake,
+      badge: (stats as any).totalPartners > 0 ? (stats as any).totalPartners : null,
+      badgeColor: 'bg-emerald-100 text-emerald-800'
     },
     {
       id: 'admin-news',

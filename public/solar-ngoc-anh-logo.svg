@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <!-- Solar Sun & Energy Symbol -->
+  <g transform="translate(15, 12)">
+    <!-- Sun rays & solar ring -->
+    <circle cx="48" cy="48" r="38" fill="#f0fdf4" stroke="#00875a" stroke-width="2.5" opacity="0.3"/>
+    
+    <!-- Solar Panel Grid in 3D Perspective -->
+    <path d="M22 66 L38 32 L58 32 L46 66 Z" fill="#0284c7" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M48 66 L60 32 L80 32 L72 66 Z" fill="#0369a1" stroke="#ffffff" stroke-width="1.5"/>
+    <path d="M25 50 L75 50" stroke="#ffffff" stroke-width="1.5"/>
+    
+    <!-- Golden Sun Crest behind panel -->
+    <circle cx="68" cy="28" r="16" fill="#f59e0b"/>
+    <path d="M68 6 L68 12 M84 14 L80 18 M90 28 L84 28 M84 42 L80 38" stroke="#f59e0b" stroke-width="2.5" stroke-linecap="round"/>
+    
+    <!-- Green leaf / Eco accent -->
+    <path d="M28 68 C35 78 50 82 66 74 C60 66 45 62 28 68 Z" fill="#00875a"/>
+  </g>
+
+  <!-- Typography / Text block matching uploaded image -->
+  <g transform="translate(125, 24)">
+    <!-- Tagline -->
+    <text x="0" y="16" fill="#00875a" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="800" letter-spacing="1.2">
+      ĐIỆN NĂNG LƯỢNG MẶT TRỜI
+    </text>
+    <!-- Brand Name matching image -->
+    <text x="0" y="46" fill="#1e40af" font-family="'Inter', -apple-system, sans-serif" font-size="25" font-weight="900" letter-spacing="-0.5">
+      Solar Ngọc Anh
+    </text>
+    <!-- Sub-info -->
+    <text x="0" y="68" fill="#64748b" font-family="'Inter', -apple-system, sans-serif" font-size="12" font-weight="500">
+      Giải pháp Năng lượng Xanh & Bền vững
+    </text>
+  </g>
+</svg>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '../../context/LanguageContext';
 import { RealProblem, ProblemCategory } from '../../types';
+import { AdminDataService } from '../../services/adminDataService';
 import { 
   X, 
   Upload, 
@@ -320,6 +321,7 @@ export const PostProblemModal: React.FC<PostProblemModalProps> = ({
     };
 
     localStorage.removeItem('binhmy_problem_draft');
+    AdminDataService.saveProblem(newProblem);
 
     setTimeout(() => {
       setIsSubmitting(false);

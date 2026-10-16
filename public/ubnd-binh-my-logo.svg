@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" fill="none">
+  <!-- Circular Civic Seal / Emblem -->
+  <g transform="translate(10, 10)">
+    <!-- Outer gold border -->
+    <circle cx="50" cy="50" r="48" fill="#da251d" stroke="#f59e0b" stroke-width="4"/>
+    <circle cx="50" cy="50" r="44" fill="none" stroke="#fbbf24" stroke-width="1.5" stroke-dasharray="3 2"/>
+    
+    <!-- Rice sheaves (golden wreath) -->
+    <path d="M22 65 C18 45 28 25 45 16 C38 28 36 45 40 60 Z" fill="#fbbf24" opacity="0.9"/>
+    <path d="M78 65 C82 45 72 25 55 16 C62 28 64 45 60 60 Z" fill="#fbbf24" opacity="0.9"/>
+    
+    <!-- Cogwheel at base -->
+    <path d="M38 78 L62 78 L60 84 L40 84 Z" fill="#f59e0b"/>
+    <circle cx="50" cy="80" r="7" fill="#da251d" stroke="#fbbf24" stroke-width="2"/>
+    
+    <!-- Central Golden 5-pointed star -->
+    <polygon points="50,26 55,42 72,42 58,52 63,68 50,58 37,68 42,52 28,42 45,42" fill="#fbbf24" stroke="#f59e0b" stroke-width="0.8"/>
+    
+    <!-- Bottom Ribbon -->
+    <path d="M15 80 Q50 92 85 80 L82 92 Q50 102 18 92 Z" fill="#b91c1c" stroke="#fbbf24" stroke-width="1.5"/>
+    <text x="50" y="89" fill="#fef08a" font-family="'Inter', sans-serif, system-ui" font-size="7.5" font-weight="900" text-anchor="middle" letter-spacing="0.5">BÌNH MỸ</text>
+  </g>
+
+  <!-- Typography / Text block -->
+  <g transform="translate(125, 26)">
+    <!-- Subtitle / Province -->
+    <text x="0" y="16" fill="#00875a" font-family="'Inter', sans-serif, system-ui" font-size="12" font-weight="800" letter-spacing="1.2">
+      CHÍNH QUYỀN ĐỊA PHƯƠNG
+    </text>
+    <!-- Main Title -->
+    <text x="0" y="44" fill="#0f294a" font-family="'Inter', sans-serif, system-ui" font-size="21" font-weight="900" letter-spacing="-0.3">
+      UBND XÃ BÌNH MỸ
+    </text>
+    <!-- Sub-info -->
+    <text x="0" y="66" fill="#64748b" font-family="'Inter', sans-serif, system-ui" font-size="12.5" font-weight="500">
+      Huyện Củ Chi • Thành phố Hồ Chí Minh
+    </text>
+  </g>
+</svg>

@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
+import { AdminDataService } from '../services/adminDataService';
 import { mockNewsArticles, mockEventItems } from '../data/mockData';
 import { 
   Megaphone, 
@@ -102,18 +103,45 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
   const [showAllNewsModal, setShowAllNewsModal] = useState(false);
   const [showMapModal, setShowMapModal] = useState(false);
   const [copiedToast, setCopiedToast] = useState(false);
+  const [dataVersion, setDataVersion] = useState(0);
+
+  useEffect(() => {
+    const unsubscribe = AdminDataService.subscribe(() => {
+      setDataVersion(v => v + 1);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Tổng hợp tin tức từ hệ thống AdminDataService và mock data
+  const allArticles = useMemo(() => {
+    const adminNews = AdminDataService.getNews()
+      .filter(n => n.isPublished !== false)
+      .map(n => ({
+        id: n.id,
+        category: n.category === 'Dự án' ? 'Hoạt động' : n.category,
+        badge: n.category,
+        title: n.title,
+        summary: n.summary,
+        date: n.publishedDate,
+        author: n.author,
+        image: n.image,
+        readTime: '3 phút đọc',
+        content: n.content
+      }));
+    return [...adminNews, ...mockNewsArticles];
+  }, [dataVersion]);
 
   // Filtered Articles for main list
   const filteredMainArticles = selectedMainCategory === 'Tất cả'
-    ? mockNewsArticles
-    : mockNewsArticles.filter(art => art.category.toLowerCase() === selectedMainCategory.toLowerCase());
+    ? allArticles
+    : allArticles.filter(art => art.category.toLowerCase() === selectedMainCategory.toLowerCase());
 
   // Main featured article (first one)
-  const featuredArticle = filteredMainArticles[0] || mockNewsArticles[0];
+  const featuredArticle = filteredMainArticles[0] || allArticles[0] || mockNewsArticles[0];
   // Side stacked articles (remaining)
   const sideArticles = filteredMainArticles.length > 1 
     ? filteredMainArticles.slice(1, 4) 
-    : mockNewsArticles.filter(art => art.id !== featuredArticle.id).slice(0, 3);
+    : allArticles.filter(art => art.id !== featuredArticle.id).slice(0, 3);
 
   // Filtered Events for Events Page
   const filteredEvents = selectedEventCategory === 'Tất cả'
@@ -132,6 +160,14 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
       return;
     }
     setFormError('');
+    // Lưu tin nhắn liên hệ bền vững vào AdminDataService
+    AdminDataService.saveContactMessage({
+      fullName: formData.fullName.trim(),
+      email: formData.email.trim(),
+      phone: formData.phone.trim(),
+      topic: formData.topic,
+      message: formData.message.trim()
+    });
     setMessageSent(true);
   };
 

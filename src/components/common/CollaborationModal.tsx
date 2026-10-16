@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { X, CheckCircle2, Building, User, Phone, Mail, ArrowLeft, ChevronDown, CheckSquare, Upload, FileText, Info, Trash2, Check } from 'lucide-react';
 import { useLanguage } from '../../context/LanguageContext';
+import { AdminDataService, AdminProposal } from '../../services/adminDataService';
 import entrepreneurImg from '../../assets/joinus-entrepreneurs.jpg';
 import expertsImg from '../../assets/joinus-experts.jpg';
 import vacanciesImg from '../../assets/joinus-vacancies.jpg';
@@ -150,6 +151,21 @@ export const CollaborationModal: React.FC<CollaborationModalProps> = ({
 
   const handleSubmitFinal = (e: React.FormEvent) => {
     e.preventDefault();
+    const newProposal: AdminProposal = {
+      id: `prop-${Date.now()}`,
+      role: 'Doanh nghiệp',
+      fullName: `${formData.firstName} ${formData.surname}`.trim() || formData.companyName.trim() || 'Doanh nghiệp SME',
+      organization: formData.companyName.trim() || undefined,
+      phone: formData.phone.trim() || '0900000000',
+      email: formData.email.trim() || undefined,
+      selectedFields: [formData.sector || 'Kinh doanh / Phát triển thị trường'],
+      solutionContent: `${formData.supportRequest || 'Đăng ký hỗ trợ / hợp tác SME'}\n\nThông tin doanh nghiệp: ${formData.description}\nĐịa chỉ: ${formData.companyAddress}, ${formData.cityArea}`,
+      availability: 'Tư vấn / hỗ trợ theo từng dự án',
+      status: 'new',
+      createdAt: new Date().toLocaleDateString('vi-VN'),
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+    AdminDataService.saveProposal(newProposal);
     setSubmitted(true);
   };
 
@@ -162,6 +178,21 @@ export const CollaborationModal: React.FC<CollaborationModalProps> = ({
 
   const handlePartnerSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const newProposal: AdminProposal = {
+      id: `prop-${Date.now()}`,
+      role: 'Đơn vị hỗ trợ / Tổ chức',
+      fullName: partnerForm.fullName.trim() || 'Đại diện Đối tác',
+      organization: partnerForm.department.trim() || undefined,
+      phone: partnerForm.phone.trim() || '0900000000',
+      email: partnerForm.email.trim() || undefined,
+      selectedFields: ['Hợp tác tổ chức / Đối tác'],
+      solutionContent: partnerForm.message.trim() || 'Đăng ký kết nối hợp tác đối tác chiến lược',
+      availability: 'Tham gia thường xuyên',
+      status: 'new',
+      createdAt: new Date().toLocaleDateString('vi-VN'),
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+    AdminDataService.saveProposal(newProposal);
     setPartnerSubmitted(true);
   };
 
@@ -188,6 +219,21 @@ export const CollaborationModal: React.FC<CollaborationModalProps> = ({
       );
       return;
     }
+    const newProposal: AdminProposal = {
+      id: `prop-${Date.now()}`,
+      role: 'Chuyên gia',
+      fullName: vacancyForm.fullName.trim() || 'Ứng viên Chuyên gia',
+      phone: `${vacancyForm.phoneDialCode} ${vacancyForm.phone}`.trim(),
+      email: vacancyForm.email.trim() || undefined,
+      selectedFields: vacancyForm.languages,
+      solutionContent: `Đăng ký ứng tuyển mạng lưới chuyên gia / tình nguyện viên quốc tế.\nKinh nghiệm đa văn hóa: ${vacancyForm.multiculturalExp}\nTừng sống nước ngoài: ${vacancyForm.livedAbroad}\n${vacancyForm.coverLetterText ? `Thư tự giới thiệu: ${vacancyForm.coverLetterText}` : ''}`,
+      availability: 'Tham gia thường xuyên',
+      fileName: vacancyForm.cvFileName || vacancyForm.coverLetterFileName || null,
+      status: 'new',
+      createdAt: new Date().toLocaleDateString('vi-VN'),
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+    AdminDataService.saveProposal(newProposal);
     setVacancySubmitted(true);
   };
 

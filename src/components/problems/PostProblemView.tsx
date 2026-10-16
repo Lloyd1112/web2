@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useLanguage } from '../../context/LanguageContext';
 import { RealProblem, ProblemCategory } from '../../types';
+import { AdminDataService } from '../../services/adminDataService';
 import { 
   Home, 
   ChevronRight, 
@@ -85,6 +87,27 @@ export const PostProblemView: React.FC<PostProblemViewProps> = ({
   const [submittedProblem, setSubmittedProblem] = useState<RealProblem | null>(null);
   const [draftToast, setDraftToast] = useState(false);
   const [lockNotice, setLockNotice] = useState<string | null>(null);
+
+  // Khóa cuộn trang và lắng nghe phím Escape khi hiển thị modal thành công
+  useEffect(() => {
+    if (!isSubmitted) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onBackToList();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isSubmitted, onBackToList]);
 
   // Load draft from localStorage on mount
   useEffect(() => {
@@ -441,6 +464,9 @@ export const PostProblemView: React.FC<PostProblemViewProps> = ({
       isPublic: false
     };
 
+    // Lưu bền vững vào cơ sở dữ liệu hệ thống
+    AdminDataService.saveProblem(newProb);
+
     setTimeout(() => {
       setIsSubmitting(false);
       setSubmittedProblem(newProb);
@@ -466,62 +492,9 @@ export const PostProblemView: React.FC<PostProblemViewProps> = ({
     { number: 5, label: 'Review & Submit' }
   ];
 
-  // ================= RENDER SUBMISSION SUCCESS MODAL VIEW =================
-  if (isSubmitted) {
-    return (
-      <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-        {/* Hộp Card màu trắng bên ngoài */}
-        <div className="bg-white rounded-3xl p-3.5 sm:p-5 shadow-2xl max-w-[480px] w-full border border-slate-100 animate-fade-in">
-          {/* Hộp bo góc màu xanh bạc hà bên trong */}
-          <div className="bg-[#eaf7f0] rounded-2xl sm:rounded-[22px] p-6 sm:p-8 text-center space-y-3.5 sm:space-y-4">
-            
-            {/* Vòng tròn xanh lá đậm chứa dấu tích trắng */}
-            <div className="w-13 h-13 sm:w-14 sm:h-14 rounded-full bg-[#1b804e] text-white flex items-center justify-center mx-auto shadow-xs">
-              <Check className="w-7 h-7 stroke-[3.5]" />
-            </div>
-
-            {/* Tiêu đề thông báo */}
-            <h3 className="text-xl sm:text-[22px] font-bold text-[#006842]">
-              {language === 'vi' ? 'Gửi bài toán thành công!' : 'Problem Submitted Successfully!'}
-            </h3>
-
-            {/* Nội dung 3 dòng theo đúng ảnh mẫu */}
-            <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed font-normal">
-              {language === 'vi' ? (
-                <>
-                  Bài toán của bạn đã được gửi thành công. Ban quản lý Làng SV<br className="hidden sm:inline" />
-                  {' '}sẽ xem xét thông tin và liên hệ khi cần xác minh thêm.<br className="hidden sm:inline" />
-                  {' '}Bài toán chỉ được công khai sau khi được phê duyệt.
-                </>
-              ) : (
-                <>
-                  Your problem has been submitted successfully. The Village board<br className="hidden sm:inline" />
-                  {' '}will review information and contact you if needed.<br className="hidden sm:inline" />
-                  {' '}The problem will be published once officially verified.
-                </>
-              )}
-            </p>
-
-            {/* Nút Đóng màu xanh bo tròn */}
-            <div className="pt-2">
-              <button
-                type="button"
-                onClick={onBackToList}
-                className="w-36 sm:w-40 py-2.5 rounded-full bg-[#1b804e] hover:bg-[#156d42] text-white text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95"
-              >
-                {language === 'vi' ? 'Đóng' : 'Close'}
-              </button>
-            </div>
-
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   // ================= MAIN STEP-BY-STEP PAGE RENDER =================
   return (
-    <div className="w-full bg-[#f8fafc] py-5 sm:py-8 min-h-screen text-slate-800">
+    <div className={`w-full bg-[#f8fafc] py-5 sm:py-8 min-h-screen text-slate-800 transition-opacity duration-200 ${isSubmitted ? 'pointer-events-none select-none opacity-40' : ''}`}>
       <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
 
         {/* ================= 1. BREADCRUMBS ================= */}
@@ -1793,6 +1766,66 @@ export const PostProblemView: React.FC<PostProblemViewProps> = ({
         </div>
 
       </div>
+
+      {/* ================= MODAL SUBMISSION SUCCESS (PORTAL VÀO BODY) ================= */}
+      {typeof document !== 'undefined' && isSubmitted && createPortal(
+        <div 
+          className="fixed inset-0 z-[9999] bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6 overflow-y-auto animate-fade-in pointer-events-auto select-auto"
+          onClick={onBackToList}
+          role="dialog"
+          aria-modal="true"
+        >
+          {/* Hộp Card màu trắng bên ngoài */}
+          <div 
+            className="relative my-auto bg-white rounded-3xl p-4 sm:p-6 shadow-2xl max-w-[480px] w-full border border-slate-100 animate-fade-in"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Hộp bo góc màu xanh bạc hà bên trong */}
+            <div className="bg-[#eaf7f0] rounded-2xl sm:rounded-[22px] p-6 sm:p-8 text-center space-y-4">
+              
+              {/* Vòng tròn xanh lá đậm chứa dấu tích trắng */}
+              <div className="w-14 h-14 rounded-full bg-[#1b804e] text-white flex items-center justify-center mx-auto shadow-xs">
+                <Check className="w-7 h-7 stroke-[3.5]" />
+              </div>
+
+              {/* Tiêu đề thông báo */}
+              <h3 className="text-xl sm:text-[22px] font-bold text-[#006842] leading-snug">
+                {language === 'vi' ? 'Gửi bài toán thành công!' : 'Problem Submitted Successfully!'}
+              </h3>
+
+              {/* Nội dung 3 dòng theo đúng ảnh mẫu */}
+              <p className="text-xs sm:text-[13px] text-slate-700 leading-relaxed font-normal">
+                {language === 'vi' ? (
+                  <>
+                    Bài toán của bạn đã được gửi thành công. Ban quản lý Làng SV<br className="hidden sm:inline" />
+                    {' '}sẽ xem xét thông tin và liên hệ khi cần xác minh thêm.<br className="hidden sm:inline" />
+                    {' '}Bài toán chỉ được công khai sau khi được phê duyệt.
+                  </>
+                ) : (
+                  <>
+                    Your problem has been submitted successfully. The Village board<br className="hidden sm:inline" />
+                    {' '}will review information and contact you if needed.<br className="hidden sm:inline" />
+                    {' '}The problem will be published once officially verified.
+                  </>
+                )}
+              </p>
+
+              {/* Nút Đóng màu xanh bo tròn */}
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={onBackToList}
+                  className="w-36 sm:w-40 py-2.5 rounded-full bg-[#1b804e] hover:bg-[#156d42] text-white text-sm font-semibold transition-all shadow-xs cursor-pointer active:scale-95"
+                >
+                  {language === 'vi' ? 'Đóng' : 'Close'}
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>,
+        document.body
+      )}
     </div>
   );
 };
