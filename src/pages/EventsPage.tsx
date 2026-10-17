@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { AdminDataService } from '../services/adminDataService';
-import { mockEventItems, mockEventsData } from '../data/mockData';
 import { 
   Calendar, 
   MapPin, 
@@ -50,61 +49,46 @@ export const EventsPage: React.FC<EventsPageProps> = ({
     '/assets/pum/Jordan_Al-Bayrouty_002-1200x800.jpg'
   ];
 
-  // Combine and safely normalize both datasets + Admin events
+  // Đồng bộ 100% danh sách sự kiện từ AdminDataService (xóa bỏ dữ liệu mock không có trong admin)
   const allEvents = useMemo(() => {
     const adminEvents = AdminDataService.getNews()
-      .filter(n => n.category === 'Sự kiện' && n.isPublished !== false)
-      .map((evt, idx) => ({
-        id: evt.id,
-        day: evt.publishedDate.split('/')[0] || '15',
-        monthYear: `Tháng ${evt.publishedDate.split('/')[1] || '10'}, 2026`,
-        dateFull: evt.publishedDate,
-        category: 'Sự kiện',
-        title: evt.title,
-        summary: evt.summary,
-        location: 'Campus Living Lab Bình Mỹ, Củ Chi',
-        image: evt.image || defaultEventImages[idx % defaultEventImages.length]
-      }));
+      .filter(n => n.isPublished !== false)
+      .map((evt, idx) => {
+        const parts = (evt.publishedDate || '').split('/');
+        const day = parts[0] || '15';
+        const month = parts[1] || '10';
+        const year = parts[2] || '2026';
+        return {
+          id: evt.id,
+          day: day,
+          monthYear: language === 'vi' ? `Tháng ${month}, ${year}` : `Month ${month}, ${year}`,
+          dateFull: evt.publishedDate,
+          category: evt.category || 'Sự kiện',
+          title: evt.title,
+          summary: evt.summary,
+          content: evt.content,
+          author: evt.author,
+          location: 'Campus Living Lab Bình Mỹ, Củ Chi',
+          image: evt.image || defaultEventImages[idx % defaultEventImages.length]
+        };
+      });
 
-    return [
-      ...adminEvents,
-      ...mockEventItems.map((evt, idx) => ({
-        id: evt.id || `ev-item-${idx}`,
-        day: evt.day || '15',
-        monthYear: evt.monthYear || 'Tháng 10, 2026',
-        dateFull: evt.dateFull || `${evt.day} Tháng 10, 2026`,
-        category: evt.category || 'Hội thảo',
-        title: evt.title || 'Sự kiện Làng Sinh Viên Bình Mỹ',
-        summary: evt.summary || 'Chương trình giao lưu và cập nhật chuyên môn.',
-        location: evt.location || 'Campus Bình Mỹ, Củ Chi, TP.HCM',
-        image: evt.image && !evt.image.startsWith('/') ? `/${evt.image}` : (defaultEventImages[idx % defaultEventImages.length])
-      })),
-      ...mockEventsData.map((evt, idx) => ({
-        id: evt.id || `ev-data-${idx}`,
-        day: evt.day || '20',
-        monthYear: language === 'vi' ? (evt.monthVi || 'Tháng 11') : (evt.monthEn || 'November'),
-      dateFull: `${evt.day} ${language === 'vi' ? (evt.monthVi || 'Tháng 11, 2026') : (evt.monthEn || 'November, 2026')}`,
-      category: language === 'vi' ? (evt.categoryVi || 'Đào tạo') : (evt.categoryEn || 'Training'),
-      title: language === 'vi' ? (evt.titleVi || 'Khóa đào tạo chuyên môn') : (evt.titleEn || 'Specialized Course'),
-      summary: language === 'vi' ? (evt.descriptionVi || 'Nội dung đào tạo thực tiễn') : (evt.descriptionEn || 'Practical training program'),
-      location: language === 'vi' ? (evt.locationVi || 'Hội trường Living Lab Bình Mỹ') : (evt.locationEn || 'Binh My Living Lab'),
-      image: defaultEventImages[(idx + 2) % defaultEventImages.length]
-    }))
-  ];
+    return adminEvents;
   }, [dataVersion, language]);
 
   const categories = [
-    { id: 'all', labelVi: 'Tất cả sự kiện', labelEn: 'All Events', icon: Calendar },
-    { id: 'Hội thảo', labelVi: 'Hội thảo', labelEn: 'Conferences & Seminars', icon: Presentation },
-    { id: 'Workshop', labelVi: 'Workshop', labelEn: 'Workshops', icon: Laptop },
-    { id: 'Hoạt động sinh viên', labelVi: 'Hoạt động sinh viên', labelEn: 'Student Activities', icon: Users },
-    { id: 'Giao lưu - Kết nối', labelVi: 'Giao lưu quốc tế', labelEn: 'Global Exchange', icon: Handshake },
+    { id: 'all', labelVi: 'Tất cả hoạt động', labelEn: 'All Activities', icon: Calendar },
+    { id: 'Sự kiện', labelVi: 'Sự kiện', labelEn: 'Events', icon: Calendar },
+    { id: 'Tin tức', labelVi: 'Tin tức', labelEn: 'News', icon: Users },
+    { id: 'Dự án', labelVi: 'Dự án', labelEn: 'Projects', icon: Handshake },
+    { id: 'Thông báo', labelVi: 'Thông báo', labelEn: 'Notices', icon: Tag },
   ];
 
   const filteredEvents = allEvents.filter(event => {
     const categoryLower = (event.category || '').toLowerCase();
     const selectedLower = selectedCategory.toLowerCase();
     const matchCat = selectedCategory === 'all' || 
+      categoryLower === selectedLower ||
       categoryLower.includes(selectedLower) || 
       selectedLower.includes(categoryLower);
 
@@ -179,78 +163,19 @@ export const EventsPage: React.FC<EventsPageProps> = ({
         </div>
 
         {/* Events Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredEvents.map((evt) => {
-            const monthDisplay = evt.monthYear ? evt.monthYear.split(',')[0] : '2026';
-            return (
-              <div
-                key={evt.id}
-                className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
-              >
-                <div>
-                  {/* Event Image & Date Badge */}
-                  <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
-                    <img
-                      src={evt.image}
-                      alt={evt.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                    />
-                    <div className="absolute top-4 left-4">
-                      <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/95 backdrop-blur-md text-pum-green shadow-xs">
-                        {evt.category}
-                      </span>
-                    </div>
-
-                    {/* Big Date Floating Badge */}
-                    <div className="absolute bottom-4 right-4 bg-pum-green text-white px-3.5 py-2 rounded-2xl shadow-md text-center">
-                      <span className="block text-xl font-black leading-none">{evt.day}</span>
-                      <span className="block text-[10px] font-bold uppercase tracking-wider text-pum-lightGreen mt-0.5">
-                        {monthDisplay}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Event Info */}
-                  <div className="p-6">
-                    <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
-                      <MapPin className="w-3.5 h-3.5 text-pum-orange flex-shrink-0" />
-                      <span className="line-clamp-1">{evt.location}</span>
-                    </div>
-
-                    <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-pum-green transition-colors leading-snug mb-3">
-                      {evt.title}
-                    </h3>
-
-                    <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
-                      {evt.summary}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card Footer Actions */}
-                <div className="px-6 py-4 border-t border-slate-100 bg-[#F8FAF9] flex items-center justify-between">
-                  <button
-                    onClick={() => setSelectedEvent(evt)}
-                    className="text-xs font-bold text-slate-600 hover:text-pum-green transition-colors"
-                  >
-                    {language === 'vi' ? 'Xem thông tin' : 'View Details'}
-                  </button>
-                  <button
-                    onClick={() => onOpenCollaboration('training', `Đăng ký sự kiện: ${evt.title}`)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-pum-orange hover:bg-pum-orangeHover transition-all active:scale-95 shadow-xs"
-                  >
-                    <span>{language === 'vi' ? 'Đăng ký ngay' : 'Register'}</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Empty Search Result Fallback */}
-        {filteredEvents.length === 0 && (
+        {allEvents.length === 0 ? (
+          <div className="text-center py-16 bg-white rounded-3xl border border-dashed border-slate-200">
+            <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-slate-700">
+              {language === 'vi' ? 'Chưa có sự kiện hoặc hoạt động nào được xuất bản' : 'No published events or activities yet'}
+            </h3>
+            <p className="text-xs text-slate-500 mt-1 max-w-md mx-auto">
+              {language === 'vi'
+                ? 'Khi Ban quản trị đăng sự kiện mới trên trang Quản trị, nội dung sẽ lập tức đồng bộ hiển thị tại đây.'
+                : 'When new events are published in the Admin portal, they will automatically appear here.'}
+            </p>
+          </div>
+        ) : filteredEvents.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-slate-200">
             <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
             <h3 className="text-lg font-bold text-slate-700">
@@ -259,6 +184,76 @@ export const EventsPage: React.FC<EventsPageProps> = ({
             <p className="text-xs text-slate-500 mt-1">
               {language === 'vi' ? 'Vui lòng thử từ khóa tìm kiếm hoặc chọn danh mục khác.' : 'Please try another search keyword or category.'}
             </p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {filteredEvents.map((evt) => {
+              const monthDisplay = evt.monthYear ? evt.monthYear.split(',')[0] : '2026';
+              return (
+                <div
+                  key={evt.id}
+                  className="bg-white rounded-3xl overflow-hidden border border-slate-200/90 shadow-2xs hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between group"
+                >
+                  <div>
+                    {/* Event Image & Date Badge */}
+                    <div className="relative aspect-[16/10] overflow-hidden bg-slate-100">
+                      <img
+                        src={evt.image}
+                        alt={evt.title}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                      />
+                      <div className="absolute top-4 left-4">
+                        <span className="px-3 py-1 rounded-full text-xs font-bold bg-white/95 backdrop-blur-md text-pum-green shadow-xs">
+                          {evt.category}
+                        </span>
+                      </div>
+
+                      {/* Big Date Floating Badge */}
+                      <div className="absolute bottom-4 right-4 bg-pum-green text-white px-3.5 py-2 rounded-2xl shadow-md text-center">
+                        <span className="block text-xl font-black leading-none">{evt.day}</span>
+                        <span className="block text-[10px] font-bold uppercase tracking-wider text-pum-lightGreen mt-0.5">
+                          {monthDisplay}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Event Info */}
+                    <div className="p-6">
+                      <div className="flex items-center gap-2 text-xs text-slate-500 mb-2">
+                        <MapPin className="w-3.5 h-3.5 text-pum-orange flex-shrink-0" />
+                        <span className="line-clamp-1">{evt.location}</span>
+                      </div>
+
+                      <h3 className="text-base sm:text-lg font-bold text-slate-900 group-hover:text-pum-green transition-colors leading-snug mb-3">
+                        {evt.title}
+                      </h3>
+
+                      <p className="text-xs sm:text-sm text-slate-600 line-clamp-3 leading-relaxed">
+                        {evt.summary}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Footer Actions */}
+                  <div className="px-6 py-4 border-t border-slate-100 bg-[#F8FAF9] flex items-center justify-between">
+                    <button
+                      onClick={() => setSelectedEvent(evt)}
+                      className="text-xs font-bold text-slate-600 hover:text-pum-green transition-colors cursor-pointer"
+                    >
+                      {language === 'vi' ? 'Xem thông tin' : 'View Details'}
+                    </button>
+                    <button
+                      onClick={() => onOpenCollaboration('training', `Đăng ký sự kiện: ${evt.title}`)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-xs font-bold text-white bg-pum-orange hover:bg-pum-orangeHover transition-all active:scale-95 shadow-xs cursor-pointer"
+                    >
+                      <span>{language === 'vi' ? 'Đăng ký ngay' : 'Register'}</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+
+                </div>
+              );
+            })}
           </div>
         )}
 
@@ -270,7 +265,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
                 <img src={selectedEvent.image} alt={selectedEvent.title} className="w-full h-full object-cover" />
                 <button
                   onClick={() => setSelectedEvent(null)}
-                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors"
+                  className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -279,22 +274,38 @@ export const EventsPage: React.FC<EventsPageProps> = ({
                 </div>
               </div>
 
-              <div className="p-6 sm:p-8 space-y-4">
-                <div className="flex items-center gap-2 text-xs text-slate-500">
-                  <Calendar className="w-4 h-4 text-pum-orange" />
-                  <span>{selectedEvent.dateFull || `${selectedEvent.day} ${selectedEvent.monthYear}`}</span>
+              <div className="p-6 sm:p-8 space-y-4 max-h-[60vh] overflow-y-auto">
+                <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4 text-pum-orange" />
+                    <span>{selectedEvent.dateFull || `${selectedEvent.day} ${selectedEvent.monthYear}`}</span>
+                  </div>
                   <span>•</span>
-                  <MapPin className="w-4 h-4 text-pum-green" />
-                  <span>{selectedEvent.location}</span>
+                  <div className="flex items-center gap-1.5">
+                    <MapPin className="w-4 h-4 text-pum-green" />
+                    <span>{selectedEvent.location}</span>
+                  </div>
+                  {selectedEvent.author && (
+                    <>
+                      <span>•</span>
+                      <span className="text-slate-600 font-medium">Đăng bởi: {selectedEvent.author}</span>
+                    </>
+                  )}
                 </div>
 
                 <h3 className="text-xl font-bold text-slate-900 leading-snug">
                   {selectedEvent.title}
                 </h3>
 
-                <p className="text-sm text-slate-600 leading-relaxed">
+                <p className="text-sm text-slate-600 leading-relaxed font-medium">
                   {selectedEvent.summary}
                 </p>
+
+                {selectedEvent.content && selectedEvent.content !== selectedEvent.summary && (
+                  <div className="pt-3 border-t border-slate-100 text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                    {selectedEvent.content}
+                  </div>
+                )}
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
                   <button

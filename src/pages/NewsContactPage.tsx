@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useLanguage } from '../context/LanguageContext';
 import { AdminDataService } from '../services/adminDataService';
-import { mockNewsArticles, mockEventItems } from '../data/mockData';
 import { 
   Megaphone, 
   Calendar, 
@@ -112,9 +111,9 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
     return unsubscribe;
   }, []);
 
-  // Tổng hợp tin tức từ hệ thống AdminDataService và mock data
+  // Tổng hợp tin tức đồng bộ 100% từ hệ thống AdminDataService
   const allArticles = useMemo(() => {
-    const adminNews = AdminDataService.getNews()
+    return AdminDataService.getNews()
       .filter(n => n.isPublished !== false)
       .map(n => ({
         id: n.id,
@@ -128,7 +127,6 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
         readTime: '3 phút đọc',
         content: n.content
       }));
-    return [...adminNews, ...mockNewsArticles];
   }, [dataVersion]);
 
   // Filtered Articles for main list
@@ -137,16 +135,32 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
     : allArticles.filter(art => art.category.toLowerCase() === selectedMainCategory.toLowerCase());
 
   // Main featured article (first one)
-  const featuredArticle = filteredMainArticles[0] || allArticles[0] || mockNewsArticles[0];
+  const featuredArticle = filteredMainArticles[0] || allArticles[0] || null;
   // Side stacked articles (remaining)
   const sideArticles = filteredMainArticles.length > 1 
     ? filteredMainArticles.slice(1, 4) 
-    : allArticles.filter(art => art.id !== featuredArticle.id).slice(0, 3);
+    : allArticles.filter(art => !featuredArticle || art.id !== featuredArticle.id).slice(0, 3);
 
-  // Filtered Events for Events Page
-  const filteredEvents = selectedEventCategory === 'Tất cả'
-    ? mockEventItems
-    : mockEventItems.filter(ev => ev.category.toLowerCase() === selectedEventCategory.toLowerCase());
+  // Filtered Events for Events Page / Sidebar
+  const filteredEvents = useMemo(() => {
+    const events = AdminDataService.getNews()
+      .filter(n => n.isPublished !== false && n.category === 'Sự kiện')
+      .map((n) => ({
+        id: n.id,
+        title: n.title,
+        dateFull: n.publishedDate,
+        day: n.publishedDate.split('/')[0] || '15',
+        monthYear: `Tháng ${n.publishedDate.split('/')[1] || '10'}, 2026`,
+        category: n.category,
+        summary: n.summary,
+        image: n.image,
+        location: 'Campus Living Lab Bình Mỹ, Củ Chi',
+        badgeBg: 'bg-[#00875a]',
+        dotColor: 'bg-emerald-500'
+      }));
+    if (selectedEventCategory === 'Tất cả') return events;
+    return events.filter(ev => ev.category.toLowerCase() === selectedEventCategory.toLowerCase());
+  }, [dataVersion, selectedEventCategory]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -199,7 +213,8 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
   };
 
   const handleOpenActivityPage = (article?: any) => {
-    const art = article || mockNewsArticles[0];
+    const art = article || featuredArticle || allArticles[0];
+    if (!art) return;
     setActiveArticle({
       ...art,
       category: 'Hoạt động',
@@ -654,20 +669,20 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
                 </div>
 
                 <div className="space-y-3">
-                  {mockEventItems.slice(0, 3).map((ev) => (
+                  {allArticles.slice(0, 3).map((ev) => (
                     <div
                       key={ev.id}
-                      onClick={() => onOpenCollaboration('training', ev.title)}
+                      onClick={() => onOpenCollaboration('event', ev.title)}
                       className="flex items-center justify-between gap-2.5 p-2 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer group"
                     >
                       <div className="flex items-start gap-2.5 min-w-0">
-                        <span className={`w-2 h-2 rounded-full ${ev.dotColor} mt-1.5 flex-shrink-0`} />
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 mt-1.5 flex-shrink-0" />
                         <div className="min-w-0">
                           <h4 className="text-xs font-bold text-slate-800 line-clamp-1 leading-snug group-hover:text-[#00875a] transition-colors">
                             {ev.title}
                           </h4>
                           <span className="text-[10.5px] text-slate-400">
-                            {ev.dateFull}
+                            {ev.date}
                           </span>
                         </div>
                       </div>
@@ -675,6 +690,9 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
                       <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-[#00875a] group-hover:translate-x-0.5 transition-all flex-shrink-0" />
                     </div>
                   ))}
+                  {allArticles.length === 0 && (
+                    <p className="text-xs text-slate-400 italic py-2 text-center">Chưa có sự kiện nào</p>
+                  )}
                 </div>
 
                 <div className="pt-1 text-right">
@@ -893,8 +911,8 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
                 </div>
 
                 <div className="space-y-3.5">
-                  {mockNewsArticles
-                    .filter(art => art.id !== activeArticle.id)
+                  {allArticles
+                    .filter(art => !activeArticle || art.id !== activeArticle.id)
                     .slice(0, 5)
                     .map((art) => (
                       <div
@@ -911,10 +929,9 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
                           <div className="min-w-0 space-y-1">
                             <span className={`text-[9.5px] font-bold px-2 py-0.5 rounded-full text-white inline-block ${
                               art.category === 'Hoạt động' ? 'bg-[#00875a]' :
-                              art.badgeColor === 'rose' || art.id === 'art-admissions' ? 'bg-[#e11d48]' :
                               art.category === 'Thông báo' ? 'bg-[#0284c7]' :
                               art.category === 'Hợp tác quốc tế' ? 'bg-[#7c3aed]' :
-                              art.category === 'Sự kiện' ? 'bg-[#d97706]' : 'bg-[#0284c7]'
+                              art.category === 'Sự kiện' ? 'bg-[#d97706]' : 'bg-[#00875a]'
                             }`}>
                               {art.category}
                             </span>
@@ -1055,103 +1072,111 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
               </div>
 
               {/* News Articles Grid: Left Big Featured Card + Right 3 Stacked Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch pt-1">
-                
-                {/* --- MAIN FEATURED ARTICLE CARD (Left) --- */}
-                <div className="md:col-span-6 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col justify-between hover:shadow-md transition-all duration-200 group">
-                  <div>
-                    <div 
-                      className="relative h-48 sm:h-52 overflow-hidden bg-slate-100 cursor-pointer" 
-                      onClick={() => handleOpenActivityPage(featuredArticle)}
-                    >
-                      <img 
-                        src={featuredArticle.image} 
-                        alt={featuredArticle.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                      />
-                      <span className="absolute top-3 left-3 bg-[#00875a] text-white text-[10.5px] font-bold px-3 py-1 rounded-full shadow-xs">
-                        {featuredArticle.category}
-                      </span>
-                    </div>
-
-                    <div className="p-4 sm:p-5 space-y-2">
-                      <div className="flex items-center gap-1.5 text-slate-400 text-[11.5px] font-medium">
-                        <Calendar className="w-3.5 h-3.5 stroke-[2]" />
-                        <span>{featuredArticle.date}</span>
-                      </div>
-
-                      <h3 
+              {featuredArticle ? (
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-stretch pt-1">
+                  
+                  {/* --- MAIN FEATURED ARTICLE CARD (Left) --- */}
+                  <div className="md:col-span-6 bg-white rounded-2xl border border-slate-200/80 shadow-2xs overflow-hidden flex flex-col justify-between hover:shadow-md transition-all duration-200 group">
+                    <div>
+                      <div 
+                        className="relative h-48 sm:h-52 overflow-hidden bg-slate-100 cursor-pointer" 
                         onClick={() => handleOpenActivityPage(featuredArticle)}
-                        className="font-bold text-[14.5px] sm:text-[15.5px] text-slate-900 group-hover:text-[#00875a] transition-colors leading-snug cursor-pointer line-clamp-3"
                       >
-                        {featuredArticle.title}
-                      </h3>
-
-                      <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
-                        {featuredArticle.summary}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-4 sm:p-5 pt-0">
-                    <button 
-                      onClick={() => handleOpenActivityPage(featuredArticle)}
-                      className="text-xs font-bold text-[#00875a] hover:text-[#00734c] flex items-center gap-1 group/btn cursor-pointer"
-                    >
-                      <span>Xem chi tiết</span>
-                      <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
-                    </button>
-                  </div>
-                </div>
-
-                {/* --- SIDE ARTICLES (Right 3 Stacked Cards) --- */}
-                <div className="md:col-span-6 flex flex-col justify-between gap-3 sm:gap-3.5">
-                  {sideArticles.map((art) => (
-                    <div 
-                      key={art.id}
-                      onClick={() => handleOpenArticleDetail(art)}
-                      className="bg-white rounded-2xl border border-slate-200/80 p-3 sm:p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 flex gap-3.5 items-center group cursor-pointer"
-                    >
-                      <div className="w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 relative">
                         <img 
-                          src={art.image} 
-                          alt={art.title}
+                          src={featuredArticle.image} 
+                          alt={featuredArticle.title}
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                         />
+                        <span className="absolute top-3 left-3 bg-[#00875a] text-white text-[10.5px] font-bold px-3 py-1 rounded-full shadow-xs">
+                          {featuredArticle.category}
+                        </span>
                       </div>
 
-                      <div className="flex-1 min-w-0 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-1">
-                          <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${
-                            art.category === 'Hoạt động' ? 'bg-[#0284c7]' :
-                            art.category === 'Thông báo' ? 'bg-[#0284c7]' :
-                            art.category === 'Hợp tác quốc tế' ? 'bg-[#0284c7]' : 'bg-[#00875a]'
-                          }`}>
-                            {art.category}
-                          </span>
+                      <div className="p-4 sm:p-5 space-y-2">
+                        <div className="flex items-center gap-1.5 text-slate-400 text-[11.5px] font-medium">
+                          <Calendar className="w-3.5 h-3.5 stroke-[2]" />
+                          <span>{featuredArticle.date}</span>
                         </div>
 
-                        <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium mb-1">
-                          <Calendar className="w-3 h-3 stroke-[2]" />
-                          <span>{art.date}</span>
-                        </div>
+                        <h3 
+                          onClick={() => handleOpenActivityPage(featuredArticle)}
+                          className="font-bold text-[14.5px] sm:text-[15.5px] text-slate-900 group-hover:text-[#00875a] transition-colors leading-snug cursor-pointer line-clamp-3"
+                        >
+                          {featuredArticle.title}
+                        </h3>
 
-                        <h4 className="font-bold text-xs sm:text-[12.5px] text-slate-800 line-clamp-2 leading-snug group-hover:text-[#00875a] transition-colors">
-                          {art.title}
-                        </h4>
-
-                        <div className="mt-1">
-                          <span className="text-[11px] font-bold text-[#00875a] group-hover:text-[#00734c] flex items-center gap-1">
-                            <span>Xem chi tiết</span>
-                            <span className="group-hover:translate-x-0.5 transition-transform">→</span>
-                          </span>
-                        </div>
+                        <p className="text-xs text-slate-500 line-clamp-3 leading-relaxed">
+                          {featuredArticle.summary}
+                        </p>
                       </div>
                     </div>
-                  ))}
-                </div>
 
-              </div>
+                    <div className="p-4 sm:p-5 pt-0">
+                      <button 
+                        onClick={() => handleOpenActivityPage(featuredArticle)}
+                        className="text-xs font-bold text-[#00875a] hover:text-[#00734c] flex items-center gap-1 group/btn cursor-pointer"
+                      >
+                        <span>Xem chi tiết</span>
+                        <span className="group-hover/btn:translate-x-1 transition-transform">→</span>
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* --- SIDE ARTICLES (Right 3 Stacked Cards) --- */}
+                  <div className="md:col-span-6 flex flex-col justify-between gap-3 sm:gap-3.5">
+                    {sideArticles.map((art) => (
+                      <div 
+                        key={art.id}
+                        onClick={() => handleOpenArticleDetail(art)}
+                        className="bg-white rounded-2xl border border-slate-200/80 p-3 sm:p-3.5 shadow-2xs hover:shadow-md transition-all duration-200 flex gap-3.5 items-center group cursor-pointer"
+                      >
+                        <div className="w-24 h-20 sm:w-28 sm:h-22 rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 relative">
+                          <img 
+                            src={art.image} 
+                            alt={art.title}
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                        </div>
+
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full text-white ${
+                              art.category === 'Hoạt động' ? 'bg-[#0284c7]' :
+                              art.category === 'Thông báo' ? 'bg-[#0284c7]' :
+                              art.category === 'Hợp tác quốc tế' ? 'bg-[#0284c7]' : 'bg-[#00875a]'
+                            }`}>
+                              {art.category}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center gap-1 text-[11px] text-slate-400 font-medium mb-1">
+                            <Calendar className="w-3 h-3 stroke-[2]" />
+                            <span>{art.date}</span>
+                          </div>
+
+                          <h4 className="font-bold text-xs sm:text-[12.5px] text-slate-800 line-clamp-2 leading-snug group-hover:text-[#00875a] transition-colors">
+                            {art.title}
+                          </h4>
+
+                          <div className="mt-1">
+                            <span className="text-[11px] font-bold text-[#00875a] group-hover:text-[#00734c] flex items-center gap-1">
+                              <span>Xem chi tiết</span>
+                              <span className="group-hover:translate-x-0.5 transition-transform">→</span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                </div>
+              ) : (
+                <div className="py-16 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+                  <Calendar className="w-10 h-10 text-slate-300 mx-auto mb-2" />
+                  <p className="text-sm font-bold text-slate-700">Chưa có bài viết hoặc sự kiện nào</p>
+                  <p className="text-xs text-slate-400 mt-1">Nội dung sẽ được cập nhật từ hệ thống quản trị.</p>
+                </div>
+              )}
 
             </div>
 
@@ -1441,7 +1466,7 @@ export const NewsContactPage: React.FC<NewsContactPageProps> = ({
             </div>
 
             <div className="space-y-4">
-              {mockNewsArticles.map((art) => (
+              {allArticles.map((art) => (
                 <div 
                   key={art.id}
                   onClick={() => {

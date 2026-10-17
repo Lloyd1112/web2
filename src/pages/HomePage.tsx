@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import { AdminDataService, AdminProject } from '../services/adminDataService';
+import { AdminDataService, AdminProject, AdminNewsItem } from '../services/adminDataService';
 import { RealProblem, ProblemCategory, AdminPartner } from '../types';
 import { ProblemDetailModal } from '../components/problems/ProblemDetailModal';
 import {
@@ -106,6 +106,9 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
 
   // State modal chi tiết dự án thực tế
   const [selectedProject, setSelectedProject] = useState<AdminProject | null>(null);
+
+  // State modal chi tiết tin tức / sự kiện đồng bộ từ admin
+  const [selectedNewsItem, setSelectedNewsItem] = useState<AdminNewsItem | null>(null);
 
   // Phiên bản dữ liệu đồng bộ real-time
   const [dataVersion, setDataVersion] = useState<number>(0);
@@ -895,42 +898,57 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
 
         {/* 3 News Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {latestNews.map((news, idx) => {
-            const fallbackNewsImgs = [
-              '/assets/problems/news_1.jpg',
-              '/assets/problems/news_2.jpg',
-              '/assets/problems/news_3.jpg'
-            ];
-            const nImg = news.image || fallbackNewsImgs[idx % 3];
+          {latestNews.length > 0 ? (
+            latestNews.map((news, idx) => {
+              const fallbackNewsImgs = [
+                '/assets/problems/news_1.jpg',
+                '/assets/problems/news_2.jpg',
+                '/assets/problems/news_3.jpg'
+              ];
+              const nImg = news.image || fallbackNewsImgs[idx % 3];
 
-            return (
-              <div 
-                key={news.id}
-                onClick={() => onNavigate('events')}
-                className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex items-center gap-4 p-4 cursor-pointer group hover:-translate-y-0.5"
-              >
-                <div className="w-24 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0">
-                  <img
-                    src={nImg}
-                    alt={news.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = fallbackNewsImgs[idx % 3];
-                    }}
-                  />
-                </div>
-                <div className="space-y-1.5 flex-1 min-w-0">
-                  <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#00875a] transition-colors line-clamp-2 leading-snug">
-                    {news.title}
-                  </h4>
-                  <div className="flex items-center gap-1 text-[11px] text-slate-400">
-                    <Calendar className="w-3.5 h-3.5" />
-                    <span>{news.publishedDate}</span>
+              return (
+                <div 
+                  key={news.id}
+                  onClick={() => setSelectedNewsItem(news)}
+                  className="bg-white rounded-2xl border border-slate-200 overflow-hidden hover:shadow-lg transition-all duration-300 flex items-center gap-4 p-4 cursor-pointer group hover:-translate-y-0.5"
+                >
+                  <div className="w-24 h-20 rounded-xl overflow-hidden bg-slate-100 shrink-0">
+                    <img
+                      src={nImg}
+                      alt={news.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = fallbackNewsImgs[idx % 3];
+                      }}
+                    />
+                  </div>
+                  <div className="space-y-1.5 flex-1 min-w-0">
+                    <span className="inline-block px-2 py-0.5 rounded text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200">
+                      {news.category}
+                    </span>
+                    <h4 className="text-sm font-bold text-slate-900 group-hover:text-[#00875a] transition-colors line-clamp-2 leading-snug">
+                      {news.title}
+                    </h4>
+                    <div className="flex items-center gap-1 text-[11px] text-slate-400">
+                      <Calendar className="w-3.5 h-3.5" />
+                      <span>{news.publishedDate}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
+              );
+            })
+          ) : (
+            <div className="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-dashed border-slate-200">
+              <Calendar className="w-8 h-8 text-slate-300 mx-auto mb-2" />
+              <p className="text-sm font-bold text-slate-600">
+                {language === 'vi' ? 'Chưa có sự kiện hoặc tin tức mới được xuất bản' : 'No upcoming events or news published yet'}
+              </p>
+              <p className="text-xs text-slate-400 mt-0.5">
+                {language === 'vi' ? 'Ban quản trị sẽ cập nhật các sự kiện mới nhất tại đây.' : 'New events will be announced here.'}
+              </p>
+            </div>
+          )}
         </div>
       </section>
 
@@ -1092,6 +1110,102 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
                 <HeartHandshake className="w-4 h-4" />
                 <span>Đề xuất hợp tác cho dự án này</span>
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Modal chi tiết tin tức / sự kiện khi người dùng click vào thẻ trên Trang chủ */}
+      {selectedNewsItem && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-xs animate-in fade-in duration-200"
+          onClick={() => setSelectedNewsItem(null)}
+        >
+          <div 
+            className="bg-white rounded-3xl max-w-xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header Image */}
+            <div className="relative aspect-[16/9] w-full bg-slate-100 shrink-0">
+              <img
+                src={selectedNewsItem.image || '/assets/problems/banner-clean.png'}
+                alt={selectedNewsItem.title}
+                className="w-full h-full object-cover"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/assets/problems/banner-clean.png';
+                }}
+              />
+              <button
+                onClick={() => setSelectedNewsItem(null)}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/60 hover:bg-black text-white flex items-center justify-center transition-colors cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+              <div className="absolute top-4 left-4 bg-[#00875a] text-white px-3 py-1 rounded-full text-xs font-bold shadow-xs">
+                {selectedNewsItem.category}
+              </div>
+            </div>
+
+            {/* Content Body */}
+            <div className="p-6 sm:p-7 overflow-y-auto space-y-4 flex-1 text-slate-700">
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                <div className="flex items-center gap-1.5">
+                  <Calendar className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>{selectedNewsItem.publishedDate}</span>
+                </div>
+                {selectedNewsItem.author && (
+                  <>
+                    <span>•</span>
+                    <span className="text-slate-600 font-medium">Tác giả: {selectedNewsItem.author}</span>
+                  </>
+                )}
+              </div>
+
+              <h3 className="text-lg sm:text-xl font-black text-slate-900 leading-snug">
+                {selectedNewsItem.title}
+              </h3>
+
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
+                {selectedNewsItem.summary}
+              </p>
+
+              {selectedNewsItem.content && selectedNewsItem.content !== selectedNewsItem.summary && (
+                <div className="pt-3 border-t border-slate-100 text-xs sm:text-sm text-slate-600 leading-relaxed whitespace-pre-line">
+                  {selectedNewsItem.content}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 py-4 bg-slate-50 border-t border-slate-100 flex items-center justify-between gap-3 shrink-0">
+              <button
+                onClick={() => setSelectedNewsItem(null)}
+                className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Đóng
+              </button>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setSelectedNewsItem(null);
+                    onNavigate('events');
+                  }}
+                  className="px-4 py-2 rounded-xl border border-emerald-600 text-emerald-700 hover:bg-emerald-50 text-xs font-bold transition-colors cursor-pointer"
+                >
+                  Xem mục Sự kiện &rarr;
+                </button>
+                <button
+                  onClick={() => {
+                    const title = selectedNewsItem.title;
+                    setSelectedNewsItem(null);
+                    onOpenCollaboration('event', title);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white text-xs font-bold shadow-md shadow-emerald-900/10 transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <HeartHandshake className="w-4 h-4" />
+                  <span>Đề xuất hợp tác</span>
+                </button>
+              </div>
             </div>
           </div>
         </div>

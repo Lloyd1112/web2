@@ -703,7 +703,7 @@ const initialProjects: AdminProject[] = [
   }
 ];
 
-// Danh sách tin tức mẫu
+// Danh sách tin tức mẫu (đồng bộ với dữ liệu quản trị thực tế)
 const initialNews: AdminNewsItem[] = [
   {
     id: 'news-1',
@@ -716,18 +716,6 @@ const initialNews: AdminNewsItem[] = [
     publishedDate: '05/10/2026',
     isPublished: true,
     views: 342
-  },
-  {
-    id: 'news-2',
-    title: 'Hợp tác chuyển giao mô hình Nấm thảo dược đối kháng Trichoderma tại Ấp 1 Bình Mỹ',
-    category: 'Dự án',
-    summary: 'Nhóm nghiên cứu Sinh học ứng dụng đã hoàn thành việc chuyển giao quy trình ủ phân vi sinh đối kháng sâu bệnh cho 10 hộ trồng sả chanh.',
-    content: 'Mô hình giúp bà con giảm 80% chi phí thuốc trừ sâu hóa học, nâng cao chất lượng tinh dầu thảo dược đạt chuẩn OCOP.',
-    image: '/assets/problems/card4.jpg',
-    author: 'Tổ Truyền Thông',
-    publishedDate: '02/10/2026',
-    isPublished: true,
-    views: 189
   }
 ];
 
@@ -1130,7 +1118,7 @@ export class AdminDataService {
       const stored = localStorage.getItem(STORAGE_KEYS.NEWS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -1157,6 +1145,14 @@ export class AdminDataService {
   static deleteNews(id: string): boolean {
     const list = this.getNews();
     const filtered = list.filter(n => n.id !== id);
+    localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(filtered));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  static deleteMultipleNews(ids: string[]): boolean {
+    const list = this.getNews();
+    const filtered = list.filter(n => !ids.includes(n.id));
     localStorage.setItem(STORAGE_KEYS.NEWS, JSON.stringify(filtered));
     dispatchSyncEvent();
     return true;
