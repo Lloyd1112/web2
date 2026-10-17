@@ -226,7 +226,7 @@ export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       const saved = localStorage.getItem('site_language');
       if (saved === 'vi' || saved === 'en') return saved;
     }
-    return 'en';
+    return 'vi';
   });
 
   const setLanguage = (lang: Language) => {
