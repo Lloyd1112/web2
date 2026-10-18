@@ -28,7 +28,8 @@ import {
   Globe2,
   Award,
   ShieldCheck,
-  ExternalLink
+  ExternalLink,
+  Eye
 } from 'lucide-react';
 
 interface HomePageProps {
@@ -177,15 +178,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
       (p as any).isPublic !== false
     );
     if (selectedProblemCategory === 'all') {
-      return publicOnly.slice(0, 4);
+      return publicOnly.slice(0, 8);
     }
     if (selectedProblemCategory === 'health') {
-      return publicOnly.filter(p => (p.category as string) === 'health' || (p.category as string) === 'health-models').slice(0, 4);
+      return publicOnly.filter(p => (p.category as string) === 'health' || (p.category as string) === 'health-models').slice(0, 8);
     }
     if (selectedProblemCategory === 'environment') {
-      return publicOnly.filter(p => (p.category as string) === 'environment' || (p.category as string) === 'other' || p.categoryDetail === 'Môi trường').slice(0, 4);
+      return publicOnly.filter(p => (p.category as string) === 'environment' || (p.category as string) === 'other' || p.categoryDetail === 'Môi trường').slice(0, 8);
     }
-    return publicOnly.filter(p => (p.category as string) === selectedProblemCategory).slice(0, 4);
+    return publicOnly.filter(p => (p.category as string) === selectedProblemCategory).slice(0, 8);
   }, [selectedProblemCategory, dataVersion]);
 
   // 4. Lấy tin tức & sự kiện từ hệ thống
@@ -817,14 +818,25 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
                       (e.target as HTMLImageElement).src = `/assets/problems/home_card${(index % 4) + 1}.jpg`;
                     }}
                   />
-                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-black tracking-wider uppercase text-white ${catInfo.color} shadow-xs`}>
+                  {/* Overlay nút Xem chi tiết khi rê chuột */}
+                  <div className="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                    <span className="bg-white/95 backdrop-blur-xs text-slate-900 text-xs font-bold px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-md transform -translate-y-1 group-hover:translate-y-0 transition-transform">
+                      <Eye className="w-3.5 h-3.5 text-[#00875a]" />
+                      <span>{language === 'vi' ? 'Xem chi tiết' : 'View Details'}</span>
+                    </span>
+                  </div>
+
+                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-md text-[10px] font-black tracking-wider uppercase text-white ${catInfo.color} shadow-xs z-10`}>
                     {language === 'vi' ? catInfo.vi : catInfo.en}
                   </span>
                 </div>
 
                 <div className="p-4 flex-1 flex flex-col justify-between space-y-3">
                   <div className="space-y-1.5">
-                    <h3 className="font-bold text-slate-900 text-sm leading-snug group-hover:text-[#00875a] transition-colors line-clamp-2">
+                    <h3 
+                      className="font-bold text-slate-900 text-sm leading-snug group-hover:text-[#00875a] transition-colors line-clamp-2"
+                      title={language === 'vi' ? problem.title : (problem.titleEn || problem.title)}
+                    >
                       {language === 'vi' ? problem.title : (problem.titleEn || problem.title)}
                     </h3>
                     <div className="flex items-center gap-1 text-[11px] text-slate-500">
@@ -837,14 +849,42 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
                   </div>
 
                   {/* Nhu cầu hỗ trợ & số lượng đề xuất thực tế */}
-                  <div className="pt-3 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                    <div className="flex items-center gap-1">
-                      <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{AdminDataService.getProposalsCountByProblemId(problem.id)} {language === 'vi' ? 'đề xuất' : 'proposals'}</span>
+                  <div className="space-y-3 pt-3 border-t border-slate-100">
+                    <div className="flex items-center justify-between text-[11px] text-slate-500">
+                      <div className="flex items-center gap-1">
+                        <MessageSquare className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{AdminDataService.getProposalsCountByProblemId(problem.id)} {language === 'vi' ? 'đề xuất' : 'proposals'}</span>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Clock className="w-3.5 h-3.5 text-slate-400" />
+                        <span>{problem.createdAt || (language === 'vi' ? 'Mới cập nhật' : 'Recently')}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="w-3.5 h-3.5 text-slate-400" />
-                      <span>{problem.createdAt || (language === 'vi' ? 'Mới cập nhật' : 'Recently')}</span>
+
+                    {/* Hàng nút bấm: Xem chi tiết bài toán & Gửi giải pháp */}
+                    <div className="flex items-center gap-2 pt-1">
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedProblem(problem);
+                        }}
+                        className="flex-1 py-2 px-2.5 rounded-xl bg-slate-100 hover:bg-emerald-50 text-slate-700 hover:text-[#00875a] text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 cursor-pointer border border-transparent hover:border-emerald-200"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-slate-500" />
+                        <span>{language === 'vi' ? 'Xem chi tiết' : 'Details'}</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onOpenCollaboration('problem', problem.title);
+                        }}
+                        className="flex-1 py-2 px-2.5 rounded-xl bg-[#00875a] hover:bg-[#00684a] text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-1.5 shadow-xs cursor-pointer active:scale-95"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-white" />
+                        <span>{language === 'vi' ? 'Gửi giải pháp' : 'Propose'}</span>
+                      </button>
                     </div>
                   </div>
                 </div>
