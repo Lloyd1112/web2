@@ -18,8 +18,8 @@ export const ROUTES: Record<string, RouteConfig> = {
     id: 'about',
     path: '/about',
     aliases: ['/about-us', '/thong-tin-ve-chung-toi', '/gioi-thieu', '/ve-chung-toi', '/doi-ngu', '/doi-ngu-chuyen-gia'],
-    titleVi: 'Đội ngũ & Về chúng tôi | Làng Sinh Viên Bình Mỹ',
-    titleEn: 'Team & About Us | Binh My Student Village'
+    titleVi: 'Thông tin về chúng tôi | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'About Us | Binh My Student Village'
   },
   'events': {
     id: 'events',
@@ -148,8 +148,8 @@ export const ROUTES: Record<string, RouteConfig> = {
     id: 'admin-about',
     path: '/admin/ve-chung-toi',
     aliases: ['/admin/about', '/admin/doi-ngu', '/admin/team'],
-    titleVi: 'Quản lý Về chúng tôi & Đội ngũ | Admin Làng SV',
-    titleEn: 'Manage About Us & Team | Admin'
+    titleVi: 'Thông tin về chúng tôi | Admin Làng SV',
+    titleEn: 'About Us & Team | Admin'
   },
   'admin-settings': {
     id: 'admin-settings',

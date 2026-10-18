@@ -96,7 +96,7 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
     },
     {
       id: 'admin-about',
-      label: 'Quản lý Về chúng tôi',
+      label: 'Thông tin về chúng tôi',
       icon: UserCheck,
       badge: (stats as any).totalTeamMembers > 0 ? (stats as any).totalTeamMembers : null,
       badgeColor: 'bg-emerald-100 text-emerald-800'

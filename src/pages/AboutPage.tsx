@@ -203,15 +203,13 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                 </div>
               </div>
 
-              {executiveMembers.length > 4 && (
-                <button
-                  onClick={() => setSelectedView('all-executive')}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 self-start sm:self-center group transition-colors"
-                >
-                  <span>Xem tất cả thành viên</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              )}
+              <button
+                onClick={() => setSelectedView('all-executive')}
+                className="px-4 py-1.5 rounded-full bg-[#f0fdf4] hover:bg-[#dcfce7] text-[#007a55] border border-[#dcfce7] text-xs font-bold inline-flex items-center gap-1.5 self-start sm:self-center transition-all shadow-2xs group"
+              >
+                <span>Xem tất cả thành viên</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </div>
 
             {/* Horizontal Cards Grid */}
@@ -220,12 +218,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                 <div
                   key={member.id}
                   onClick={() => setSelectedMember(member)}
-                  className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex items-center gap-3.5 group"
+                  className="bg-white rounded-2xl border border-slate-200/80 p-4 shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex items-center gap-3.5 group"
                 >
-                  <div className="w-20 h-20 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-[76px] h-[76px] rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200/60 shadow-2xs group-hover:scale-105 transition-transform duration-300">
                     <img
                       src={member.avatar}
-                      alt={member.name}
+                      alt={member.name || member.fullName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
@@ -234,15 +232,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
-                      {member.name}
+                    <h3 className="text-[14px] font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                      {member.name || member.fullName}
                     </h3>
-                    <p className="text-xs font-bold text-emerald-700 truncate mt-0.5">
-                      {member.role}
+                    <p className="text-[12px] font-semibold text-[#007a55] truncate mt-0.5">
+                      {member.role || member.roleName}
                     </p>
-                    {member.bio && (
-                      <p className="text-[11px] text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
-                        {member.bio}
+                    {(member.bio || member.shortBio) && (
+                      <p className="text-[11px] text-slate-500 mt-1.5 line-clamp-2 leading-snug">
+                        {member.bio || member.shortBio}
                       </p>
                     )}
                   </div>
@@ -268,29 +266,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                 </div>
               </div>
 
-              {managementMembers.length > 5 && (
-                <button
-                  onClick={() => setSelectedView('all-management')}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 self-start sm:self-center group transition-colors"
-                >
-                  <span>Xem tất cả thành viên</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              )}
+              <button
+                onClick={() => setSelectedView('all-management')}
+                className="px-4 py-1.5 rounded-full bg-[#f0fdf4] hover:bg-[#dcfce7] text-[#007a55] border border-[#dcfce7] text-xs font-bold inline-flex items-center gap-1.5 self-start sm:self-center transition-all shadow-2xs group"
+              >
+                <span>Xem tất cả thành viên</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </div>
 
             {/* Horizontal Cards Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5">
               {managementMembers.slice(0, 5).map((member) => (
                 <div
                   key={member.id}
                   onClick={() => setSelectedMember(member)}
-                  className="bg-white rounded-2xl border border-slate-200/90 p-4 shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex items-center gap-3 group"
+                  className="bg-white rounded-2xl border border-slate-200/80 p-3.5 shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex items-center gap-3 group"
                 >
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200 shadow-2xs group-hover:scale-105 transition-transform duration-300">
+                  <div className="w-[68px] h-[68px] rounded-xl overflow-hidden bg-slate-100 flex-shrink-0 border border-slate-200/60 shadow-2xs group-hover:scale-105 transition-transform duration-300">
                     <img
                       src={member.avatar}
-                      alt={member.name}
+                      alt={member.name || member.fullName}
                       className="w-full h-full object-cover"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
@@ -299,15 +295,15 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                   </div>
 
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
-                      {member.name}
+                    <h3 className="text-[13px] font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                      {member.name || member.fullName}
                     </h3>
-                    <p className="text-[11px] font-bold text-emerald-700 truncate mt-0.5">
-                      {member.role}
+                    <p className="text-[11.5px] font-semibold text-[#007a55] truncate mt-0.5">
+                      {member.role || member.roleName}
                     </p>
-                    {member.bio && (
-                      <p className="text-[10px] text-slate-500 mt-1 line-clamp-2 leading-tight">
-                        {member.bio}
+                    {(member.bio || member.shortBio) && (
+                      <p className="text-[10.5px] text-slate-500 mt-1 line-clamp-2 leading-tight">
+                        {member.bio || member.shortBio}
                       </p>
                     )}
                   </div>
@@ -333,29 +329,27 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                 </div>
               </div>
 
-              {studentMembers.length > 6 && (
-                <button
-                  onClick={() => setSelectedView('all-student')}
-                  className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 self-start sm:self-center group transition-colors"
-                >
-                  <span>Xem tất cả thành viên</span>
-                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
-                </button>
-              )}
+              <button
+                onClick={() => setSelectedView('all-student')}
+                className="px-4 py-1.5 rounded-full bg-[#f0fdf4] hover:bg-[#dcfce7] text-[#007a55] border border-[#dcfce7] text-xs font-bold inline-flex items-center gap-1.5 self-start sm:self-center transition-all shadow-2xs group"
+              >
+                <span>Xem tất cả thành viên</span>
+                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+              </button>
             </div>
 
             {/* Vertical Student Cards Grid (6 columns) */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
               {studentMembers.slice(0, 6).map((student) => (
                 <div
                   key={student.id}
                   onClick={() => setSelectedMember(student)}
-                  className="bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex flex-col group"
+                  className="bg-white rounded-2xl border border-slate-200/80 overflow-hidden shadow-2xs hover:shadow-md transition-all cursor-pointer hover:border-emerald-500/40 flex flex-col group"
                 >
                   <div className="aspect-[4/3] bg-slate-100 overflow-hidden relative">
                     <img
                       src={student.avatar}
-                      alt={student.name}
+                      alt={student.name || student.fullName}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
@@ -363,20 +357,20 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                     />
                   </div>
 
-                  <div className="p-3.5 flex flex-col flex-1 justify-between">
+                  <div className="p-3 flex flex-col flex-1 justify-between">
                     <div>
-                      <h3 className="text-xs font-bold text-slate-900 group-hover:text-emerald-700 transition-colors truncate">
-                        {student.name}
+                      <h3 className="text-[13px] font-bold text-slate-900 group-hover:text-emerald-700 transition-colors truncate">
+                        {student.name || student.fullName}
                       </h3>
                       {student.major && (
-                        <p className="text-[11px] font-medium text-slate-500 truncate mt-0.5">
+                        <p className="text-[11px] font-normal text-slate-500 truncate mt-0.5">
                           {student.major}
                         </p>
                       )}
                     </div>
-                    {student.role && (
-                      <p className="text-[10px] text-emerald-800 font-semibold truncate mt-2 bg-emerald-50 px-2 py-0.5 rounded-md self-start">
-                        {student.role}
+                    {(student.role || student.roleName) && (
+                      <p className="text-[11px] text-[#007a55] font-medium truncate mt-1">
+                        {student.role || student.roleName}
                       </p>
                     )}
                   </div>
@@ -389,8 +383,8 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
           <section className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div className="flex items-start gap-3">
-                <div className="w-10 h-10 rounded-2xl bg-amber-100/70 text-amber-800 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Sparkles className="w-5 h-5 text-amber-600" />
+                <div className="w-10 h-10 rounded-2xl bg-emerald-100/70 text-emerald-800 flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Sparkles className="w-5 h-5 text-emerald-700" />
                 </div>
                 <div>
                   <h2 className="text-2xl font-black text-slate-900 tracking-tight">
@@ -404,7 +398,7 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
 
               <button
                 onClick={() => setSelectedView('all-experts')}
-                className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 self-start sm:self-center group transition-colors"
+                className="px-4 py-1.5 rounded-full bg-[#f0fdf4] hover:bg-[#dcfce7] text-[#007a55] border border-[#dcfce7] text-xs font-bold inline-flex items-center gap-1.5 self-start sm:self-center transition-all shadow-2xs group"
               >
                 <span>Xem tất cả chuyên gia</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
@@ -450,12 +444,12 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                         <div
                           key={expert.id}
                           onClick={() => setSelectedMember(expert)}
-                          className="bg-slate-50/70 hover:bg-emerald-50/40 rounded-2xl p-2.5 border border-slate-200/60 hover:border-emerald-300 transition-all cursor-pointer flex items-center gap-3 group"
+                          className="flex items-center gap-3 p-2 rounded-xl hover:bg-emerald-50/50 transition-all cursor-pointer group"
                         >
-                          <div className="w-11 h-11 rounded-full overflow-hidden bg-white border border-slate-200 flex-shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
+                          <div className="w-12 h-12 rounded-full overflow-hidden bg-slate-100 border border-slate-200 flex-shrink-0 shadow-2xs group-hover:scale-105 transition-transform">
                             <img
                               src={expert.avatar}
-                              alt={expert.name}
+                              alt={expert.name || expert.fullName}
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80';
@@ -463,11 +457,11 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
-                              {expert.name}
+                            <h4 className="text-[12.5px] font-bold text-slate-900 truncate group-hover:text-emerald-700 transition-colors">
+                              {expert.name || expert.fullName}
                             </h4>
-                            <p className="text-[11px] text-slate-500 truncate mt-0.5 font-medium">
-                              {expert.role}
+                            <p className="text-[11px] text-slate-500 truncate mt-0.5 font-normal">
+                              {expert.role || expert.roleName}
                             </p>
                           </div>
                         </div>

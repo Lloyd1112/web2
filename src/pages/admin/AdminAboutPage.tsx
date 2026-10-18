@@ -353,10 +353,10 @@ export const AdminAboutPage: React.FC = () => {
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 text-xs font-bold uppercase tracking-wider mb-2">
             <Users className="w-3.5 h-3.5 text-emerald-600" />
-            <span>Quản trị Hệ thống Đội ngũ & Về chúng tôi</span>
+            <span>Quản trị Thông tin về chúng tôi & Đội ngũ</span>
           </div>
           <h1 className="text-2xl font-black text-slate-900 tracking-tight">
-            Quản Lý Về Chúng Tôi & Đội Ngũ Chuyên Gia
+            Quản Lý Thông Tin Về Chúng Tôi & Đội Ngũ
           </h1>
           <p className="text-sm text-slate-500 mt-1">
             Toàn bộ thay đổi về Ban điều hành, Quản lý, Sinh viên, Chuyên gia và Lĩnh vực chuyên môn được đồng bộ tự động ra website công khai.

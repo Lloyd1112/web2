@@ -246,7 +246,7 @@ export const Header: React.FC<HeaderProps> = ({
               {language === 'vi' ? 'Bài toán thực tế' : 'Real-World Problems'}
             </a>
 
-            {/* 4. Đội ngũ (Về chúng tôi) */}
+            {/* 4. Thông tin về chúng tôi */}
             <a
               href={getPathForTab('about')}
               onClick={(e) => {
@@ -258,7 +258,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-slate-800 hover:text-[#00875a]'
                 }`}
             >
-              {language === 'vi' ? 'Đội ngũ' : 'Our Team'}
+              {language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}
             </a>
 
             {/* 4. Sự kiện */}
@@ -455,7 +455,7 @@ export const Header: React.FC<HeaderProps> = ({
                 : 'text-slate-800 hover:bg-slate-100'
                 }`}
             >
-              <span>{language === 'vi' ? 'Đội ngũ & Về chúng tôi' : 'Our Team & About Us'}</span>
+              <span>{language === 'vi' ? 'Thông tin về chúng tôi' : 'About Us'}</span>
               <ArrowRight className="w-4 h-4 opacity-70" />
             </a>
 
