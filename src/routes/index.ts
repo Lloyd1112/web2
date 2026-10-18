@@ -17,9 +17,9 @@ export const ROUTES: Record<string, RouteConfig> = {
   'about': {
     id: 'about',
     path: '/about',
-    aliases: ['/about-us', '/thong-tin-ve-chung-toi', '/gioi-thieu', '/ve-chung-toi'],
-    titleVi: 'Thông tin về chúng tôi | Làng Sinh Viên Bình Mỹ',
-    titleEn: 'About Us | Binh My Student Village'
+    aliases: ['/about-us', '/thong-tin-ve-chung-toi', '/gioi-thieu', '/ve-chung-toi', '/doi-ngu', '/doi-ngu-chuyen-gia'],
+    titleVi: 'Đội ngũ & Về chúng tôi | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'Team & About Us | Binh My Student Village'
   },
   'events': {
     id: 'events',
@@ -144,6 +144,13 @@ export const ROUTES: Record<string, RouteConfig> = {
     titleVi: 'Quản lý Tin tức & Sự kiện | Admin Làng SV',
     titleEn: 'Manage News & Events | Admin'
   },
+  'admin-about': {
+    id: 'admin-about',
+    path: '/admin/ve-chung-toi',
+    aliases: ['/admin/about', '/admin/doi-ngu', '/admin/team'],
+    titleVi: 'Quản lý Về chúng tôi & Đội ngũ | Admin Làng SV',
+    titleEn: 'Manage About Us & Team | Admin'
+  },
   'admin-settings': {
     id: 'admin-settings',
     path: '/admin/cai-dat',
@@ -170,6 +177,7 @@ export function getTabFromPath(pathname: string): string {
     if (cleanPath.startsWith('/admin/du-an')) return 'admin-projects';
     if (cleanPath.startsWith('/admin/doi-tac') || cleanPath.startsWith('/admin/partners') || cleanPath.startsWith('/admin/partner')) return 'admin-partners';
     if (cleanPath.startsWith('/admin/tin-tuc')) return 'admin-news';
+    if (cleanPath.startsWith('/admin/ve-chung-toi') || cleanPath.startsWith('/admin/about') || cleanPath.startsWith('/admin/doi-ngu') || cleanPath.startsWith('/admin/team')) return 'admin-about';
     if (cleanPath.startsWith('/admin/cai-dat')) return 'admin-settings';
     return 'admin-dashboard';
   }

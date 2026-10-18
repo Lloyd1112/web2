@@ -1,5 +1,23 @@
-import { RealProblem, ProblemStatus, ProblemCategory, AdminPartner, PartnerCategory } from '../types';
+import { 
+  RealProblem, 
+  ProblemStatus, 
+  ProblemCategory, 
+  AdminPartner, 
+  PartnerCategory,
+  AboutIntroConfig,
+  TeamRole,
+  ExpertDomain,
+  TeamMember,
+  TeamMemberGroup,
+  TeamMemberStatus
+} from '../types';
 import { initialRealProblems } from '../data/mockProblems';
+import { 
+  initialAboutIntro, 
+  initialTeamRoles, 
+  initialExpertDomains, 
+  initialTeamMembers 
+} from '../data/mockTeamData';
 
 // ================= TYPES CHO ADMIN =================
 
@@ -139,7 +157,11 @@ const STORAGE_KEYS = {
   NEWS: 'binhmy_admin_news_v1',
   PARTNERS: 'binhmy_admin_partners_v1',
   CONTACTS: 'binhmy_contact_messages_v1',
-  AUTH: 'binhmy_admin_auth_user'
+  AUTH: 'binhmy_admin_auth_user',
+  ABOUT_INTRO: 'binhmy_about_intro_v1',
+  TEAM_ROLES: 'binhmy_team_roles_v1',
+  EXPERT_DOMAINS: 'binhmy_expert_domains_v1',
+  TEAM_MEMBERS: 'binhmy_team_members_v1'
 };
 
 /**
@@ -1243,6 +1265,7 @@ export class AdminDataService {
     const projects = this.getProjects();
     const partners = this.getPartners();
     const contacts = this.getContactMessages();
+    const teamMembers = this.getTeamMembers();
 
     const totalProblems = problems.length;
     const pendingProblems = problems.filter(p => p.status === 'pending').length;
@@ -1281,7 +1304,9 @@ export class AdminDataService {
       totalPartners,
       activePartners,
       homepagePartners,
-      newContacts
+      newContacts,
+      totalTeamMembers: teamMembers.length,
+      totalExperts: teamMembers.filter(m => m.group === 'expert').length
     };
   }
 
@@ -1347,11 +1372,317 @@ export class AdminDataService {
     localStorage.removeItem(STORAGE_KEYS.NEWS);
     localStorage.removeItem(STORAGE_KEYS.PARTNERS);
     localStorage.removeItem(STORAGE_KEYS.CONTACTS);
+    localStorage.removeItem(STORAGE_KEYS.ABOUT_INTRO);
+    localStorage.removeItem(STORAGE_KEYS.TEAM_ROLES);
+    localStorage.removeItem(STORAGE_KEYS.EXPERT_DOMAINS);
+    localStorage.removeItem(STORAGE_KEYS.TEAM_MEMBERS);
     this.getProblems();
     this.getProposals();
     this.getProjects();
     this.getNews();
     this.getPartners();
+    this.getAboutIntro();
+    this.getTeamRoles();
+    this.getExpertDomains();
+    this.getTeamMembers();
     dispatchSyncEvent();
   }
+
+  // ================= 10. QUẢN LÝ VỀ CHÚNG TÔI, ĐỘI NGŨ & CHUYÊN GIA =================
+
+  // --- 10.1. Nội dung Giới thiệu ---
+  static getAboutIntro(): AboutIntroConfig {
+    const normalize = (data: any): AboutIntroConfig => ({
+      ...data,
+      title: data.title || data.titleVi || 'Đội ngũ và Chuyên gia cho Bình Mỹ',
+      titleVi: data.titleVi || data.title || 'Đội ngũ và Chuyên gia cho Bình Mỹ',
+      badge: data.badge || data.badgeVi || 'VỀ CHÚNG TÔI',
+      badgeVi: data.badgeVi || data.badge || 'VỀ CHÚNG TÔI',
+      description: data.description || data.descVi || '',
+      descVi: data.descVi || data.description || '',
+      slogan: data.slogan || data.sloganVi || 'Kết nối tri thức – Kiến tạo giải pháp – Phát triển Bình Mỹ',
+      sloganVi: data.sloganVi || data.slogan || 'Kết nối tri thức – Kiến tạo giải pháp – Phát triển Bình Mỹ',
+      handwrittenNote: data.handwrittenNote || data.calloutVi || 'Kết nối tri thức\nKiến tạo giá trị\ncho Bình Mỹ',
+      calloutVi: data.calloutVi || data.handwrittenNote || 'Kết nối tri thức\nKiến tạo giá trị\ncho Bình Mỹ',
+      bannerImage: data.bannerImage || '/assets/pum/hero_visual2-e1710851129461-1200x836.jpg',
+      ctaTitle: data.ctaTitle || 'Bạn là sinh viên, chuyên gia, doanh nghiệp?',
+      ctaDescription: data.ctaDescription || 'Hãy cùng Làng SV Đổi mới sáng tạo Bình Mỹ tạo nên những giá trị thiết thực cho cộng đồng. Tham gia đội ngũ của chúng tôi ngay hôm nay!',
+      ctaPrimaryButtonText: data.ctaPrimaryButtonText || 'Tham gia đội ngũ',
+      ctaSecondaryButtonText: data.ctaSecondaryButtonText || 'Đăng ký làm chuyên gia'
+    });
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.ABOUT_INTRO);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (parsed && typeof parsed === 'object') {
+          return normalize(parsed);
+        }
+      }
+    } catch (e) {
+      console.error('Error reading about intro:', e);
+    }
+    const initial = normalize(initialAboutIntro);
+    localStorage.setItem(STORAGE_KEYS.ABOUT_INTRO, JSON.stringify(initial));
+    return initial;
+  }
+
+  static saveAboutIntro(intro: AboutIntroConfig): void {
+    localStorage.setItem(STORAGE_KEYS.ABOUT_INTRO, JSON.stringify(intro));
+    dispatchSyncEvent();
+  }
+
+  // --- 10.2. Chức vụ và Vai trò ---
+  static getTeamRoles(): TeamRole[] {
+    const normalizeRole = (r: any): TeamRole => ({
+      ...r,
+      targetGroup: r.targetGroup || r.group || 'all',
+      group: r.group || r.targetGroup || 'all',
+      isActive: r.isActive !== undefined ? r.isActive : (r.status !== 'disabled'),
+      status: r.status || (r.isActive === false ? 'disabled' : 'active')
+    });
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.TEAM_ROLES);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return parsed.map(normalizeRole).sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+        }
+      }
+    } catch (e) {
+      console.error('Error reading team roles:', e);
+    }
+    const initial = initialTeamRoles.map(normalizeRole);
+    localStorage.setItem(STORAGE_KEYS.TEAM_ROLES, JSON.stringify(initial));
+    return initial;
+  }
+
+  static saveTeamRole(role: TeamRole): void {
+    const list = this.getTeamRoles();
+    const now = new Date().toLocaleDateString('vi-VN');
+    const index = list.findIndex(r => r.id === role.id);
+    if (index >= 0) {
+      list[index] = { ...role, updatedAt: now };
+    } else {
+      list.push({ ...role, createdAt: role.createdAt || now, updatedAt: now });
+    }
+    list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    localStorage.setItem(STORAGE_KEYS.TEAM_ROLES, JSON.stringify(list));
+
+    // Đồng bộ cập nhật tên chức vụ hiển thị cho các thành viên đang dùng roleId này
+    const members = this.getTeamMembers();
+    let hasUpdatedMembers = false;
+    members.forEach(m => {
+      if (m.roleId === role.id && m.roleName !== role.name) {
+        m.roleName = role.name;
+        hasUpdatedMembers = true;
+      }
+    });
+    if (hasUpdatedMembers) {
+      localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+    }
+
+    dispatchSyncEvent();
+  }
+
+  static deleteTeamRole(id: string): { success: boolean; error?: string } {
+    const members = this.getTeamMembers();
+    const isUsed = members.some(m => m.roleId === id);
+    if (isUsed) {
+      return {
+        success: false,
+        error: 'Không thể xóa chức vụ này vì đang có thành viên sử dụng. Vui lòng chuyển thành viên sang chức vụ khác hoặc chọn trạng thái "Ngừng sử dụng".'
+      };
+    }
+    const list = this.getTeamRoles();
+    const filtered = list.filter(r => r.id !== id);
+    localStorage.setItem(STORAGE_KEYS.TEAM_ROLES, JSON.stringify(filtered));
+    dispatchSyncEvent();
+    return { success: true };
+  }
+
+  static reassignMembersRole(oldRoleId: string, newRoleId: string, newRoleName: string): number {
+    const members = this.getTeamMembers();
+    let count = 0;
+    members.forEach(m => {
+      if (m.roleId === oldRoleId) {
+        m.roleId = newRoleId;
+        m.role = newRoleName;
+        m.updatedAt = new Date().toLocaleDateString('vi-VN');
+        count++;
+      }
+    });
+    if (count > 0) {
+      localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+      dispatchSyncEvent();
+    }
+    return count;
+  }
+
+  // --- 10.3. Lĩnh vực Chuyên môn ---
+  static getExpertDomains(): ExpertDomain[] {
+    const normalizeDomain = (d: any): ExpertDomain => ({
+      ...d,
+      slug: d.slug || d.name.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, ""),
+      isActive: d.isActive !== undefined ? d.isActive : (d.status !== 'hidden'),
+      status: d.status || (d.isActive === false ? 'hidden' : 'active')
+    });
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.EXPERT_DOMAINS);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return parsed.map(normalizeDomain).sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+        }
+      }
+    } catch (e) {
+      console.error('Error reading expert domains:', e);
+    }
+    const initial = initialExpertDomains.map(normalizeDomain);
+    localStorage.setItem(STORAGE_KEYS.EXPERT_DOMAINS, JSON.stringify(initial));
+    return initial;
+  }
+
+  static saveExpertDomain(domain: ExpertDomain): void {
+    const list = this.getExpertDomains();
+    const now = new Date().toLocaleDateString('vi-VN');
+    const index = list.findIndex(d => d.id === domain.id);
+    if (index >= 0) {
+      list[index] = { ...domain, updatedAt: now };
+    } else {
+      list.push({ ...domain, createdAt: domain.createdAt || now, updatedAt: now });
+    }
+    list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    localStorage.setItem(STORAGE_KEYS.EXPERT_DOMAINS, JSON.stringify(list));
+
+    // Đồng bộ cập nhật tên lĩnh vực cho các thành viên đang liên kết
+    const members = this.getTeamMembers();
+    let hasUpdatedMembers = false;
+    members.forEach(m => {
+      if (m.domainId === domain.id && m.domainName !== domain.name) {
+        m.domainName = domain.name;
+        hasUpdatedMembers = true;
+      }
+    });
+    if (hasUpdatedMembers) {
+      localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+    }
+
+    dispatchSyncEvent();
+  }
+
+  static deleteExpertDomain(id: string): { success: boolean; error?: string } {
+    const members = this.getTeamMembers();
+    const isUsed = members.some(m => m.domainId === id);
+    if (isUsed) {
+      return {
+        success: false,
+        error: 'Không thể xóa lĩnh vực này vì đang có chuyên gia tham gia. Vui lòng chuyển các chuyên gia sang lĩnh vực khác trước khi xóa.'
+      };
+    }
+    const list = this.getExpertDomains();
+    const filtered = list.filter(d => d.id !== id);
+    localStorage.setItem(STORAGE_KEYS.EXPERT_DOMAINS, JSON.stringify(filtered));
+    dispatchSyncEvent();
+    return { success: true };
+  }
+
+  static reassignMembersDomain(oldDomainId: string, newDomainId: string, newDomainName: string): number {
+    const members = this.getTeamMembers();
+    let count = 0;
+    members.forEach(m => {
+      if (m.domainId === oldDomainId) {
+        m.domainId = newDomainId;
+        m.domainName = newDomainName;
+        m.updatedAt = new Date().toLocaleDateString('vi-VN');
+        count++;
+      }
+    });
+    if (count > 0) {
+      localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(members));
+      dispatchSyncEvent();
+    }
+    return count;
+  }
+
+  // --- 10.4. Thành viên & Chuyên gia ---
+  static getTeamMembers(): TeamMember[] {
+    const normalizeMember = (m: any): TeamMember => ({
+      ...m,
+      name: m.name || m.fullName || '',
+      fullName: m.fullName || m.name || '',
+      role: m.role || m.roleName || '',
+      roleName: m.roleName || m.role || '',
+      bio: m.bio || m.shortBio || '',
+      shortBio: m.shortBio || m.bio || '',
+      status: m.status || 'active'
+    });
+
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.TEAM_MEMBERS);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          return parsed.map(normalizeMember).sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+        }
+      }
+    } catch (e) {
+      console.error('Error reading team members:', e);
+    }
+    const initial = initialTeamMembers.map(normalizeMember);
+    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(initial));
+    return initial;
+  }
+
+  static getTeamMemberById(id: string): TeamMember | undefined {
+    return this.getTeamMembers().find(m => m.id === id);
+  }
+
+  static saveTeamMember(member: TeamMember): void {
+    const list = this.getTeamMembers();
+    const now = new Date().toLocaleDateString('vi-VN');
+    const index = list.findIndex(m => m.id === member.id);
+    if (index >= 0) {
+      list[index] = { ...member, updatedAt: now };
+    } else {
+      list.push({ ...member, createdAt: member.createdAt || now, updatedAt: now });
+    }
+    list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(list));
+    dispatchSyncEvent();
+  }
+
+  static deleteTeamMember(id: string): boolean {
+    const list = this.getTeamMembers();
+    const filtered = list.filter(m => m.id !== id);
+    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(filtered));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  static toggleTeamMemberStatus(id: string): boolean {
+    const list = this.getTeamMembers();
+    const item = list.find(m => m.id === id);
+    if (!item) return false;
+    item.status = item.status === 'active' ? 'hidden' : 'active';
+    item.updatedAt = new Date().toLocaleDateString('vi-VN');
+    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  static updateTeamMemberOrder(id: string, newOrder: number): boolean {
+    const list = this.getTeamMembers();
+    const item = list.find(m => m.id === id);
+    if (!item) return false;
+    item.order = newOrder;
+    item.updatedAt = new Date().toLocaleDateString('vi-VN');
+    list.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+    localStorage.setItem(STORAGE_KEYS.TEAM_MEMBERS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return true;
+  }
 }
+

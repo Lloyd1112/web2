@@ -18,7 +18,8 @@ import {
   Clock,
   Sparkles,
   Search,
-  Handshake
+  Handshake,
+  UserCheck
 } from 'lucide-react';
 
 interface AdminLayoutProps {
@@ -92,6 +93,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       label: 'Tin tức & Sự kiện',
       icon: Newspaper,
       badge: null
+    },
+    {
+      id: 'admin-about',
+      label: 'Quản lý Về chúng tôi',
+      icon: UserCheck,
+      badge: (stats as any).totalTeamMembers > 0 ? (stats as any).totalTeamMembers : null,
+      badgeColor: 'bg-emerald-100 text-emerald-800'
     },
     {
       id: 'admin-settings',

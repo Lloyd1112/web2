@@ -27,6 +27,7 @@ import { AdminProposalsPage } from './pages/admin/AdminProposalsPage';
 import { AdminProjectsPage } from './pages/admin/AdminProjectsPage';
 import { AdminPartnersPage } from './pages/admin/AdminPartnersPage';
 import { AdminNewsPage } from './pages/admin/AdminNewsPage';
+import { AdminAboutPage } from './pages/admin/AdminAboutPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
 import { AdminDataService } from './services/adminDataService';
 import { RealProblem } from './types';
@@ -225,6 +226,9 @@ export function App() {
 
             case 'admin-news':
               return <AdminNewsPage />;
+
+            case 'admin-about':
+              return <AdminAboutPage />;
 
             case 'admin-settings':
               return <AdminSettingsPage />;

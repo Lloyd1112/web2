@@ -278,3 +278,86 @@ export interface SolutionProposal {
   createdAt: string;
 }
 
+// ================= QUẢN TRỊ VỀ CHÚNG TÔI & ĐỘI NGŨ =================
+
+export type TeamMemberGroup = 'executive' | 'management' | 'student' | 'expert';
+export type TeamMemberStatus = 'active' | 'hidden' | 'draft';
+
+export interface AboutIntroConfig {
+  badgeVi?: string;
+  badgeEn?: string;
+  badge?: string;
+  titleVi?: string;
+  titleEn?: string;
+  title?: string;
+  descVi?: string;
+  descEn?: string;
+  description?: string;
+  sloganVi?: string;
+  sloganEn?: string;
+  slogan?: string;
+  calloutVi?: string;
+  calloutEn?: string;
+  handwrittenNote?: string;
+  bannerImage: string;
+  ctaTitle?: string;
+  ctaDescription?: string;
+  ctaPrimaryButtonText?: string;
+  ctaSecondaryButtonText?: string;
+}
+
+export interface TeamRole {
+  id: string;
+  name: string;
+  nameEn?: string;
+  group?: TeamMemberGroup | 'all';
+  targetGroup?: TeamMemberGroup | 'all';
+  description?: string;
+  status?: 'active' | 'disabled';
+  isActive?: boolean;
+  order: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface ExpertDomain {
+  id: string;
+  name: string;
+  nameEn?: string;
+  slug?: string;
+  description: string;
+  descriptionEn?: string;
+  icon: string; // 'Laptop' | 'Sprout' | 'Palmtree' | 'GraduationCap' | 'TrendingUp' | 'Heart' | 'Compass' | 'BookOpen' | 'HeartPulse'
+  order: number;
+  status?: 'active' | 'hidden';
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TeamMember {
+  id: string;
+  fullName?: string;
+  name?: string;
+  avatar: string;
+  group: TeamMemberGroup;
+  roleId: string;
+  roleName?: string;
+  role?: string;
+  domainId?: string; // Áp dụng cho chuyên gia
+  domainName?: string;
+  organization?: string;
+  major?: string; // Ngành học hoặc chuyên môn
+  shortBio?: string; // Giới thiệu ngắn / Nhiệm vụ / Trách nhiệm
+  bio?: string;
+  order: number;
+  status: TeamMemberStatus;
+  email?: string;
+  phone?: string;
+  linkedin?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+
+
