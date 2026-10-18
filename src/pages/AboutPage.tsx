@@ -96,49 +96,60 @@ export const AboutPage: React.FC<AboutPageProps> = ({ onOpenCollaboration, onNav
   return (
     <div className="w-full bg-[#fbfdfc] min-h-screen text-slate-800 font-sans pb-16">
       
-      {/* ================= HERO HEADER BANNER ================= */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#eaf6f0] via-[#f4faf7] to-[#fbfdfc] pt-10 pb-12 lg:pt-14 lg:pb-16 border-b border-emerald-100/60">
-        <div className="max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+      {/* ================= HERO HEADER BANNER (EXACT IMAGE 2 REPLICA) ================= */}
+      <section className="relative overflow-hidden bg-[#eaf5ef] border-b border-emerald-100/60 min-h-[340px] lg:min-h-[380px] flex items-center">
+        <div className="w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-4 relative z-10">
+          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
             
-            {/* Left Content */}
-            <div className="lg:col-span-7 space-y-5">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-100/80 text-emerald-800 text-xs font-black uppercase tracking-wider">
-                <Sprout className="w-4 h-4 text-emerald-600" />
+            {/* Left Content Column */}
+            <div className="w-full lg:w-[48%] xl:w-[46%] space-y-4 lg:py-6 z-10">
+              <div className="inline-flex items-center gap-2 text-xs font-black uppercase tracking-wider text-[#00684a]">
+                <Sprout className="w-4 h-4 text-[#00875a]" />
                 <span>{intro.badge || intro.badgeVi || 'VỀ CHÚNG TÔI'}</span>
               </div>
 
-              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-slate-900 tracking-tight leading-tight">
-                {intro.title || intro.titleVi || 'Đội ngũ và Chuyên gia cho Bình Mỹ'}
+              <h1 className="text-3xl sm:text-4xl lg:text-[40px] xl:text-[44px] font-black text-[#005e46] tracking-tight leading-[1.18]">
+                {intro.title || intro.titleVi ? (
+                  (intro.title || intro.titleVi) === 'Đội ngũ và Chuyên gia cho Bình Mỹ' ? (
+                    <>
+                      Đội ngũ và Chuyên gia<br />
+                      cho Bình Mỹ
+                    </>
+                  ) : (
+                    intro.title || intro.titleVi
+                  )
+                ) : (
+                  <>
+                    Đội ngũ và Chuyên gia<br />
+                    cho Bình Mỹ
+                  </>
+                )}
               </h1>
 
-              <p className="text-sm sm:text-base text-slate-600 font-normal leading-relaxed text-justify max-w-2xl">
-                {intro.description || intro.descVi || ''}
+              <p className="text-[13.5px] lg:text-[14px] text-slate-600 font-normal leading-relaxed text-justify max-w-xl">
+                {intro.description || intro.descVi || 'Làng SV Đổi mới sáng tạo Bình Mỹ là nơi kết nối tri thức, nguồn lực và con người để cùng giải quyết những bài toán thực tế của địa phương. Chúng tôi tin rằng, khi người dân – sinh viên – chuyên gia – doanh nghiệp cùng đồng hành, Bình Mỹ sẽ có thêm nhiều cơ hội phát triển bền vững và tạo ra giá trị lâu dài cho cộng đồng.'}
               </p>
 
-              <div className="pt-2 flex items-center gap-2 text-emerald-800 font-bold text-sm sm:text-base">
-                <Sprout className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-                <span className="italic">{intro.slogan || intro.sloganVi || ''}</span>
+              <div className="pt-1 flex items-center gap-2 text-[#007a55] font-semibold text-xs sm:text-sm">
+                <Sprout className="w-4 h-4 text-[#00875a] flex-shrink-0" />
+                <span className="italic">{intro.slogan || intro.sloganVi || 'Kết nối tri thức – Kiến tạo giải pháp – Phát triển Bình Mỹ'}</span>
               </div>
             </div>
 
-            {/* Right Banner Image with Handwritten Note */}
-            <div className="lg:col-span-5 relative">
-              <div className="relative rounded-3xl overflow-hidden shadow-2xl border-4 border-white aspect-[16/11] bg-slate-100">
+            {/* Right Panoramic Students Artwork (matches Image 2 without boxed border) */}
+            <div className="w-full lg:w-[52%] xl:w-[54%] flex items-center justify-end relative">
+              <div className="relative w-full flex justify-end">
                 <img
-                  src={intro.bannerImage}
-                  alt={intro.title || intro.titleVi || 'Banner'}
-                  className="w-full h-full object-cover"
+                  src={intro.bannerImage || '/assets/about-hero-students.png'}
+                  alt={intro.title || intro.titleVi || 'Đội ngũ và Chuyên gia cho Bình Mỹ'}
+                  className="w-full h-auto max-h-[340px] lg:max-h-[380px] object-contain object-right"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=1200&q=80';
+                    (e.target as HTMLImageElement).src = '/assets/about-hero-students.png';
                   }}
                 />
-                
-                {/* Soft gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/30 via-transparent to-transparent pointer-events-none" />
 
-                {/* Handwritten Callout in top-right */}
-                {(intro.handwrittenNote || intro.calloutVi) && (
+                {/* Optional overlay for custom uploaded images only */}
+                {intro.bannerImage && !intro.bannerImage.includes('about-hero') && (intro.handwrittenNote || intro.calloutVi) && (
                   <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-md px-4 py-3 rounded-2xl shadow-lg border border-white/60">
                     <p className="text-xs sm:text-sm font-black text-emerald-800 whitespace-pre-line text-right leading-snug font-serif italic">
                       {intro.handwrittenNote || intro.calloutVi}

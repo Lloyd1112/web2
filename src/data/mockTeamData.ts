@@ -11,7 +11,7 @@ export const initialAboutIntro: AboutIntroConfig = {
   sloganEn: 'Connecting Knowledge – Creating Solutions – Developing Binh My',
   calloutVi: 'Kết nối tri thức\nKiến tạo giá trị\ncho Bình Mỹ',
   calloutEn: 'Connecting Knowledge\nCreating Value\nfor Binh My',
-  bannerImage: '/assets/pum/hero_visual2-e1710851129461-1200x836.jpg'
+  bannerImage: '/assets/about-hero-students.png'
 };
 
 export const initialTeamRoles: TeamRole[] = [
