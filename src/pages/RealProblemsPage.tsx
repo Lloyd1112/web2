@@ -169,14 +169,10 @@ export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
     return filteredProblems.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredProblems, currentPage]);
 
-  // Thống kê tổng quan (chỉ tính các bài toán đã được xác minh / công khai)
-  const publishedProblems = useMemo(() => {
-    return problems.filter(p => p.status !== 'pending');
-  }, [problems]);
-
-  const totalCount = Math.max(12, publishedProblems.length);
-  const verifiedCount = Math.max(8, publishedProblems.filter(p => p.status === 'verified').length);
-  const processingCount = Math.max(4, publishedProblems.filter(p => p.status === 'in_progress' || p.status === 'seeking_support').length);
+  // Thống kê tổng quan đồng bộ thời gian thực từ Web Admin
+  const totalCount = problems.length;
+  const verifiedCount = problems.filter(p => p.status === 'verified').length;
+  const processingCount = problems.filter(p => p.status === 'in_progress' || p.status === 'seeking_support').length;
 
   // NẾU ĐANG CHỌN ĐĂNG BÀI TOÁN THỰC TẾ -> HIỂN THỊ GIAO DIỆN TỪNG BƯỚC CHUẨN THEO ẢNH
   if (isPostingProblem) {

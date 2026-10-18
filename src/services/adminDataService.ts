@@ -753,7 +753,7 @@ export class AdminDataService {
       const stored = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -835,7 +835,7 @@ export class AdminDataService {
       const stored = localStorage.getItem(STORAGE_KEYS.PROPOSALS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }
@@ -1128,7 +1128,7 @@ export class AdminDataService {
         return [...initialAdminPartners];
       }
       const parsed = JSON.parse(stored);
-      if (Array.isArray(parsed) && parsed.length > 0) {
+      if (Array.isArray(parsed)) {
         return parsed.sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
       }
       localStorage.setItem(STORAGE_KEYS.PARTNERS, JSON.stringify(initialAdminPartners));
