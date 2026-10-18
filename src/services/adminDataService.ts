@@ -999,47 +999,7 @@ export class AdminDataService {
       const stored = localStorage.getItem(STORAGE_KEYS.PROJECTS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Tự động đồng bộ chuẩn hóa nếu phát hiện dữ liệu cũ bị thiếu proj-4 hoặc sai lệch thumbnail/problemId
-          const hasInnovation = parsed.some(p => p.id === 'proj-4' || p.category === 'innovation');
-          const p1 = parsed.find(p => p.id === 'proj-1');
-          const p2 = parsed.find(p => p.id === 'proj-2');
-          const p3 = parsed.find(p => p.id === 'proj-3');
-          const isThumbnailMisaligned = 
-            (p2 && (p2.thumbnail === '/assets/problems/card2.jpg' || p2.thumbnail?.includes('card2'))) ||
-            (p3 && (p3.thumbnail === '/assets/problems/card3.jpg' || p3.thumbnail?.includes('card3')));
-          const isProblemIdMisaligned = 
-            (p1 && p1.problemId === 'prob-1') ||
-            (p2 && p2.problemId === 'prob-2') ||
-            (p3 && p3.problemId === 'prob-3');
-
-          if (!hasInnovation || isThumbnailMisaligned || isProblemIdMisaligned || parsed.length < 4) {
-            const updated = initialProjects.map(initProj => {
-              const existing = parsed.find(p => p.id === initProj.id);
-              if (existing) {
-                return {
-                  ...initProj,
-                  ...existing,
-                  thumbnail: initProj.thumbnail,
-                  category: initProj.category,
-                  categoryName: initProj.categoryName,
-                  problemId: initProj.problemId,
-                  problemTitle: initProj.problemTitle,
-                };
-              }
-              return initProj;
-            });
-
-            parsed.forEach(p => {
-              if (!updated.some(u => u.id === p.id)) {
-                updated.push(p);
-              }
-            });
-
-            localStorage.setItem(STORAGE_KEYS.PROJECTS, JSON.stringify(updated));
-            return updated;
-          }
-
+        if (Array.isArray(parsed)) {
           return parsed;
         }
       }

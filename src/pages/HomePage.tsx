@@ -142,26 +142,26 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
     );
   }, [partnersList, selectedPartnerCategory, dataVersion]);
 
-  // 2. Lấy dữ liệu dự án tiêu biểu từ module dự án của hệ thống (đồng bộ với các mục)
+  // 2. Lấy dữ liệu dự án tiêu biểu từ module dự án của hệ thống (đồng bộ thời gian thực với web admin)
   const filteredProjects = useMemo(() => {
     const allProjects = AdminDataService.getProjects();
-    const published = allProjects.filter(p => p.publishStatus === 'published' || p.publishStatus !== 'hidden');
+    const published = allProjects.filter(p => p.publishStatus === 'published');
     if (selectedProjectCategory === 'all') {
-      return published.slice(0, 4);
+      return published;
     }
     if (selectedProjectCategory === 'agriculture') {
-      return published.filter(p => p.category === 'agriculture' || p.category === 'agro').slice(0, 4);
+      return published.filter(p => p.category === 'agriculture' || p.category === 'agro');
     }
     if (selectedProjectCategory === 'health') {
-      return published.filter(p => p.category === 'health' || p.category === 'healthcare' || p.category === 'wellness' || p.category === 'elderly').slice(0, 4);
+      return published.filter(p => p.category === 'health' || p.category === 'healthcare' || p.category === 'wellness' || p.category === 'elderly');
     }
     if (selectedProjectCategory === 'tourism') {
-      return published.filter(p => p.category === 'tourism' || p.category === 'tour').slice(0, 4);
+      return published.filter(p => p.category === 'tourism' || p.category === 'tour');
     }
     if (selectedProjectCategory === 'innovation') {
-      return published.filter(p => p.category === 'innovation' || p.category === 'tech' || p.category === 'technology' || p.category === 'environment').slice(0, 4);
+      return published.filter(p => p.category === 'innovation' || p.category === 'tech' || p.category === 'technology' || p.category === 'environment');
     }
-    return published.filter(p => p.category === selectedProjectCategory).slice(0, 4);
+    return published.filter(p => p.category === selectedProjectCategory);
   }, [selectedProjectCategory, dataVersion]);
 
   // 3. Lấy dữ liệu bài toán thực tế đã xác minh / công khai từ hệ thống (đồng bộ với các mục)

@@ -263,7 +263,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
     const nextStatus: ProjectPublishStatus = p.publishStatus === 'published' ? 'hidden' : 'published';
     AdminDataService.updateProjectPublishStatus(p.id, nextStatus);
     setProjects(prev => prev.map(item => item.id === p.id ? { ...item, publishStatus: nextStatus } : item));
-    showToast(nextStatus === 'published' ? `Đã xuất bản dự án "${p.title}" lên Trang chủ!` : `Đã ẩn dự án "${p.title}" khỏi Trang chủ.`);
+    showToast(nextStatus === 'published' ? `Đã xuất bản dự án "${p.title}" lên Trang chủ và Trang dự án!` : `Đã ẩn dự án "${p.title}" khỏi Trang chủ và Trang dự án.`);
   };
 
   const handleCycleImplStatus = (p: AdminProject) => {
@@ -623,7 +623,7 @@ export const AdminProjectsPage: React.FC<AdminProjectsPageProps> = ({
                         <button
                           type="button"
                           onClick={() => handleTogglePublish(p)}
-                          title="Bấm để chuyển đổi nhanh Ẩn / Xuất bản công khai lên Trang chủ"
+                          title="Bấm để chuyển đổi nhanh Ẩn / Xuất bản công khai lên Trang chủ và Trang dự án"
                           className="cursor-pointer hover:opacity-80 transition-opacity active:scale-95 text-left inline-block"
                         >
                           {getPublishStatusBadge(p.publishStatus)}
