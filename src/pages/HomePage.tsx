@@ -217,11 +217,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
       
       {/* ================= 1. HERO SECTION (PHONG CẢNH BÌNH MỸ: HOA SEN & HOA LỤC BÌNH) ================= */}
       <section className="relative w-full overflow-hidden border-b border-emerald-100/60 bg-[#eef7f4]">
-        {/* Natural Landscape Background: Đầm sen & Hoa lục bình Bình Mỹ */}
+        {/* Natural Landscape Background: Đầm sen & Hoa lục bình Bình Mỹ (file 7e260313-7106-4b8d-b754-25b36873ff31.png) */}
         <div 
           className="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none select-none z-0"
           style={{
-            backgroundImage: `url('/assets/hero-bg-binh-my.png')`,
+            backgroundImage: `url('/assets/7e260313-7106-4b8d-b754-25b36873ff31.png')`,
           }}
         />
 
