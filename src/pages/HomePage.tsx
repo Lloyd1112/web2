@@ -229,14 +229,14 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
         <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent pointer-events-none z-0 lg:hidden" />
 
         {/* Hero Content Container */}
-        <div className="relative z-10 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 lg:pt-12 lg:pb-14">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <div className="relative z-10 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-5 pb-8 lg:pt-7 lg:pb-10">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-10 items-center">
           
           {/* CỘT TRÁI (6 CỘT) */}
-          <div className="lg:col-span-6 space-y-6">
+          <div className="lg:col-span-6 space-y-3 lg:space-y-3.5">
             
             {/* Nhãn nhỏ phía trên */}
-            <div className="flex flex-wrap items-center gap-2.5">
+            <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold text-amber-900 bg-[#fef3c7] border border-amber-300/80 shadow-2xs">
                 <span>✨</span>
                 <span>CAMPUS MỞ ĐỔI MỚI SÁNG TẠO</span>
@@ -248,15 +248,15 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             </div>
 
             {/* Tiêu đề 3 dòng theo màu chuẩn */}
-            <div className="space-y-1">
-              <h1 className="text-3xl sm:text-4xl lg:text-[50px] font-black tracking-tight leading-[1.15]">
+            <div className="space-y-0.5">
+              <h1 className="text-2xl sm:text-3xl lg:text-[38px] xl:text-[42px] font-black tracking-tight leading-[1.12]">
                 {/* Dòng 1: Xanh navy đậm */}
                 <span className="text-[#0f294a] block">Làng Sinh Viên</span>
                 
                 {/* Dòng 2: Xanh lá đậm kèm họa tiết lá */}
                 <span className="inline-flex items-center gap-2 text-[#00875a]">
                   <span>Đổi Mới Sáng Tạo</span>
-                  <svg className="w-8 h-8 lg:w-10 lg:h-10 text-emerald-500 inline-block -translate-y-1 rotate-12 shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                  <svg className="w-7 h-7 lg:w-9 lg:h-9 text-emerald-500 inline-block -translate-y-1 rotate-12 shrink-0" viewBox="0 0 24 24" fill="currentColor">
                     <path d="M12 2C8 6 6 12 8 18C10 16 16 14 18 8C19 5 16 3 12 2Z" />
                     <path d="M17 11C15 14 14 17 15 20C16 19 20 18 21 14C22 12 20 11 17 11Z" opacity="0.8" />
                   </svg>
@@ -268,7 +268,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             </div>
 
             {/* Đoạn mô tả */}
-            <p className="text-sm sm:text-base text-slate-600 leading-relaxed max-w-xl font-normal">
+            <p className="text-xs sm:text-[13px] lg:text-[13.5px] text-slate-600 leading-[1.5] max-w-lg lg:max-w-[500px] font-normal text-justify">
               {language === 'vi' ? (
                 <>
                   <strong className="text-slate-800 font-bold">Làng Sinh Viên Đổi Mới Sáng Tạo Bình Mỹ</strong> là nền tảng kết nối các bài toán thực tế của địa phương với sinh viên, chuyên gia và doanh nghiệp, cùng hợp tác xây dựng và thử nghiệm giải pháp trong lĩnh vực y tế – du lịch – nông nghiệp. Hướng đến biến Bình Mỹ thành <strong className="text-slate-800 font-bold">“phòng thí nghiệm sống”</strong>, nơi tri thức được ứng dụng vào thực tiễn, thúc đẩy đổi mới sáng tạo và phát triển cộng đồng bền vững.
@@ -281,11 +281,11 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
             </p>
 
             {/* Bố trí các nút bấm hành động */}
-            <div className="flex flex-wrap items-center gap-3 pt-1">
+            <div className="flex flex-wrap items-center gap-3 pt-1.5 lg:pt-2">
               {/* Nút 1: Bài toán thực tế (Xanh lá đậm) */}
               <button
                 onClick={() => onNavigate('real-problems')}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white bg-[#00875a] hover:bg-[#00684a] transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold text-white bg-[#00875a] hover:bg-[#00684a] transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer min-w-[155px]"
               >
                 <span>{language === 'vi' ? 'Bài toán thực tế' : 'Real-world Challenges'}</span>
                 <ArrowRight className="w-4 h-4" />
@@ -294,7 +294,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
               {/* Nút 2: Đề xuất hợp tác (Màu cam) */}
               <button
                 onClick={() => onOpenCollaboration('general', '')}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-full text-sm font-bold text-white bg-[#f97316] hover:bg-[#ea580c] transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer"
+                className="inline-flex items-center justify-center gap-2 px-5 sm:px-6 py-2.5 sm:py-3 rounded-full text-xs sm:text-sm font-bold text-white bg-[#f97316] hover:bg-[#ea580c] transition-all shadow-md hover:shadow-lg active:scale-95 cursor-pointer min-w-[150px]"
               >
                 <HeartHandshake className="w-4 h-4 text-white" />
                 <span>{language === 'vi' ? 'Đề xuất hợp tác' : 'Propose Collaboration'}</span>
