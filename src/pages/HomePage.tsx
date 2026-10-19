@@ -215,33 +215,22 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
   return (
     <div className="w-full bg-[#fbfdfa] text-slate-800 font-sans relative overflow-x-hidden">
       
-      {/* ================= HỌA TIẾT THIÊN NHIÊN (BOTANICAL LEAF ACCENTS) ================= */}
-      {/* Top Left Leaf */}
-      <div className="absolute top-8 left-0 w-32 h-64 pointer-events-none opacity-25 select-none hidden lg:block z-0">
-        <svg viewBox="0 0 120 240" fill="none" className="w-full h-full text-emerald-600">
-          <path d="M10 20C40 60 20 120 5 180C40 160 80 120 70 60C65 30 35 15 10 20Z" fill="currentColor" opacity="0.4" />
-          <path d="M30 90C60 120 50 170 30 220C70 190 90 140 80 90C75 60 50 75 30 90Z" fill="currentColor" opacity="0.3" />
-        </svg>
-      </div>
+      {/* ================= 1. HERO SECTION (PHONG CẢNH BÌNH MỸ: HOA SEN & HOA LỤC BÌNH) ================= */}
+      <section className="relative w-full overflow-hidden border-b border-emerald-100/60 bg-[#eef7f4]">
+        {/* Natural Landscape Background: Đầm sen & Hoa lục bình Bình Mỹ */}
+        <div 
+          className="absolute inset-0 w-full h-full bg-cover bg-center pointer-events-none select-none z-0"
+          style={{
+            backgroundImage: `url('/assets/hero-bg-binh-my.png')`,
+          }}
+        />
 
-      {/* Top Right Leaf */}
-      <div className="absolute top-6 right-0 w-48 h-80 pointer-events-none opacity-30 select-none hidden lg:block z-0">
-        <svg viewBox="0 0 180 300" fill="none" className="w-full h-full text-emerald-500">
-          <path d="M160 20C100 60 110 140 130 210C80 180 40 130 50 70C60 30 110 15 160 20Z" fill="currentColor" opacity="0.35" />
-          <path d="M120 110C80 150 90 210 110 270C65 230 30 180 40 120C50 80 85 95 120 110Z" fill="currentColor" opacity="0.25" />
-        </svg>
-      </div>
+        {/* Soft atmospheric gradient on mobile/tablet to ensure text contrast while retaining natural beauty */}
+        <div className="absolute inset-0 bg-gradient-to-r from-white/80 via-white/40 to-transparent pointer-events-none z-0 lg:hidden" />
 
-      {/* Bottom Right Leaf */}
-      <div className="absolute top-[520px] right-0 w-40 h-72 pointer-events-none opacity-20 select-none hidden lg:block z-0">
-        <svg viewBox="0 0 140 260" fill="none" className="w-full h-full text-emerald-600">
-          <path d="M130 140C90 170 60 220 70 260C100 250 130 210 140 160Z" fill="currentColor" opacity="0.3" />
-        </svg>
-      </div>
-
-      {/* ================= 1. HERO SECTION (BỐ CỤC 2 CỘT CHUẨN MỤC TIÊU) ================= */}
-      <section className="relative z-10 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-10 lg:pt-12 lg:pb-14">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        {/* Hero Content Container */}
+        <div className="relative z-10 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-12 lg:pt-12 lg:pb-14">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* CỘT TRÁI (6 CỘT) */}
           <div className="lg:col-span-6 space-y-6">
@@ -383,7 +372,8 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
           </div>
 
         </div>
-      </section>
+      </div>
+    </section>
 
       {/* ================= 2. BỐN LĨNH VỰC HOẠT ĐỘNG (4 PILLARS STRIP CHUẨN HÌNH 1) ================= */}
       <section className="relative z-20 max-w-[1360px] mx-auto px-4 sm:px-6 lg:px-8 pb-10">
