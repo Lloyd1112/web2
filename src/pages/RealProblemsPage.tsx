@@ -46,7 +46,16 @@ export const RealProblemsPage: React.FC<RealProblemsPageProps> = () => {
   // Tự động đồng bộ với AdminDataService khi có bất kỳ thay đổi nào từ Admin hoặc người dùng
   useEffect(() => {
     const unsubscribe = AdminDataService.subscribe(() => {
-      setProblems(AdminDataService.getProblems());
+      const fresh = AdminDataService.getProblems();
+      setProblems(fresh);
+      setSelectedProblem(prev => {
+        if (!prev) return null;
+        return fresh.some(p => p.id === prev.id) ? prev : null;
+      });
+      setProblemForProposal(prev => {
+        if (!prev) return null;
+        return fresh.some(p => p.id === prev.id) ? prev : null;
+      });
     });
     return unsubscribe;
   }, []);

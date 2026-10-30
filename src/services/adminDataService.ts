@@ -175,7 +175,8 @@ const STORAGE_KEYS = {
   TEAM_MEMBERS: 'binhmy_team_members_v1',
   USERS: 'binhmy_app_users_v1',
   FEEDBACKS: 'binhmy_problem_feedbacks_v1',
-  FEEDBACK_TOKENS: 'binhmy_feedback_tokens_v1'
+  FEEDBACK_TOKENS: 'binhmy_feedback_tokens_v1',
+  DELETED_PROBLEMS: 'binhmy_deleted_problems_v1'
 };
 
 /**
@@ -784,6 +785,17 @@ export class AdminDataService {
   }
 
   // 1. Quản lý Bài toán thực tế
+  static getDeletedProblemIds(): string[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.DELETED_PROBLEMS);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed;
+      }
+    } catch (_) {}
+    return [];
+  }
+
   static getProblems(): RealProblem[] {
     const normalize = (p: RealProblem, idx: number): RealProblem => {
       const code = p.code || `BM-${String(idx + 1).padStart(3, '0')}`;
@@ -801,20 +813,26 @@ export class AdminDataService {
       };
     };
 
+    const deletedIds = this.getDeletedProblemIds();
+
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return parsed.map((item, idx) => normalize(item, idx));
+        if (Array.isArray(parsed)) {
+          return parsed
+            .filter((item: RealProblem) => !deletedIds.includes(item.id))
+            .map((item: RealProblem, idx: number) => normalize(item, idx));
         }
       }
     } catch (e) {
       console.error('Error reading problems:', e);
     }
 
-    // Kết hợp initial + additional problems
-    const allInitial = [...initialRealProblems, ...additionalMockProblems].map((item, idx) => normalize(item, idx));
+    // Kết hợp initial + additional problems (loại bỏ những bài đã từng bị xóa)
+    const allInitial = [...initialRealProblems, ...additionalMockProblems]
+      .filter(item => !deletedIds.includes(item.id))
+      .map((item, idx) => normalize(item, idx));
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(allInitial));
     return allInitial;
   }
@@ -838,6 +856,12 @@ export class AdminDataService {
   }
 
   static saveProblem(problem: RealProblem): void {
+    const deletedIds = this.getDeletedProblemIds();
+    if (deletedIds.includes(problem.id)) {
+      const nextDeleted = deletedIds.filter(id => id !== problem.id);
+      localStorage.setItem(STORAGE_KEYS.DELETED_PROBLEMS, JSON.stringify(nextDeleted));
+    }
+
     const list = this.getProblems();
     const index = list.findIndex(p => p.id === problem.id);
     const now = new Date().toLocaleDateString('vi-VN');
@@ -1101,6 +1125,12 @@ export class AdminDataService {
   }
 
   static deleteProblem(id: string): boolean {
+    const deletedIds = this.getDeletedProblemIds();
+    if (!deletedIds.includes(id)) {
+      deletedIds.push(id);
+      localStorage.setItem(STORAGE_KEYS.DELETED_PROBLEMS, JSON.stringify(deletedIds));
+    }
+
     const list = this.getProblems();
     const filtered = list.filter(p => p.id !== id);
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(filtered));
@@ -1109,6 +1139,14 @@ export class AdminDataService {
   }
 
   static deleteMultipleProblems(ids: string[]): boolean {
+    const deletedIds = this.getDeletedProblemIds();
+    ids.forEach(id => {
+      if (!deletedIds.includes(id)) {
+        deletedIds.push(id);
+      }
+    });
+    localStorage.setItem(STORAGE_KEYS.DELETED_PROBLEMS, JSON.stringify(deletedIds));
+
     const list = this.getProblems();
     const filtered = list.filter(p => !ids.includes(p.id));
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(filtered));

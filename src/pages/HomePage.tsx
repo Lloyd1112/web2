@@ -119,10 +119,23 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
     return AdminDataService.getPartners();
   });
 
+  // Danh sách bài toán thực tế đồng bộ từ AdminDataService
+  const [problemsList, setProblemsList] = useState<RealProblem[]>(() => {
+    return AdminDataService.getProblems();
+  });
+
   useEffect(() => {
     const unsubscribe = AdminDataService.subscribe(() => {
+      const freshProblems = AdminDataService.getProblems();
       setPartnersList(AdminDataService.getPartners());
+      setProblemsList(freshProblems);
       setDataVersion(v => v + 1);
+
+      // Nếu bài toán đang mở trong modal vừa bị xóa ở web admin -> tự động đóng modal
+      setSelectedProblem(prev => {
+        if (!prev) return null;
+        return freshProblems.some(p => p.id === prev.id) ? prev : null;
+      });
     });
     return unsubscribe;
   }, []);
@@ -165,17 +178,13 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
     return published.filter(p => p.category === selectedProjectCategory);
   }, [selectedProjectCategory, dataVersion]);
 
-  // 3. Lấy dữ liệu bài toán thực tế đã xác minh / công khai từ hệ thống (đồng bộ với các mục)
+  // 3. Lấy dữ liệu bài toán thực tế đã xác minh / công khai từ hệ thống (đồng bộ 100% với Web Admin & Trang Bài toán)
   const filteredProblems = useMemo(() => {
-    const all = AdminDataService.getProblems();
-    const publicOnly = all.filter(p => 
-      ((p.status as string) === 'verified' || 
-      (p.status as string) === 'published' || 
-      p.status === 'seeking_support' || 
-      p.status === 'in_progress') &&
+    const publicOnly = problemsList.filter(p => 
       p.status !== 'pending' &&
       (p as any).status !== 'rejected' &&
-      (p as any).isPublic !== false
+      (p as any).status !== 'cancelled' &&
+      p.isPublic !== false
     );
     if (selectedProblemCategory === 'all') {
       return publicOnly.slice(0, 8);
@@ -187,7 +196,7 @@ export const HomePage: React.FC<HomePageProps> = ({ onNavigate, onOpenCollaborat
       return publicOnly.filter(p => (p.category as string) === 'environment' || (p.category as string) === 'other' || p.categoryDetail === 'Môi trường').slice(0, 8);
     }
     return publicOnly.filter(p => (p.category as string) === selectedProblemCategory).slice(0, 8);
-  }, [selectedProblemCategory, dataVersion]);
+  }, [problemsList, selectedProblemCategory, dataVersion]);
 
   // 4. Lấy tin tức & sự kiện từ hệ thống
   const latestNews = useMemo(() => {

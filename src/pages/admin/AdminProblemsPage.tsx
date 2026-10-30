@@ -34,7 +34,8 @@ import {
   Copy,
   Sparkles,
   TrendingUp,
-  HandHeart
+  HandHeart,
+  Plus
 } from 'lucide-react';
 
 interface AdminProblemsPageProps {
@@ -67,6 +68,71 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
   const [customTeamName, setCustomTeamName] = useState('');
   const [isCompletionModalOpen, setIsCompletionModalOpen] = useState(false);
   const [completionSummaryInput, setCompletionSummaryInput] = useState('');
+
+  // Modal Thêm bài toán mới từ Web Admin
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [newTitle, setNewTitle] = useState('');
+  const [newCategory, setNewCategory] = useState<ProblemCategory>('agriculture');
+  const [newContactName, setNewContactName] = useState('');
+  const [newOrganizationName, setNewOrganizationName] = useState('');
+  const [newPhoneNumber, setNewPhoneNumber] = useState('');
+  const [newEmail, setNewEmail] = useState('');
+  const [newLocation, setNewLocation] = useState('Ấp 1, Xã Bình Mỹ, Củ Chi, TP.HCM');
+  const [newDescription, setNewDescription] = useState('');
+  const [newSupportNeeded, setNewSupportNeeded] = useState('');
+  const [newStatus, setNewStatus] = useState<ProblemStatus>('verified');
+
+  const handleCreateProblem = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTitle.trim() || !newDescription.trim()) {
+      showToast('Vui lòng nhập đầy đủ tiêu đề và mô tả bài toán.');
+      return;
+    }
+
+    const code = AdminDataService.generateProblemCode();
+    const now = new Date().toLocaleDateString('vi-VN');
+    const createdProblem: RealProblem = {
+      id: `prob-${Date.now()}`,
+      code,
+      title: newTitle.trim(),
+      category: newCategory,
+      categoryDetail: newCategory === 'agriculture' ? 'Nông nghiệp' : newCategory === 'health' ? 'Y tế' : newCategory === 'tourism' ? 'Du lịch' : 'Khác',
+      submitterType: 'Đại diện đơn vị địa phương',
+      contactName: newContactName.trim() || 'Ban Quản trị / Người dân',
+      organizationName: newOrganizationName.trim() || 'Xã Bình Mỹ, Củ Chi',
+      phoneNumber: newPhoneNumber.trim() || '0908 123 456',
+      email: newEmail.trim() || 'binhmy@langsinhvien.site',
+      location: newLocation.trim() || 'Xã Bình Mỹ, Củ Chi, TP.HCM',
+      description: newDescription.trim(),
+      occurredTime: 'Từ 6 tháng đến 1 năm',
+      affectedAudience: 'Cộng đồng địa phương',
+      desiredOutcome: 'Ứng dụng giải pháp đổi mới sáng tạo, chuyển đổi số nâng cao chất lượng đời sống bà con',
+      supportNeeded: newSupportNeeded ? newSupportNeeded.split(',').map(s => s.trim()) : ['Công nghệ / Kỹ thuật', 'Nguồn lực sinh viên'],
+      readyToCoordinate: 'Có',
+      canSupportTesting: 'Có',
+      status: newStatus,
+      isPublic: newStatus !== 'pending' && newStatus !== 'rejected',
+      createdAt: now,
+      updatedAt: now,
+      images: ['/assets/problems/card1.jpg'],
+      statusLogs: [
+        { id: `log-${Date.now()}`, status: newStatus, note: 'Khởi tạo trực tiếp từ Web Admin', updatedAt: now, updatedBy: 'Admin' }
+      ]
+    };
+
+    AdminDataService.saveProblem(createdProblem);
+    setIsCreateModalOpen(false);
+    // Reset form
+    setNewTitle('');
+    setNewDescription('');
+    setNewSupportNeeded('');
+    setNewContactName('');
+    setNewOrganizationName('');
+    setNewPhoneNumber('');
+    setNewEmail('');
+    loadProblems();
+    showToast(`Đã thêm bài toán "${createdProblem.title}" thành công! Dữ liệu đã đồng bộ ra Trang chủ & Trang Bài toán.`);
+  };
 
   useEffect(() => {
     loadProblems();
@@ -286,13 +352,25 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
           </p>
         </div>
 
-        <button
-          onClick={loadProblems}
-          className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs self-start sm:self-auto"
-        >
-          <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
-          <span>Làm mới dữ liệu</span>
-        </button>
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <button
+            type="button"
+            onClick={() => setIsCreateModalOpen(true)}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-white bg-[#00875a] hover:bg-[#00734c] transition-all cursor-pointer shadow-xs active:scale-98"
+          >
+            <Plus className="w-3.5 h-3.5" />
+            <span>Thêm bài toán mới</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={loadProblems}
+            className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-all cursor-pointer shadow-2xs"
+          >
+            <RefreshCw className="w-3.5 h-3.5 text-slate-500" />
+            <span>Làm mới dữ liệu</span>
+          </button>
+        </div>
       </div>
 
       {/* Filter and Search Bar */}
@@ -1255,6 +1333,193 @@ export const AdminProblemsPage: React.FC<AdminProblemsPageProps> = ({
                 <span>Nghiệm thu & Đánh dấu Hoàn thành</span>
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ================= MODAL THÊM BÀI TOÁN MỚI TỪ WEB ADMIN ================= */}
+      {isCreateModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 animate-in fade-in duration-150">
+          <div 
+            className="bg-white rounded-3xl max-w-2xl w-full p-6 shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh] animate-in zoom-in-95 duration-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
+                  <Plus className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-sm">
+                    Thêm Bài toán thực tế mới
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    Bài toán sẽ tự động đồng bộ ngay lập tức ra Trang chủ và Trang Bài toán thực tế
+                  </p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsCreateModalOpen(false)}
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-600 transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleCreateProblem} className="overflow-y-auto space-y-4 py-4 pr-1 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Tiêu đề bài toán thực tế <span className="text-rose-500">*</span>
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={newTitle}
+                  onChange={(e) => setNewTitle(e.target.value)}
+                  placeholder="VD: Cải tạo hệ thống tưới tiêu và chống xói mòn kênh rạch Ấp 3..."
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600 font-medium"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Lĩnh vực trọng điểm <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={newCategory}
+                    onChange={(e) => setNewCategory(e.target.value as ProblemCategory)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-emerald-600 font-medium cursor-pointer"
+                  >
+                    <option value="agriculture">Nông nghiệp sinh thái</option>
+                    <option value="health">Y tế - Sức khỏe cộng đồng</option>
+                    <option value="tourism">Du lịch trải nghiệm & Văn hóa</option>
+                    <option value="other">Môi trường & Đổi mới sáng tạo khác</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Trạng thái công khai <span className="text-rose-500">*</span>
+                  </label>
+                  <select
+                    value={newStatus}
+                    onChange={(e) => setNewStatus(e.target.value as ProblemStatus)}
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:outline-emerald-600 font-medium cursor-pointer"
+                  >
+                    <option value="verified">Đã xác minh (Công khai ngay lên Trang chủ & Web)</option>
+                    <option value="seeking_support">Đang tìm nguồn lực / Nhóm sinh viên</option>
+                    <option value="in_progress">Đang triển khai thực địa</option>
+                    <option value="completed">Đã hoàn thành giải quyết</option>
+                    <option value="pending">Chờ duyệt (Chưa công khai)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Người / Hộ đề xuất
+                  </label>
+                  <input
+                    type="text"
+                    value={newContactName}
+                    onChange={(e) => setNewContactName(e.target.value)}
+                    placeholder="VD: Nguyễn Văn Ba, Chú Tám..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Đơn vị / Tổ hợp tác
+                  </label>
+                  <input
+                    type="text"
+                    value={newOrganizationName}
+                    onChange={(e) => setNewOrganizationName(e.target.value)}
+                    placeholder="VD: Tổ hợp tác rau sạch Ấp 2, HTX Nông nghiệp..."
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Số điện thoại liên hệ
+                  </label>
+                  <input
+                    type="tel"
+                    value={newPhoneNumber}
+                    onChange={(e) => setNewPhoneNumber(e.target.value)}
+                    placeholder="VD: 0908 123 456"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">
+                    Địa điểm cụ thể
+                  </label>
+                  <input
+                    type="text"
+                    value={newLocation}
+                    onChange={(e) => setNewLocation(e.target.value)}
+                    placeholder="VD: Ấp 1, Xã Bình Mỹ, Củ Chi, TP.HCM"
+                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Mô tả chi tiết bài toán & Nỗi đau thực tế <span className="text-rose-500">*</span>
+                </label>
+                <textarea
+                  rows={4}
+                  required
+                  value={newDescription}
+                  onChange={(e) => setNewDescription(e.target.value)}
+                  placeholder="Mô tả cụ thể hiện trạng, khó khăn gặp phải, nguyên nhân và thiệt hại thực tế của bà con / địa phương..."
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600 leading-relaxed"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Nhu cầu hỗ trợ cần kết nối (ngăn cách bởi dấu phẩy)
+                </label>
+                <input
+                  type="text"
+                  value={newSupportNeeded}
+                  onChange={(e) => setNewSupportNeeded(e.target.value)}
+                  placeholder="VD: Công nghệ sinh học, Tự động hóa tưới tiêu, Tìm đầu ra bao tiêu"
+                  className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 focus:bg-white focus:outline-emerald-600"
+                />
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setIsCreateModalOpen(false)}
+                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl cursor-pointer"
+                >
+                  Hủy bỏ
+                </button>
+                <button
+                  type="submit"
+                  className="px-5 py-2 bg-[#00875a] hover:bg-[#00734c] text-white font-bold rounded-xl shadow-xs transition-colors cursor-pointer flex items-center gap-1.5"
+                >
+                  <Check className="w-3.5 h-3.5" />
+                  <span>Lưu & Đồng bộ lên Website</span>
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
