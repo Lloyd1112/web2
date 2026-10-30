@@ -1647,10 +1647,12 @@ export class AdminDataService {
     const q = (usernameOrEmail || '').trim().toLowerCase();
     const users = this.getUsers();
 
-    // 1. Kiểm tra trong danh sách users đã đăng ký / khởi tạo
+    // 1. Kiểm tra trong danh sách users đã đăng ký / khởi tạo (Username, Email hoặc Số điện thoại)
+    const cleanQPhone = q.replace(/\D/g, '');
     const matched = users.find(u => 
       u.username.toLowerCase() === q || 
-      u.email.toLowerCase() === q
+      u.email.toLowerCase() === q ||
+      (cleanQPhone.length >= 9 && u.phone && u.phone.replace(/\D/g, '') === cleanQPhone)
     );
 
     if (matched) {
@@ -1693,13 +1695,15 @@ export class AdminDataService {
       return { success: true, user: citUser };
     }
 
-    // 6. Cho phép đăng nhập demo an toàn nếu nhập đúng format email
-    if (q.includes('@') && password.length >= 6) {
+    // 6. Cho phép đăng nhập nếu nhập đúng format email hoặc số điện thoại
+    if ((q.includes('@') || cleanQPhone.length >= 9) && password.length >= 6) {
+      const identifier = q.includes('@') ? q.split('@')[0] : `user_${cleanQPhone}`;
       const genericUser: AppUser = {
         id: `user-${Date.now()}`,
-        username: q.split('@')[0],
-        fullName: q.split('@')[0].toUpperCase(),
-        email: q,
+        username: identifier,
+        fullName: identifier.toUpperCase(),
+        email: q.includes('@') ? q : `${cleanQPhone}@citizen.binhmy.edu.vn`,
+        phone: cleanQPhone ? q : '',
         role: q.includes('admin') ? 'admin' : (q.includes('sv') || q.includes('expert') ? 'team_member' : 'citizen'),
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
         createdAt: new Date().toLocaleDateString('vi-VN')
@@ -1711,7 +1715,7 @@ export class AdminDataService {
 
     return {
       success: false,
-      error: 'Tài khoản hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
+      error: 'Tài khoản, Email/SĐT hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
     };
   }
 
@@ -1721,27 +1725,36 @@ export class AdminDataService {
   static registerCitizen(data: {
     fullName: string;
     username?: string;
-    email: string;
-    phone: string;
+    email?: string;
+    phone?: string;
     password: string;
     address?: string;
     organization?: string;
   }): { success: boolean; user?: AppUser; error?: string } {
-    const uname = (data.username?.trim() || data.phone.replace(/\D/g, '') || `cit_${Date.now()}`).toLowerCase();
-    if (!uname || !data.password || !data.fullName || !data.phone) {
-      return { success: false, error: 'Vui lòng điền đầy đủ các thông tin bắt buộc.' };
+    const phone = data.phone?.trim() || '';
+    const email = data.email?.trim() || '';
+
+    if (!data.fullName?.trim() || !data.password || (!phone && !email)) {
+      return { success: false, error: 'Vui lòng điền đầy đủ họ tên, mật khẩu và số điện thoại hoặc Gmail.' };
     }
 
     if (data.password.length < 6) {
       return { success: false, error: 'Mật khẩu phải có độ dài tối thiểu 6 ký tự để đảm bảo an toàn.' };
     }
 
+    const cleanPhone = phone.replace(/\D/g, '');
+    const emailPrefix = email ? email.split('@')[0].toLowerCase().replace(/[^a-z0-9_]/g, '') : '';
+    const uname = (data.username?.trim() || cleanPhone || emailPrefix || `cit_${Date.now()}`).toLowerCase();
+
     const users = this.getUsers();
-    if (users.some(u => u.username.toLowerCase() === uname)) {
-      return { success: false, error: 'Tên đăng nhập / Số điện thoại này đã được sử dụng. Vui lòng chọn tên khác.' };
+    if (cleanPhone && cleanPhone.length >= 9 && users.some(u => u.phone && u.phone.replace(/\D/g, '') === cleanPhone)) {
+      return { success: false, error: 'Số điện thoại này đã được đăng ký tài khoản. Vui lòng đăng nhập hoặc sử dụng số khác.' };
     }
-    if (data.email && users.some(u => u.email.toLowerCase() === data.email.trim().toLowerCase())) {
-      return { success: false, error: 'Địa chỉ Email này đã được đăng ký tài khoản.' };
+    if (email && users.some(u => u.email && u.email.toLowerCase() === email.toLowerCase())) {
+      return { success: false, error: 'Địa chỉ Gmail này đã được đăng ký tài khoản. Vui lòng đăng nhập hoặc sử dụng Gmail khác.' };
+    }
+    if (users.some(u => u.username.toLowerCase() === uname)) {
+      return { success: false, error: 'Tên đăng nhập này đã tồn tại. Vui lòng đăng nhập.' };
     }
 
     // Cố định role là citizen (chống việc tự cấp quyền Admin)
@@ -1749,9 +1762,9 @@ export class AdminDataService {
       id: `cit-${Date.now()}`,
       username: uname,
       fullName: data.fullName.trim(),
-      email: data.email?.trim() || `${uname}@citizen.binhmy.edu.vn`,
-      phone: data.phone.trim(),
-      address: data.address?.trim(),
+      email: email || (cleanPhone ? `${cleanPhone}@citizen.binhmy.edu.vn` : `${uname}@citizen.binhmy.edu.vn`),
+      phone: phone || '',
+      address: data.address?.trim() || 'Bình Mỹ, Củ Chi, TP. Hồ Chí Minh',
       role: 'citizen',
       organization: data.organization?.trim(),
       avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',

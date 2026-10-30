@@ -186,6 +186,13 @@ export const ROUTES: Record<string, RouteConfig> = {
     aliases: ['/danh-gia', '/phan-hoi', '/danh-gia-ket-qua'],
     titleVi: 'Đánh giá kết quả bài toán | Làng Sinh Viên Bình Mỹ',
     titleEn: 'Citizen Feedback | Binh My Student Village'
+  },
+  'auth': {
+    id: 'auth',
+    path: '/login',
+    aliases: ['/dang-nhap', '/dang-ky', '/auth', '/register'],
+    titleVi: 'Đăng nhập & Đăng ký Người dùng | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'User Login & Register | Binh My Student Village'
   }
 };
 
@@ -200,8 +207,8 @@ export function getTabFromPath(pathname: string): string {
 
   // Admin routes matching
   if (cleanPath.startsWith('/admin')) {
-    if (cleanPath === '/admin/login') return 'admin-login';
-    if (cleanPath === '/admin' || cleanPath === '/admin/dashboard') return 'admin-dashboard';
+    if (cleanPath === '/admin/login' || cleanPath === '/admin') return 'admin-login';
+    if (cleanPath === '/admin/dashboard') return 'admin-dashboard';
     if (cleanPath.startsWith('/admin/bai-toan')) return 'admin-problems';
     if (cleanPath.startsWith('/admin/de-xuat-hop-tac')) return 'admin-proposals';
     if (cleanPath.startsWith('/admin/du-an')) return 'admin-projects';

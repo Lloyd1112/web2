@@ -33,6 +33,7 @@ import { AdminFeedbackPage } from './pages/admin/AdminFeedbackPage';
 import { TeamWorkspacePage } from './pages/team/TeamWorkspacePage';
 import { CitizenPortalPage } from './pages/citizen/CitizenPortalPage';
 import { PublicFeedbackPage } from './pages/feedback/PublicFeedbackPage';
+import { UserAuthPage } from './pages/auth/UserAuthPage';
 import { AdminDataService } from './services/adminDataService';
 import { RealProblem } from './types';
 
@@ -141,32 +142,24 @@ export function App() {
 
   // ================= ADMIN VIEW RENDERING =================
   const renderAdminView = () => {
-    const handleLoginRedirect = (defaultTab: string = 'admin-dashboard') => {
-      const user = AdminDataService.getCurrentUser();
-      if (user?.role === 'student' || user?.role === 'expert') {
-        navigateTo('team-workspace');
-      } else if (user?.role === 'citizen') {
-        navigateTo('citizen-portal');
-      } else {
-        navigateTo(defaultTab);
-      }
-    };
-
     if (activeTab === 'admin-login') {
       return (
         <AdminLoginPage
-          onLoginSuccess={() => handleLoginRedirect('admin-dashboard')}
+          onLoginSuccess={() => navigateTo('admin-dashboard')}
           onBackToHome={() => navigateTo('home')}
+          onGoToUserLogin={() => navigateTo('auth')}
         />
       );
     }
 
-    // Server-grade security check (Protected Route Guard)
-    if (!AdminDataService.isAuthenticated()) {
+    // Server-grade security check (Protected Route Guard for Admin)
+    const currentUser = AdminDataService.getCurrentUser();
+    if (!AdminDataService.isAuthenticated() || currentUser?.role !== 'admin') {
       return (
         <AdminLoginPage
-          onLoginSuccess={() => handleLoginRedirect(activeTab)}
+          onLoginSuccess={() => navigateTo(activeTab === 'admin-login' ? 'admin-dashboard' : activeTab)}
           onBackToHome={() => navigateTo('home')}
+          onGoToUserLogin={() => navigateTo('auth')}
         />
       );
     }
@@ -355,6 +348,27 @@ export function App() {
         );
     }
   };
+
+  // User Auth Page (Đăng nhập & Đăng ký Người dùng riêng biệt, không có Admin)
+  if (activeTab === 'auth' || activeTab === 'login' || activeTab === 'register') {
+    return (
+      <LanguageProvider>
+        <UserAuthPage
+          initialTab={activeTab === 'register' ? 'register' : 'login'}
+          onLoginSuccess={(role) => {
+            if (role === 'student' || role === 'expert' || role === 'team_member') {
+              navigateTo('team-workspace');
+            } else if (role === 'citizen') {
+              navigateTo('citizen-portal');
+            } else {
+              navigateTo('home');
+            }
+          }}
+          onBackToHome={() => navigateTo('home')}
+        />
+      </LanguageProvider>
+    );
+  }
 
   // If currently in Admin section, render Admin shell without public Header/Footer
   if (activeTab.startsWith('admin')) {

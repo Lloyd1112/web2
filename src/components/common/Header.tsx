@@ -448,9 +448,9 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
             ) : (
               <button
-                onClick={() => handleNavClick('admin-login')}
+                onClick={() => handleNavClick('auth')}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 transition-all cursor-pointer shadow-2xs"
-                title="Đăng nhập / Quản lý bài toán"
+                title="Đăng nhập / Đăng ký tài khoản Người dùng"
               >
                 <User className="w-3.5 h-3.5" />
                 <span>{language === 'vi' ? 'Đăng nhập' : 'Login'}</span>
@@ -688,12 +688,12 @@ export const Header: React.FC<HeaderProps> = ({
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  handleNavClick('admin-login');
+                  handleNavClick('auth');
                 }}
                 className="w-full py-2.5 rounded-2xl bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5"
               >
                 <User className="w-4 h-4 text-emerald-600" />
-                <span>Đăng nhập hệ thống & Dịch vụ</span>
+                <span>Đăng nhập / Đăng ký Người dùng</span>
               </button>
             )}
 
