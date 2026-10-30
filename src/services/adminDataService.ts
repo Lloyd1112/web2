@@ -1649,14 +1649,18 @@ export class AdminDataService {
 
   static isAuthenticated(): boolean {
     if (typeof window === 'undefined') return false;
-    const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
+    const auth = sessionStorage.getItem(STORAGE_KEYS.AUTH);
     return Boolean(auth);
   }
 
   static getCurrentUser(): (AppUser & { role: any }) | null {
     if (typeof window === 'undefined') return null;
     try {
-      const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
+      // Dọn dẹp session cũ trong localStorage nếu có để ngăn việc tự động đăng nhập khi mở web
+      if (localStorage.getItem(STORAGE_KEYS.AUTH)) {
+        localStorage.removeItem(STORAGE_KEYS.AUTH);
+      }
+      const auth = sessionStorage.getItem(STORAGE_KEYS.AUTH);
       return auth ? JSON.parse(auth) : null;
     } catch {
       return null;
@@ -1685,6 +1689,12 @@ export class AdminDataService {
     const q = (usernameOrEmail || '').trim().toLowerCase();
     const users = this.getUsers();
 
+    const saveSession = (u: AppUser) => {
+      sessionStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(u));
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+      dispatchSyncEvent();
+    };
+
     // 1. Kiểm tra trong danh sách users đã đăng ký / khởi tạo (Username, Email hoặc Số điện thoại)
     const cleanQPhone = q.replace(/\D/g, '');
     const matched = users.find(u => 
@@ -1695,8 +1705,7 @@ export class AdminDataService {
 
     if (matched) {
       // Khớp tài khoản hợp lệ
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(matched));
-      dispatchSyncEvent();
+      saveSession(matched);
       return { success: true, user: matched };
     }
 
@@ -1704,32 +1713,28 @@ export class AdminDataService {
     if ((q === 'admin' || q === 'admin@binhmy.edu.vn') && 
         (password === 'admin123' || password === 'admin' || password === '123456')) {
       const adminUser = users.find(u => u.role === 'admin') || initialAppUsers[0];
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(adminUser));
-      dispatchSyncEvent();
+      saveSession(adminUser);
       return { success: true, user: adminUser };
     }
 
     // 3. Fallback cho tài khoản demo nhóm sinh viên
     if ((q === 'sv_hutech' || q === 'thu.nguyen@hutech.edu.vn') && password.length >= 6) {
       const svUser = users.find(u => u.id === 'sv_hutech') || initialAppUsers[1];
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(svUser));
-      dispatchSyncEvent();
+      saveSession(svUser);
       return { success: true, user: svUser };
     }
 
     // 4. Fallback cho tài khoản demo chuyên gia y tế
     if ((q === 'bs_quan' || q === 'quan.tran@medvn.org') && password.length >= 6) {
       const expUser = users.find(u => u.id === 'bs_quan') || initialAppUsers[2];
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(expUser));
-      dispatchSyncEvent();
+      saveSession(expUser);
       return { success: true, user: expUser };
     }
 
     // 5. Fallback cho tài khoản demo người dân
     if ((q === 'to_rau_ap4' || q === 'nongdan_ba' || q === 'rauantoan.ap4a@gmail.com') && password.length >= 6) {
       const citUser = users.find(u => u.username === q || u.email === q) || initialAppUsers[3];
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(citUser));
-      dispatchSyncEvent();
+      saveSession(citUser);
       return { success: true, user: citUser };
     }
 
@@ -1746,8 +1751,7 @@ export class AdminDataService {
         avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
         createdAt: new Date().toLocaleDateString('vi-VN')
       };
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(genericUser));
-      dispatchSyncEvent();
+      saveSession(genericUser);
       return { success: true, user: genericUser };
     }
 
@@ -1812,8 +1816,9 @@ export class AdminDataService {
     users.push(newUser);
     localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 
-    // Đăng nhập ngay sau khi đăng ký thành công
-    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(newUser));
+    // Đăng nhập ngay sau khi đăng ký thành công vào session hiện tại
+    sessionStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(newUser));
+    localStorage.removeItem(STORAGE_KEYS.AUTH);
     dispatchSyncEvent();
     return { success: true, user: newUser };
   }
@@ -1841,6 +1846,7 @@ export class AdminDataService {
 
   static logout(): void {
     if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(STORAGE_KEYS.AUTH);
       localStorage.removeItem(STORAGE_KEYS.AUTH);
       dispatchSyncEvent();
     }
@@ -2113,6 +2119,10 @@ export class AdminDataService {
 
   // 9. Khôi phục dữ liệu mẫu
   static resetToSampleData(): void {
+    if (typeof window !== 'undefined') {
+      sessionStorage.removeItem(STORAGE_KEYS.AUTH);
+      localStorage.removeItem(STORAGE_KEYS.AUTH);
+    }
     localStorage.removeItem(STORAGE_KEYS.PROBLEMS);
     localStorage.removeItem(STORAGE_KEYS.PROPOSALS);
     localStorage.removeItem(STORAGE_KEYS.PROJECTS);
