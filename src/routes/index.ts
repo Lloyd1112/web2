@@ -151,11 +151,41 @@ export const ROUTES: Record<string, RouteConfig> = {
     titleVi: 'Thông tin về chúng tôi | Admin Làng SV',
     titleEn: 'About Us & Team | Admin'
   },
+  'admin-feedback': {
+    id: 'admin-feedback',
+    path: '/admin/feedback',
+    aliases: ['/admin/phan-hoi', '/admin/danh-gia'],
+    titleVi: 'Quản lý Phản hồi & Đánh giá | Admin Làng SV',
+    titleEn: 'Manage Citizen Feedbacks | Admin'
+  },
   'admin-settings': {
     id: 'admin-settings',
     path: '/admin/cai-dat',
     titleVi: 'Cài đặt hệ thống | Admin Làng SV',
     titleEn: 'System Settings | Admin'
+  },
+
+  // ================= PORTAL & WORKSPACE ROUTES =================
+  'team-workspace': {
+    id: 'team-workspace',
+    path: '/team-workspace',
+    aliases: ['/team', '/khu-vuc-lam-viec', '/workspace'],
+    titleVi: 'Không gian làm việc Nhóm thực hiện | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'Team Workspace | Binh My Student Village'
+  },
+  'citizen-portal': {
+    id: 'citizen-portal',
+    path: '/my-problems',
+    aliases: ['/bai-toan-cua-toi', '/theo-doi-tien-do', '/tra-cuu', '/tracking'],
+    titleVi: 'Theo dõi bài toán & Đánh giá kết quả | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'Track Problems & Results | Binh My Student Village'
+  },
+  'public-feedback': {
+    id: 'public-feedback',
+    path: '/feedback',
+    aliases: ['/danh-gia', '/phan-hoi', '/danh-gia-ket-qua'],
+    titleVi: 'Đánh giá kết quả bài toán | Làng Sinh Viên Bình Mỹ',
+    titleEn: 'Citizen Feedback | Binh My Student Village'
   }
 };
 
@@ -177,6 +207,7 @@ export function getTabFromPath(pathname: string): string {
     if (cleanPath.startsWith('/admin/du-an')) return 'admin-projects';
     if (cleanPath.startsWith('/admin/doi-tac') || cleanPath.startsWith('/admin/partners') || cleanPath.startsWith('/admin/partner')) return 'admin-partners';
     if (cleanPath.startsWith('/admin/tin-tuc')) return 'admin-news';
+    if (cleanPath.startsWith('/admin/feedback') || cleanPath.startsWith('/admin/phan-hoi') || cleanPath.startsWith('/admin/danh-gia')) return 'admin-feedback';
     if (cleanPath.startsWith('/admin/ve-chung-toi') || cleanPath.startsWith('/admin/about') || cleanPath.startsWith('/admin/doi-ngu') || cleanPath.startsWith('/admin/team')) return 'admin-about';
     if (cleanPath.startsWith('/admin/cai-dat')) return 'admin-settings';
     return 'admin-dashboard';

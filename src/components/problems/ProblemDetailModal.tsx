@@ -23,6 +23,9 @@ import {
   Building,
   Info
 } from 'lucide-react';
+import { ProblemTimeline } from './ProblemTimeline';
+import { ProblemFeedbackModal } from '../feedback/ProblemFeedbackModal';
+import { AdminDataService } from '../../services/adminDataService';
 
 interface ProblemDetailModalProps {
   problem: (RealProblem & { isSampleData?: boolean }) | null;
@@ -39,8 +42,11 @@ export const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
   if (!problem) return null;
+
+  const hasFeedback = problem ? AdminDataService.getFeedbacksByProblemId(problem.id).length > 0 : false;
 
   const getStatusBadge = (status: string) => {
     switch (status) {
@@ -358,6 +364,13 @@ export const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
                 )}
               </div>
 
+              {/* ================= TIẾN ĐỘ THỰC TẾ & CÁC MỐC CÔNG VIỆC ================= */}
+              <ProblemTimeline 
+                problem={problem} 
+                onOpenFeedback={() => setIsFeedbackOpen(true)}
+                hasFeedbackAlready={hasFeedback}
+              />
+
               {/* ================= KHU VỰC NỔI BẬT: BẠN CÓ THỂ GIÚP GIẢI QUYẾT BÀI TOÁN NÀY? ================= */}
               {problem.status !== 'pending' ? (
                 <div className="p-6 rounded-3xl bg-gradient-to-br from-emerald-600 via-teal-700 to-slate-900 text-white shadow-xl relative overflow-hidden space-y-3 text-center sm:text-left">
@@ -454,6 +467,13 @@ export const ProblemDetailModal: React.FC<ProblemDetailModalProps> = ({
           />
         </div>
       )}
+
+      {/* Modal Đánh giá Feedback cho bài toán */}
+      <ProblemFeedbackModal
+        problem={problem}
+        isOpen={isFeedbackOpen}
+        onClose={() => setIsFeedbackOpen(false)}
+      />
     </>
   );
 };

@@ -14,10 +14,18 @@ import {
   Sparkles,
   ArrowRight,
   Sprout,
-  Palmtree
+  Palmtree,
+  User,
+  LogOut,
+  FolderKanban,
+  LayoutDashboard,
+  ShieldCheck,
+  FileText
 } from 'lucide-react';
 import hutechLogo from '../../assets/hutech-logo.png';
 import { getPathForTab } from '../../routes';
+import { AdminDataService } from '../../services/adminDataService';
+import { AppUser } from '../../types';
 
 interface HeaderProps {
   activeTab: string;
@@ -38,6 +46,28 @@ export const Header: React.FC<HeaderProps> = ({
   const [isScrolled, setIsScrolled] = useState(false);
   const [isProjectsDropdownOpen, setIsProjectsDropdownOpen] = useState(false);
   const dropdownTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // User auth state
+  const [currentUser, setCurrentUser] = useState<AppUser | null>(() => AdminDataService.getCurrentUser());
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
+  const userDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const unsub = AdminDataService.subscribe(() => {
+      setCurrentUser(AdminDataService.getCurrentUser());
+    });
+    return unsub;
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(e.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -327,6 +357,106 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             </div>
 
+            {/* User Account / Portal Dropdown */}
+            {currentUser ? (
+              <div className="relative" ref={userDropdownRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+                  className="flex items-center gap-2 p-1 pl-2.5 pr-3 rounded-full bg-slate-100 hover:bg-slate-200 transition-colors border border-slate-200 cursor-pointer"
+                >
+                  <div className={`w-7 h-7 rounded-full flex items-center justify-center font-bold text-xs text-white ${
+                    currentUser.role === 'admin' ? 'bg-emerald-700' :
+                    currentUser.role === 'student' ? 'bg-blue-600' :
+                    currentUser.role === 'expert' ? 'bg-teal-600' : 'bg-amber-600'
+                  }`}>
+                    {currentUser.fullName.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="text-left hidden xl:block">
+                    <span className="block text-xs font-bold text-slate-800 leading-none max-w-[100px] truncate">
+                      {currentUser.fullName}
+                    </span>
+                    <span className="block text-[10px] text-slate-500 font-medium">
+                      {currentUser.role === 'admin' ? 'Admin BQL' :
+                       currentUser.role === 'student' ? 'Sinh viên' :
+                       currentUser.role === 'expert' ? 'Chuyên gia' : 'Người dân'}
+                    </span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-500" />
+                </button>
+
+                {isUserDropdownOpen && (
+                  <div className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in slide-in-from-top-2">
+                    <div className="p-2 border-b border-slate-100 mb-1">
+                      <p className="text-xs font-bold text-slate-900 truncate">{currentUser.fullName}</p>
+                      <p className="text-[11px] text-slate-500 truncate">{currentUser.email || currentUser.username}</p>
+                    </div>
+
+                    {currentUser.role === 'admin' && (
+                      <button
+                        onClick={() => {
+                          setIsUserDropdownOpen(false);
+                          handleNavClick('admin-dashboard');
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition-colors cursor-pointer text-left"
+                      >
+                        <LayoutDashboard className="w-4 h-4 text-emerald-600" />
+                        <span>Bảng quản trị Admin</span>
+                      </button>
+                    )}
+
+                    {(currentUser.role === 'student' || currentUser.role === 'expert') && (
+                      <button
+                        onClick={() => {
+                          setIsUserDropdownOpen(false);
+                          handleNavClick('team-workspace');
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition-colors cursor-pointer text-left"
+                      >
+                        <FolderKanban className="w-4 h-4 text-emerald-600" />
+                        <span>Không gian làm việc (Tasks)</span>
+                      </button>
+                    )}
+
+                    {currentUser.role === 'citizen' && (
+                      <button
+                        onClick={() => {
+                          setIsUserDropdownOpen(false);
+                          handleNavClick('citizen-portal');
+                        }}
+                        className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-slate-700 hover:bg-emerald-50 hover:text-emerald-800 transition-colors cursor-pointer text-left"
+                      >
+                        <FileText className="w-4 h-4 text-emerald-600" />
+                        <span>Bài toán của tôi & Feedback</span>
+                      </button>
+                    )}
+
+                    <button
+                      onClick={() => {
+                        AdminDataService.logout();
+                        setIsUserDropdownOpen(false);
+                        setCurrentUser(null);
+                        handleNavClick('home');
+                      }}
+                      className="w-full flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer text-left mt-1 pt-2 border-t border-slate-100"
+                    >
+                      <LogOut className="w-4 h-4" />
+                      <span>Đăng xuất</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => handleNavClick('admin-login')}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold text-slate-700 bg-slate-100 hover:bg-emerald-50 hover:text-emerald-700 border border-slate-200 transition-all cursor-pointer shadow-2xs"
+                title="Đăng nhập / Quản lý bài toán"
+              >
+                <User className="w-3.5 h-3.5" />
+                <span>{language === 'vi' ? 'Đăng nhập' : 'Login'}</span>
+              </button>
+            )}
+
             {/* Signature PUM Orange CTA Button */}
             <button
               onClick={() => onOpenCollaboration('general', '')}
@@ -493,7 +623,80 @@ export const Header: React.FC<HeaderProps> = ({
 
           </nav>
 
-          <div className="mt-5 pt-4 border-t border-slate-200">
+          <div className="mt-5 pt-4 border-t border-slate-200 space-y-3">
+            {currentUser ? (
+              <div className="p-3 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <span className="font-bold text-xs text-slate-900 block">{currentUser.fullName}</span>
+                    <span className="text-[11px] text-slate-500">
+                      {currentUser.role === 'admin' ? 'Quản trị viên' :
+                       currentUser.role === 'student' ? 'Sinh viên thực hiện' :
+                       currentUser.role === 'expert' ? 'Chuyên gia' : 'Người dân'}
+                    </span>
+                  </div>
+                  <button
+                    onClick={() => {
+                      AdminDataService.logout();
+                      setCurrentUser(null);
+                      setMobileMenuOpen(false);
+                      handleNavClick('home');
+                    }}
+                    className="text-xs font-semibold text-rose-600 hover:underline"
+                  >
+                    Đăng xuất
+                  </button>
+                </div>
+
+                {currentUser.role === 'admin' && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNavClick('admin-dashboard');
+                    }}
+                    className="w-full py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold"
+                  >
+                    Vào Bảng quản trị Admin
+                  </button>
+                )}
+
+                {(currentUser.role === 'student' || currentUser.role === 'expert') && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNavClick('team-workspace');
+                    }}
+                    className="w-full py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold"
+                  >
+                    Vào Không gian làm việc
+                  </button>
+                )}
+
+                {currentUser.role === 'citizen' && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      handleNavClick('citizen-portal');
+                    }}
+                    className="w-full py-2 bg-emerald-600 text-white rounded-xl text-xs font-bold"
+                  >
+                    Xem bài toán & Gửi feedback
+                  </button>
+                )}
+              </div>
+            ) : (
+              <button
+                onClick={() => {
+                  setMobileMenuOpen(false);
+                  handleNavClick('admin-login');
+                }}
+                className="w-full py-2.5 rounded-2xl bg-slate-100 text-slate-800 text-xs font-bold flex items-center justify-center gap-1.5"
+              >
+                <User className="w-4 h-4 text-emerald-600" />
+                <span>Đăng nhập hệ thống & Dịch vụ</span>
+              </button>
+            )}
+
             <button
               onClick={() => {
                 setMobileMenuOpen(false);

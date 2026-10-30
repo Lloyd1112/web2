@@ -29,6 +29,10 @@ import { AdminPartnersPage } from './pages/admin/AdminPartnersPage';
 import { AdminNewsPage } from './pages/admin/AdminNewsPage';
 import { AdminAboutPage } from './pages/admin/AdminAboutPage';
 import { AdminSettingsPage } from './pages/admin/AdminSettingsPage';
+import { AdminFeedbackPage } from './pages/admin/AdminFeedbackPage';
+import { TeamWorkspacePage } from './pages/team/TeamWorkspacePage';
+import { CitizenPortalPage } from './pages/citizen/CitizenPortalPage';
+import { PublicFeedbackPage } from './pages/feedback/PublicFeedbackPage';
 import { AdminDataService } from './services/adminDataService';
 import { RealProblem } from './types';
 
@@ -137,10 +141,21 @@ export function App() {
 
   // ================= ADMIN VIEW RENDERING =================
   const renderAdminView = () => {
+    const handleLoginRedirect = (defaultTab: string = 'admin-dashboard') => {
+      const user = AdminDataService.getCurrentUser();
+      if (user?.role === 'student' || user?.role === 'expert') {
+        navigateTo('team-workspace');
+      } else if (user?.role === 'citizen') {
+        navigateTo('citizen-portal');
+      } else {
+        navigateTo(defaultTab);
+      }
+    };
+
     if (activeTab === 'admin-login') {
       return (
         <AdminLoginPage
-          onLoginSuccess={() => navigateTo('admin-dashboard')}
+          onLoginSuccess={() => handleLoginRedirect('admin-dashboard')}
           onBackToHome={() => navigateTo('home')}
         />
       );
@@ -150,7 +165,7 @@ export function App() {
     if (!AdminDataService.isAuthenticated()) {
       return (
         <AdminLoginPage
-          onLoginSuccess={() => navigateTo(activeTab)}
+          onLoginSuccess={() => handleLoginRedirect(activeTab)}
           onBackToHome={() => navigateTo('home')}
         />
       );
@@ -229,6 +244,9 @@ export function App() {
 
             case 'admin-about':
               return <AdminAboutPage />;
+
+            case 'admin-feedback':
+              return <AdminFeedbackPage />;
 
             case 'admin-settings':
               return <AdminSettingsPage />;
@@ -312,6 +330,22 @@ export function App() {
         );
       case 'real-problems':
         return <RealProblemsPage onOpenCollaboration={handleOpenCollaboration} />;
+      case 'team-workspace':
+        return (
+          <TeamWorkspacePage
+            onNavigate={navigateTo}
+            onOpenProblemDetail={(id) => navigateTo('real-problems')}
+          />
+        );
+      case 'citizen-portal':
+        return (
+          <CitizenPortalPage
+            onNavigate={navigateTo}
+            onOpenProblemDetail={(id) => navigateTo('real-problems')}
+          />
+        );
+      case 'public-feedback':
+        return <PublicFeedbackPage onNavigate={navigateTo} />;
       default:
         return (
           <HomePage

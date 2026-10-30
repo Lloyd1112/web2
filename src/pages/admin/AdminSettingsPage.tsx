@@ -27,7 +27,7 @@ export const AdminSettingsPage: React.FC = () => {
   const [resetConfirmOpen, setResetConfirmOpen] = useState(false);
 
   useEffect(() => {
-    setCurrentUser(AdminDataService.getCurrentUser());
+    setCurrentUser(AdminDataService.getCurrentUser() as any);
   }, []);
 
   const showToast = (msg: string) => {

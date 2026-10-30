@@ -28,14 +28,123 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1592417817098-8f3d6910609b?auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80'
     ],
+    code: 'BM-001',
+    userId: 'to_rau_ap4',
+    assignedTeam: 'Nhóm SV Công nghệ Sinh học HUTECH',
+    assignedMemberIds: ['sv_hutech'],
+    progressPercentage: 100,
+    completionDate: '15/10/2026',
+    completionSummary: 'Đã chuyển giao thành công chế phẩm màng vi sinh Chitosan và quy trình tiền làm mát. Tỷ lệ rau dập héo giảm từ 30% xuống dưới 5%.',
+    progressUpdates: [
+      {
+        id: 'upd-101',
+        problemId: 'prob-01',
+        title: 'Khảo sát hiện trường giàn thủy canh & lấy mẫu phân tích',
+        description: 'Đoàn sinh viên và cố vấn nông học đã trực tiếp khảo sát 6 hộ tại Ấp 4A, ghi nhận độ ẩm và nguyên nhân thoát nước nhanh của rau muống và cải xanh.',
+        date: '06/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['/assets/problems/card1.jpg'],
+        evidenceDocName: 'Bien_ban_khao_sat_ap4a.pdf',
+        submittedBy: 'Nguyễn Thị Minh Thư (Trưởng nhóm SV)',
+        submittedRole: 'team_member',
+        submittedAt: '06/10/2026 16:30'
+      },
+      {
+        id: 'upd-102',
+        problemId: 'prob-01',
+        title: 'Thử nghiệm màng bọc sinh học Chitosan giữ ẩm tự nhiên',
+        description: 'Đã áp dụng màng bảo quản Chitosan trên 200kg rau đợt 1. Kết quả rau giữ độ giòn tươi 6-7 ngày trong điều kiện tự nhiên không cần hóa chất.',
+        date: '10/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['https://images.unsplash.com/photo-1540420773420-3366772f4999?auto=format&fit=crop&w=800&q=80'],
+        submittedBy: 'Nguyễn Thị Minh Thư',
+        submittedRole: 'team_member',
+        submittedAt: '10/10/2026 18:00'
+      },
+      {
+        id: 'upd-103',
+        problemId: 'prob-01',
+        title: 'Bàn giao trạm sơ chế làm mát nhanh & quy trình đóng gói',
+        description: 'Hoàn tất bàn giao quy trình đóng gói túi màng sinh học và tủ sơ chế tạm trữ năng lượng mặt trời cho Tổ hợp tác. Nông dân ký biên bản nghiệm thu.',
+        date: '14/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['https://images.unsplash.com/photo-1592417817098-8f3d6910609b?auto=format&fit=crop&w=800&q=80'],
+        evidenceDocName: 'Bien_ban_nghiem_thu_BM001.pdf',
+        submittedBy: 'Nguyễn Thị Minh Thư',
+        submittedRole: 'team_member',
+        submittedAt: '14/10/2026 17:20'
+      }
+    ],
+    statusLogs: [
+      { id: 'log-1', status: 'pending', note: 'Tiếp nhận bài toán từ Tổ hợp tác', updatedAt: '05/10/2026', updatedBy: 'Hệ thống' },
+      { id: 'log-2', status: 'verified', note: 'Ban Quản trị xác minh thông tin thực địa tại Ấp 4A', updatedAt: '05/10/2026', updatedBy: 'Admin' },
+      { id: 'log-3', status: 'seeking_support', note: 'Mở kết nối nguồn lực sinh viên và chuyên gia', updatedAt: '05/10/2026', updatedBy: 'Admin' },
+      { id: 'log-4', status: 'in_progress', note: 'Phân công Nhóm SV Công nghệ Sinh học triển khai giải pháp Chitosan', updatedAt: '06/10/2026', updatedBy: 'Admin' },
+      { id: 'log-5', status: 'evaluating', note: 'Nhóm nộp báo cáo kết quả và biên bản nghiệm thu', updatedAt: '14/10/2026', updatedBy: 'Admin' },
+      { id: 'log-6', status: 'completed', note: 'Admin duyệt nghiệm thu kết quả và mở liên kết đánh giá Feedback', updatedAt: '15/10/2026', updatedBy: 'Admin' }
+    ],
     imageDescription: 'Mô hình giàn thủy canh và quy trình thu hoạch rau ăn lá tại Ấp 4A Bình Mỹ.',
-    status: 'seeking_support', // Đã xác minh & đang tìm người hỗ trợ (Công khai)
+    status: 'completed', // ĐÃ HOÀN THÀNH
     createdAt: '05/10/2026',
+    updatedAt: '15/10/2026',
     isPublic: true,
     isSampleData: true
   },
   {
     id: 'prob-02',
+    code: 'BM-002',
+    userId: 'nongdan_ba',
+    assignedTeam: 'Đoàn Y Bác sĩ Gia đình & SV Y Dược HUTECH',
+    assignedMemberIds: ['bs_quan'],
+    progressPercentage: 65,
+    progressUpdates: [
+      {
+        id: 'upd-201',
+        problemId: 'prob-02',
+        title: 'Khám sàng lọc và lập hồ sơ quản lý cơ xương khớp cho 120 hội viên',
+        description: 'Đã tổ chức ngày hội thăm khám sàng lọc miễn phí tại Nhà văn hóa Ấp 2, phát hiện 78 ca thoái hóa khớp gối độ 2 và độ 3.',
+        date: '05/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['/assets/problems/card2.jpg'],
+        submittedBy: 'ThS. BS. Trần Hoàng Quân',
+        submittedRole: 'team_member',
+        submittedAt: '05/10/2026 15:00'
+      },
+      {
+        id: 'upd-202',
+        problemId: 'prob-02',
+        title: 'Khai giảng CLB Dưỡng sinh & Hướng dẫn vật lý trị liệu hàng tuần',
+        description: 'Sinh viên y khoa luân phiên hướng dẫn các bài tập phục hồi chức năng gối, xoa bóp day bấm huyệt an toàn và phát cẩm nang in màu.',
+        date: '12/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['https://images.unsplash.com/photo-1576765608535-5f04d1e3f289?auto=format&fit=crop&w=800&q=80'],
+        submittedBy: 'ThS. BS. Trần Hoàng Quân',
+        submittedRole: 'team_member',
+        submittedAt: '12/10/2026 17:30'
+      },
+      {
+        id: 'upd-203',
+        problemId: 'prob-02',
+        title: 'Đánh giá mức giảm đau sau 4 tuần tập luyện và chuyển giao tủ thuốc ấp',
+        description: 'Đang theo dõi chỉ số thang đo đau VAS và chuẩn bị tủ thuốc thảo dược xoa bóp ngâm chân cho chi hội.',
+        date: '20/10/2026',
+        completed: false,
+        isApproved: false,
+        submittedBy: 'ThS. BS. Trần Hoàng Quân',
+        submittedRole: 'team_member',
+        submittedAt: '18/10/2026 09:00'
+      }
+    ],
+    statusLogs: [
+      { id: 'log-21', status: 'pending', note: 'Tiếp nhận bài toán', updatedAt: '02/10/2026', updatedBy: 'Hệ thống' },
+      { id: 'log-22', status: 'verified', note: 'Xác minh qua Chi hội NCT Ấp 2', updatedAt: '03/10/2026', updatedBy: 'Admin' },
+      { id: 'log-23', status: 'in_progress', note: 'Phân công BS. Quân và đội sinh viên y khoa', updatedAt: '04/10/2026', updatedBy: 'Admin' }
+    ],
     submitterType: 'Hội người cao tuổi',
     contactName: 'Chi hội Người cao tuổi Ấp 2 Bình Mỹ',
     organizationName: 'Chi hội Người cao tuổi Ấp 2 Bình Mỹ',
@@ -61,13 +170,45 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1586773860418-d37222d8fce3?auto=format&fit=crop&w=800&q=80'
     ],
     imageDescription: 'Buổi sinh hoạt kiểm tra sức khỏe và thăm hỏi hội viên cao tuổi tại Ấp 2.',
-    status: 'in_progress', // Đã xác minh & đang triển khai (Công khai)
+    status: 'in_progress', // ĐANG TRIỂN KHAI
     createdAt: '02/10/2026',
+    updatedAt: '18/10/2026',
     isPublic: true,
     isSampleData: true
   },
   {
     id: 'prob-03',
+    code: 'BM-003',
+    assignedTeam: 'CLB Khởi nghiệp Du lịch Sinh thái HUTECH',
+    progressPercentage: 85,
+    progressUpdates: [
+      {
+        id: 'upd-301',
+        problemId: 'prob-03',
+        title: 'Khảo sát cảnh quan 1,8 ha và định hình tour trải nghiệm sông nước',
+        description: 'Đã hoàn thành thiết kế hành trình 1 ngày: Đón khách bến đò Rạch Tra -> Hái bưởi da xanh -> Thưởng thức bánh quê -> Chèo thuyền ngắm hoàng hôn.',
+        date: '04/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['/assets/problems/card3.jpg'],
+        submittedBy: 'CLB Du lịch',
+        submittedRole: 'team_member',
+        submittedAt: '04/10/2026 14:00'
+      },
+      {
+        id: 'upd-302',
+        problemId: 'prob-03',
+        title: 'Xây dựng bản đồ số và bàn giao ấn phẩm truyền thông',
+        description: 'Đã thiết lập fanpage và mã QR tại bến đò, thử nghiệm đón 2 đoàn khách 45 người trải nghiệm phản hồi tốt.',
+        date: '16/10/2026',
+        completed: true,
+        isApproved: true,
+        evidenceImages: ['https://images.unsplash.com/photo-1528127269322-539801943592?auto=format&fit=crop&w=800&q=80'],
+        submittedBy: 'CLB Du lịch',
+        submittedRole: 'team_member',
+        submittedAt: '16/10/2026 18:00'
+      }
+    ],
     submitterType: 'Cơ sở kinh doanh',
     contactName: 'Vườn sinh thái Bưởi Da Xanh Sông Sài Gòn',
     organizationName: 'Vườn sinh thái Bưởi Da Xanh Sông Sài Gòn',
@@ -93,13 +234,15 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80'
     ],
     imageDescription: 'Vườn bưởi da xanh ven bến đò Rạch Tra sông Sài Gòn.',
-    status: 'verified', // Đã xác minh (Công khai)
+    status: 'evaluating', // CHỜ ĐÁNH GIÁ KẾT QUẢ
     createdAt: '28/09/2026',
+    updatedAt: '16/10/2026',
     isPublic: true,
     isSampleData: true
   },
   {
     id: 'prob-04',
+    code: 'BM-004',
     submitterType: 'Hợp tác xã',
     contactName: 'Vườn dược liệu Bình Mỹ Xanh',
     organizationName: 'Vườn dược liệu Bình Mỹ Xanh',
@@ -125,13 +268,14 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?auto=format&fit=crop&w=800&q=80'
     ],
     imageDescription: 'Khu vực luống trồng thảo dược sả chanh và bạc hà tại Vườn dược liệu Bình Mỹ Xanh.',
-    status: 'seeking_support', // Đã xác minh & đang tìm người hỗ trợ (Công khai)
+    status: 'seeking_support', // Đang kết nối nguồn lực
     createdAt: '25/09/2026',
     isPublic: true,
     isSampleData: true
   },
   {
     id: 'prob-05',
+    code: 'BM-005',
     submitterType: 'Cơ sở kinh doanh',
     contactName: 'Cơ sở Mật ong & Thảo dược Sinh thái Bình Mỹ',
     organizationName: 'Cơ sở Mật ong & Thảo dược Sinh thái Bình Mỹ',
@@ -157,13 +301,14 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=800&q=80'
     ],
     imageDescription: 'Sản phẩm mật ong hoa tràm và thảo dược thiên nhiên Bình Mỹ.',
-    status: 'in_progress', // Đã xác minh & đang triển khai (Công khai)
+    status: 'verified', // Đã xác minh
     createdAt: '18/09/2026',
     isPublic: true,
     isSampleData: true
   },
   {
     id: 'prob-06',
+    code: 'BM-006',
     submitterType: 'Đơn vị địa phương',
     contactName: 'Đội Thanh niên Tình nguyện Xã Bình Mỹ',
     organizationName: 'Đội Thanh niên Tình nguyện Xã Bình Mỹ',
@@ -189,9 +334,9 @@ export const initialRealProblems: (RealProblem & { isSampleData?: boolean })[] =
       'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80'
     ],
     imageDescription: 'Khu vực bờ rạch trũng thấp nơi nông dân thường xuyên canh tác tại Bình Mỹ.',
-    status: 'verified', // Đã xác minh (Công khai)
+    status: 'pending', // Chờ xác minh
     createdAt: '12/09/2026',
-    isPublic: true,
+    isPublic: false,
     isSampleData: true
   },
   // BÀI TOÁN MẪU ĐANG CHỜ XÁC MINH (SẼ BỊ LOẠI BỎ KHỎI GIAO DIỆN CÔNG KHAI)

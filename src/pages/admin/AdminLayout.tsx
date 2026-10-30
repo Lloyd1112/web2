@@ -37,12 +37,12 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
 }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [currentUser, setCurrentUser] = useState<AdminUser | null>(null);
+  const [currentUser, setCurrentUser] = useState<any | null>(null);
   const [stats, setStats] = useState(AdminDataService.getDashboardStats());
   const [isNotifOpen, setIsNotifOpen] = useState(false);
 
   useEffect(() => {
-    setCurrentUser(AdminDataService.getCurrentUser());
+    setCurrentUser(AdminDataService.getCurrentUser() as any);
     const updateStats = () => setStats(AdminDataService.getDashboardStats());
     updateStats();
     const unsubscribe = AdminDataService.subscribe(updateStats);
@@ -93,6 +93,13 @@ export const AdminLayout: React.FC<AdminLayoutProps> = ({
       label: 'Tin tức & Sự kiện',
       icon: Newspaper,
       badge: null
+    },
+    {
+      id: 'admin-feedback',
+      label: 'Phản hồi người dân (Feedback)',
+      icon: Sparkles,
+      badge: (stats as any).totalFeedbacks > 0 ? (stats as any).totalFeedbacks : null,
+      badgeColor: 'bg-emerald-100 text-emerald-800'
     },
     {
       id: 'admin-about',

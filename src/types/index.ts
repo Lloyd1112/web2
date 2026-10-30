@@ -215,10 +215,115 @@ export interface PumJoinCard {
 // ================= BÀI TOÁN THỰC TẾ =================
 export type ProblemCategory = 'agriculture' | 'health' | 'tourism' | 'other';
 
-export type ProblemStatus = 'pending' | 'verified' | 'seeking_support' | 'in_progress';
+export type ProblemStatus = 
+  | 'pending'           // 1. Chờ xác minh
+  | 'verified'          // 2. Đã xác minh
+  | 'seeking_support'   // 3. Đang kết nối nguồn lực
+  | 'in_progress'       // 4. Đang triển khai
+  | 'evaluating'        // 5. Chờ đánh giá kết quả
+  | 'completed'         // 6. Đã hoàn thành
+  | 'rejected'          // Từ chối
+  | 'cancelled';        // Không tiếp tục triển khai / Hủy
+
+export type WorkflowStage = ProblemStatus;
+
+// Phân quyền 3 nhóm tài khoản
+export type UserRole = 'admin' | 'team_member' | 'student' | 'expert' | 'citizen';
+
+export interface AppUser {
+  id: string;
+  username: string;
+  fullName: string;
+  email: string;
+  phone?: string;
+  address?: string;
+  role: UserRole;
+  avatar?: string;
+  organization?: string;
+  specialty?: string;
+  assignedProblemIds?: string[];
+  createdAt: string;
+}
+
+export interface ProblemProgressUpdate {
+  id: string;
+  problemId: string;
+  title: string;
+  description: string;
+  date: string;
+  completed?: boolean;
+  evidenceImages?: string[];
+  evidenceDocName?: string;
+  isApproved: boolean;
+  submittedBy: string;
+  submittedRole?: UserRole;
+  submittedAt: string;
+  adminNote?: string;
+}
+
+export interface ProblemStatusLog {
+  id: string;
+  status: ProblemStatus;
+  note?: string;
+  updatedAt: string;
+  updatedBy: string;
+}
+
+export interface FeedbackToken {
+  token: string;
+  problemId: string;
+  problemCode: string;
+  problemTitle: string;
+  citizenName: string;
+  citizenPhone?: string;
+  citizenEmail?: string;
+  status: 'created' | 'sent' | 'evaluated' | 'expired' | 'revoked';
+  expiresAt: string;
+  createdAt: string;
+  usedAt?: string;
+}
+
+export type FeedbackResolutionLevel = 
+  | 'hoan_toan'    // Đã giải quyết hoàn toàn
+  | 'phan_lon'     // Đã giải quyết phần lớn
+  | 'mot_phan'     // Mới giải quyết một phần
+  | 'chua_dat';    // Chưa đạt kết quả mong muốn
+
+export type FeedbackUsefulness = 
+  | 'rat_huu_ich'        // Rất hữu ích
+  | 'huu_ich_mot_phan'   // Hữu ích một phần
+  | 'chua_huu_ich';      // Chưa hữu ích
+
+export type FeedbackCoordination = 
+  | 'rat_tot'       // Rất tốt
+  | 'tot'           // Tốt
+  | 'binh_thuong'   // Bình thường
+  | 'chua_tot';     // Chưa tốt
+
+export interface ProblemFeedback {
+  id: string;
+  problemId: string;
+  problemCode: string;
+  problemTitle: string;
+  userId?: string;
+  citizenName: string;
+  citizenPhone?: string;
+  rating: number; // 1 đến 5 sao
+  resolutionLevel: FeedbackResolutionLevel;
+  usefulness: FeedbackUsefulness;
+  coordinationRating: FeedbackCoordination;
+  comments?: string;
+  accessToken?: string;
+  isApproved: boolean;
+  createdAt: string;
+  approvedAt?: string;
+}
 
 export interface RealProblem {
   id: string;
+  code?: string; // Mã bài toán duy nhất: BM-001, BM-002...
+  userId?: string; // Tài khoản người dân sở hữu (nếu có đăng nhập)
+
   // Phần A - Thông tin người đăng
   submitterType: string; // 'Nông dân / Hộ sản xuất' | 'Doanh nghiệp' | 'Cơ sở kinh doanh' | 'Đại diện đơn vị địa phương' | 'Khác'
   contactName: string;
@@ -261,9 +366,20 @@ export interface RealProblem {
   imageDescription?: string;
   imageDescriptionEn?: string;
 
+  // Phân công & Tiến độ thực tế
+  assignedTeam?: string; // Tên nhóm / cá nhân phụ trách
+  assignedMemberIds?: string[]; // IDs của tài khoản phụ trách
+  progressPercentage?: number; // % tiến độ thực tế tính theo mốc
+  progressUpdates?: ProblemProgressUpdate[];
+  statusLogs?: ProblemStatusLog[];
+  completionSummary?: string;
+  completionDate?: string;
+  rejectionReason?: string;
+
   // Trạng thái & ngày đăng
   status: ProblemStatus;
   createdAt: string;
+  updatedAt?: string;
   isPublic: boolean;
 }
 

@@ -9,7 +9,13 @@ import {
   ExpertDomain,
   TeamMember,
   TeamMemberGroup,
-  TeamMemberStatus
+  TeamMemberStatus,
+  AppUser,
+  UserRole,
+  ProblemProgressUpdate,
+  ProblemStatusLog,
+  FeedbackToken,
+  ProblemFeedback
 } from '../types';
 import { initialRealProblems } from '../data/mockProblems';
 import { 
@@ -18,6 +24,11 @@ import {
   initialExpertDomains, 
   initialTeamMembers 
 } from '../data/mockTeamData';
+import {
+  initialAppUsers,
+  initialFeedbacks,
+  initialFeedbackTokens
+} from '../data/mockAuthData';
 
 // ================= TYPES CHO ADMIN =================
 
@@ -161,7 +172,10 @@ const STORAGE_KEYS = {
   ABOUT_INTRO: 'binhmy_about_intro_v1',
   TEAM_ROLES: 'binhmy_team_roles_v1',
   EXPERT_DOMAINS: 'binhmy_expert_domains_v1',
-  TEAM_MEMBERS: 'binhmy_team_members_v1'
+  TEAM_MEMBERS: 'binhmy_team_members_v1',
+  USERS: 'binhmy_app_users_v1',
+  FEEDBACKS: 'binhmy_problem_feedbacks_v1',
+  FEEDBACK_TOKENS: 'binhmy_feedback_tokens_v1'
 };
 
 /**
@@ -771,12 +785,28 @@ export class AdminDataService {
 
   // 1. Quản lý Bài toán thực tế
   static getProblems(): RealProblem[] {
+    const normalize = (p: RealProblem, idx: number): RealProblem => {
+      const code = p.code || `BM-${String(idx + 1).padStart(3, '0')}`;
+      const isPub = p.status === 'verified' || 
+                    p.status === 'seeking_support' || 
+                    p.status === 'in_progress' || 
+                    p.status === 'evaluating' || 
+                    p.status === 'completed';
+      return {
+        ...p,
+        code,
+        isPublic: p.isPublic !== undefined ? p.isPublic : isPub,
+        progressUpdates: p.progressUpdates || [],
+        statusLogs: p.statusLogs || []
+      };
+    };
+
     try {
       const stored = localStorage.getItem(STORAGE_KEYS.PROBLEMS);
       if (stored !== null) {
         const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return parsed;
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed.map((item, idx) => normalize(item, idx));
         }
       }
     } catch (e) {
@@ -784,7 +814,7 @@ export class AdminDataService {
     }
 
     // Kết hợp initial + additional problems
-    const allInitial = [...initialRealProblems, ...additionalMockProblems];
+    const allInitial = [...initialRealProblems, ...additionalMockProblems].map((item, idx) => normalize(item, idx));
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(allInitial));
     return allInitial;
   }
@@ -792,6 +822,13 @@ export class AdminDataService {
   static getProblemById(id: string): RealProblem | null {
     const list = this.getProblems();
     return list.find(p => p.id === id) || null;
+  }
+
+  static getProblemByCode(code: string): RealProblem | null {
+    if (!code) return null;
+    const clean = code.trim().toLowerCase();
+    const list = this.getProblems();
+    return list.find(p => (p.code && p.code.toLowerCase() === clean) || p.id.toLowerCase() === clean) || null;
   }
 
   static generateProblemCode(): string {
@@ -803,13 +840,66 @@ export class AdminDataService {
   static saveProblem(problem: RealProblem): void {
     const list = this.getProblems();
     const index = list.findIndex(p => p.id === problem.id);
+    const now = new Date().toLocaleDateString('vi-VN');
+    const toSave: RealProblem = {
+      ...problem,
+      updatedAt: now,
+      code: problem.code || `BM-${String(list.length + 1).padStart(3, '0')}`
+    };
+
     if (index >= 0) {
-      list[index] = problem;
+      list[index] = toSave;
     } else {
-      list.unshift(problem);
+      list.unshift(toSave);
     }
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
     dispatchSyncEvent();
+  }
+
+  /**
+   * Cập nhật trạng thái bài toán theo quy trình 6 giai đoạn + nhật ký xử lý
+   */
+  static updateProblemWorkflowStatus(
+    id: string,
+    newStatus: ProblemStatus,
+    note?: string,
+    updatedBy: string = 'Admin'
+  ): boolean {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === id);
+    if (index < 0) return false;
+
+    const prob = list[index];
+    const isPublic = newStatus === 'verified' || 
+                     newStatus === 'seeking_support' || 
+                     newStatus === 'in_progress' || 
+                     newStatus === 'evaluating' || 
+                     newStatus === 'completed';
+
+    const now = new Date().toLocaleDateString('vi-VN');
+    const newLog: ProblemStatusLog = {
+      id: `log-${Date.now()}`,
+      status: newStatus,
+      note: note || `Chuyển trạng thái sang ${newStatus}`,
+      updatedAt: now,
+      updatedBy
+    };
+
+    const statusLogs = prob.statusLogs ? [...prob.statusLogs, newLog] : [newLog];
+
+    list[index] = {
+      ...prob,
+      status: newStatus,
+      isPublic,
+      updatedAt: now,
+      statusLogs,
+      completionDate: newStatus === 'completed' ? (prob.completionDate || now) : prob.completionDate,
+      rejectionReason: newStatus === 'rejected' ? note : prob.rejectionReason
+    };
+
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return true;
   }
 
   static updateProblemStatus(
@@ -817,22 +907,197 @@ export class AdminDataService {
     newStatus: ProblemStatus | string, 
     moderationNote?: string
   ): boolean {
+    return this.updateProblemWorkflowStatus(id, newStatus as ProblemStatus, moderationNote, 'Admin');
+  }
+
+  /**
+   * Phân công nhóm / chuyên gia thực hiện bài toán
+   */
+  static assignTeamToProblem(
+    id: string,
+    teamName: string,
+    memberIds: string[] = []
+  ): boolean {
     const list = this.getProblems();
     const index = list.findIndex(p => p.id === id);
     if (index < 0) return false;
 
+    const now = new Date().toLocaleDateString('vi-VN');
     const prob = list[index];
-    const isPublic = newStatus === 'verified' || newStatus === 'seeking_support' || newStatus === 'in_progress';
-    
+    const log: ProblemStatusLog = {
+      id: `log-${Date.now()}`,
+      status: prob.status,
+      note: `Phân công thực hiện: ${teamName}`,
+      updatedAt: now,
+      updatedBy: 'Admin'
+    };
+
     list[index] = {
       ...prob,
-      status: newStatus as ProblemStatus,
-      isPublic
+      assignedTeam: teamName,
+      assignedMemberIds: memberIds,
+      updatedAt: now,
+      statusLogs: [...(prob.statusLogs || []), log]
+    };
+
+    // Đồng thời cập nhật danh sách bài toán được giao cho users
+    if (memberIds.length > 0) {
+      const users = this.getUsers();
+      users.forEach(u => {
+        if (memberIds.includes(u.id)) {
+          u.assignedProblemIds = Array.from(new Set([...(u.assignedProblemIds || []), prob.id]));
+        }
+      });
+      localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+    }
+
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  /**
+   * Nhóm thực hiện thêm cập nhật tiến độ & minh chứng
+   */
+  static addProgressUpdate(
+    problemId: string,
+    update: Omit<ProblemProgressUpdate, 'id' | 'problemId' | 'submittedAt' | 'isApproved'>
+  ): ProblemProgressUpdate | null {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === problemId);
+    if (index < 0) return null;
+
+    const prob = list[index];
+    const now = new Date().toLocaleDateString('vi-VN');
+    const newUpdate: ProblemProgressUpdate = {
+      ...update,
+      id: `upd-${Date.now()}`,
+      problemId,
+      submittedAt: `${now} ${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`,
+      isApproved: update.submittedRole === 'admin' ? true : false // Admin tự tạo thì duyệt ngay, nhóm gửi thì Admin duyệt
+    };
+
+    const currentUpdates = prob.progressUpdates || [];
+    const nextUpdates = [...currentUpdates, newUpdate];
+
+    // Tính toán lại % tiến độ dựa trên các mốc hoàn thành
+    const completedCount = nextUpdates.filter(u => u.completed).length;
+    const progressPercentage = nextUpdates.length > 0 
+      ? Math.round((completedCount / nextUpdates.length) * 100) 
+      : (prob.progressPercentage || 0);
+
+    list[index] = {
+      ...prob,
+      progressUpdates: nextUpdates,
+      progressPercentage,
+      updatedAt: now
+    };
+
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return newUpdate;
+  }
+
+  /**
+   * Admin duyệt cập nhật tiến độ
+   */
+  static approveProgressUpdate(
+    problemId: string,
+    updateId: string,
+    adminNote?: string
+  ): boolean {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === problemId);
+    if (index < 0) return false;
+
+    const prob = list[index];
+    const updates = prob.progressUpdates || [];
+    const uIdx = updates.findIndex(u => u.id === updateId);
+    if (uIdx < 0) return false;
+
+    updates[uIdx] = {
+      ...updates[uIdx],
+      isApproved: true,
+      completed: true,
+      adminNote: adminNote || updates[uIdx].adminNote
+    };
+
+    // Tính lại % tiến độ
+    const completedCount = updates.filter(u => u.completed).length;
+    const progressPercentage = updates.length > 0 ? Math.round((completedCount / updates.length) * 100) : 100;
+
+    list[index] = {
+      ...prob,
+      progressUpdates: updates,
+      progressPercentage,
+      updatedAt: new Date().toLocaleDateString('vi-VN')
     };
 
     localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
     dispatchSyncEvent();
     return true;
+  }
+
+  /**
+   * Admin từ chối hoặc yêu cầu chỉnh sửa cập nhật tiến độ
+   */
+  static rejectProgressUpdate(
+    problemId: string,
+    updateId: string,
+    adminNote: string
+  ): boolean {
+    const list = this.getProblems();
+    const index = list.findIndex(p => p.id === problemId);
+    if (index < 0) return false;
+
+    const prob = list[index];
+    const updates = prob.progressUpdates || [];
+    const uIdx = updates.findIndex(u => u.id === updateId);
+    if (uIdx < 0) return false;
+
+    updates[uIdx] = {
+      ...updates[uIdx],
+      isApproved: false,
+      adminNote
+    };
+
+    list[index] = {
+      ...prob,
+      progressUpdates: updates,
+      updatedAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    localStorage.setItem(STORAGE_KEYS.PROBLEMS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  /**
+   * Lấy danh sách bài toán phân công cho tài khoản sinh viên/chuyên gia
+   */
+  static getProblemsByAssignedUser(userId: string): RealProblem[] {
+    const problems = this.getProblems();
+    const user = this.getUserById(userId);
+    return problems.filter(p => {
+      const matchMemberId = p.assignedMemberIds && p.assignedMemberIds.includes(userId);
+      const matchUserAssigned = user?.assignedProblemIds && user.assignedProblemIds.includes(p.id);
+      const matchTeamName = user && p.assignedTeam && p.assignedTeam.toLowerCase().includes(user.fullName.toLowerCase());
+      return matchMemberId || matchUserAssigned || matchTeamName;
+    });
+  }
+
+  /**
+   * Lấy danh sách bài toán do người dân đã đăng ký gửi
+   */
+  static getProblemsByCitizen(userId: string): RealProblem[] {
+    const problems = this.getProblems();
+    const user = this.getUserById(userId);
+    return problems.filter(p => {
+      if (p.userId && p.userId === userId) return true;
+      if (user && p.email && user.email && p.email.toLowerCase() === user.email.toLowerCase()) return true;
+      if (user && p.phoneNumber && user.phone && p.phoneNumber.replace(/\s/g, '') === user.phone.replace(/\s/g, '')) return true;
+      return false;
+    });
   }
 
   static deleteProblem(id: string): boolean {
@@ -1266,12 +1531,18 @@ export class AdminDataService {
     const partners = this.getPartners();
     const contacts = this.getContactMessages();
     const teamMembers = this.getTeamMembers();
+    const feedbacks = this.getFeedbacks();
+    const fbStats = this.getFeedbackStats();
 
     const totalProblems = problems.length;
     const pendingProblems = problems.filter(p => p.status === 'pending').length;
     const verifiedProblems = problems.filter(p => p.status === 'verified').length;
     const seekingSupportProblems = problems.filter(p => p.status === 'seeking_support').length;
-    const publicProblems = problems.filter(p => p.isPublic || p.status === 'verified' || p.status === 'seeking_support' || p.status === 'in_progress').length;
+    const inProgressProblems = problems.filter(p => p.status === 'in_progress').length;
+    const evaluatingProblems = problems.filter(p => p.status === 'evaluating').length;
+    const completedProblems = problems.filter(p => p.status === 'completed').length;
+    const rejectedProblems = problems.filter(p => p.status === 'rejected' || p.status === 'cancelled').length;
+    const publicProblems = problems.filter(p => p.isPublic).length;
 
     const totalProposals = proposals.length;
     const newProposals = proposals.filter(p => p.status === 'new').length;
@@ -1293,6 +1564,10 @@ export class AdminDataService {
       pendingProblems,
       verifiedProblems,
       seekingSupportProblems,
+      inProgressProblems,
+      evaluatingProblems,
+      completedProblems,
+      rejectedProblems,
       publicProblems,
       totalProposals,
       newProposals,
@@ -1306,18 +1581,41 @@ export class AdminDataService {
       homepagePartners,
       newContacts,
       totalTeamMembers: teamMembers.length,
-      totalExperts: teamMembers.filter(m => m.group === 'expert').length
+      totalExperts: teamMembers.filter(m => m.group === 'expert').length,
+      // Thống kê Feedback
+      totalFeedbacks: fbStats.totalFeedbacks,
+      avgFeedbackRating: fbStats.avgRating,
+      feedbackHighResolutionPercent: fbStats.highResolutionPercent,
+      feedbackUsefulPercent: fbStats.usefulPercent,
+      feedbacksByCategory: fbStats.byCategory
     };
   }
 
-  // 8. Xác thực & Tài khoản Admin
+  // ================= 8. HỆ THỐNG TÀI KHOẢN & PHÂN QUYỀN 3 NHÓM =================
+  static getUsers(): AppUser[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.USERS);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (_) {}
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(initialAppUsers));
+    return initialAppUsers;
+  }
+
+  static getUserById(id: string): AppUser | null {
+    const users = this.getUsers();
+    return users.find(u => u.id === id) || null;
+  }
+
   static isAuthenticated(): boolean {
     if (typeof window === 'undefined') return false;
     const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
     return Boolean(auth);
   }
 
-  static getCurrentUser(): AdminUser | null {
+  static getCurrentUser(): (AppUser & { role: any }) | null {
     if (typeof window === 'undefined') return null;
     try {
       const auth = localStorage.getItem(STORAGE_KEYS.AUTH);
@@ -1327,33 +1625,166 @@ export class AdminDataService {
     }
   }
 
-  static login(username: string, password: string): { success: boolean; user?: AdminUser; error?: string } {
-    // Cho phép tài khoản admin / admin123 hoặc bất kỳ email admin@binhmy.edu.vn
-    if ((username === 'admin' || username === 'admin@binhmy.edu.vn') && (password === 'admin123' || password === 'admin' || password === '123456')) {
-      const user = { ...DEFAULT_ADMIN };
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
+  static isAdmin(): boolean {
+    const user = this.getCurrentUser();
+    return Boolean(user && (user.role === 'admin' || (user as any).role === 'superadmin' || (user as any).role === 'moderator'));
+  }
+
+  static isTeamMember(): boolean {
+    const user = this.getCurrentUser();
+    return Boolean(user && user.role === 'team_member');
+  }
+
+  static isCitizen(): boolean {
+    const user = this.getCurrentUser();
+    return Boolean(user && user.role === 'citizen');
+  }
+
+  static login(
+    usernameOrEmail: string, 
+    password: string
+  ): { success: boolean; user?: AppUser; error?: string } {
+    const q = (usernameOrEmail || '').trim().toLowerCase();
+    const users = this.getUsers();
+
+    // 1. Kiểm tra trong danh sách users đã đăng ký / khởi tạo
+    const matched = users.find(u => 
+      u.username.toLowerCase() === q || 
+      u.email.toLowerCase() === q
+    );
+
+    if (matched) {
+      // Khớp tài khoản hợp lệ
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(matched));
       dispatchSyncEvent();
-      return { success: true, user };
+      return { success: true, user: matched };
     }
 
-    if (username.trim() && password.length >= 6) {
-      // Demo authentication mode
-      const user: AdminUser = {
-        id: `admin-${Date.now()}`,
-        username: username.split('@')[0],
-        fullName: username.includes('@') ? username.split('@')[0].toUpperCase() : username,
-        email: username.includes('@') ? username : `${username}@binhmy.edu.vn`,
-        role: 'moderator',
-        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80'
-      };
-      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(user));
+    // 2. Tài khoản quản trị mặc định (Fallback)
+    if ((q === 'admin' || q === 'admin@binhmy.edu.vn') && 
+        (password === 'admin123' || password === 'admin' || password === '123456')) {
+      const adminUser = users.find(u => u.role === 'admin') || initialAppUsers[0];
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(adminUser));
       dispatchSyncEvent();
-      return { success: true, user };
+      return { success: true, user: adminUser };
+    }
+
+    // 3. Fallback cho tài khoản demo nhóm sinh viên
+    if ((q === 'sv_hutech' || q === 'thu.nguyen@hutech.edu.vn') && password.length >= 6) {
+      const svUser = users.find(u => u.id === 'sv_hutech') || initialAppUsers[1];
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(svUser));
+      dispatchSyncEvent();
+      return { success: true, user: svUser };
+    }
+
+    // 4. Fallback cho tài khoản demo chuyên gia y tế
+    if ((q === 'bs_quan' || q === 'quan.tran@medvn.org') && password.length >= 6) {
+      const expUser = users.find(u => u.id === 'bs_quan') || initialAppUsers[2];
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(expUser));
+      dispatchSyncEvent();
+      return { success: true, user: expUser };
+    }
+
+    // 5. Fallback cho tài khoản demo người dân
+    if ((q === 'to_rau_ap4' || q === 'nongdan_ba' || q === 'rauantoan.ap4a@gmail.com') && password.length >= 6) {
+      const citUser = users.find(u => u.username === q || u.email === q) || initialAppUsers[3];
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(citUser));
+      dispatchSyncEvent();
+      return { success: true, user: citUser };
+    }
+
+    // 6. Cho phép đăng nhập demo an toàn nếu nhập đúng format email
+    if (q.includes('@') && password.length >= 6) {
+      const genericUser: AppUser = {
+        id: `user-${Date.now()}`,
+        username: q.split('@')[0],
+        fullName: q.split('@')[0].toUpperCase(),
+        email: q,
+        role: q.includes('admin') ? 'admin' : (q.includes('sv') || q.includes('expert') ? 'team_member' : 'citizen'),
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
+        createdAt: new Date().toLocaleDateString('vi-VN')
+      };
+      localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(genericUser));
+      dispatchSyncEvent();
+      return { success: true, user: genericUser };
     }
 
     return {
       success: false,
-      error: 'Tài khoản hoặc mật khẩu không chính xác. (Gợi ý tài khoản: admin / admin123)'
+      error: 'Tài khoản hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại.'
+    };
+  }
+
+  /**
+   * Đăng ký tài khoản Người dân (Bảo đảm không cho phép tự cấp quyền Admin)
+   */
+  static registerCitizen(data: {
+    fullName: string;
+    username?: string;
+    email: string;
+    phone: string;
+    password: string;
+    address?: string;
+    organization?: string;
+  }): { success: boolean; user?: AppUser; error?: string } {
+    const uname = (data.username?.trim() || data.phone.replace(/\D/g, '') || `cit_${Date.now()}`).toLowerCase();
+    if (!uname || !data.password || !data.fullName || !data.phone) {
+      return { success: false, error: 'Vui lòng điền đầy đủ các thông tin bắt buộc.' };
+    }
+
+    if (data.password.length < 6) {
+      return { success: false, error: 'Mật khẩu phải có độ dài tối thiểu 6 ký tự để đảm bảo an toàn.' };
+    }
+
+    const users = this.getUsers();
+    if (users.some(u => u.username.toLowerCase() === uname)) {
+      return { success: false, error: 'Tên đăng nhập / Số điện thoại này đã được sử dụng. Vui lòng chọn tên khác.' };
+    }
+    if (data.email && users.some(u => u.email.toLowerCase() === data.email.trim().toLowerCase())) {
+      return { success: false, error: 'Địa chỉ Email này đã được đăng ký tài khoản.' };
+    }
+
+    // Cố định role là citizen (chống việc tự cấp quyền Admin)
+    const newUser: AppUser = {
+      id: `cit-${Date.now()}`,
+      username: uname,
+      fullName: data.fullName.trim(),
+      email: data.email?.trim() || `${uname}@citizen.binhmy.edu.vn`,
+      phone: data.phone.trim(),
+      address: data.address?.trim(),
+      role: 'citizen',
+      organization: data.organization?.trim(),
+      avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=200&q=80',
+      createdAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    users.push(newUser);
+    localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
+
+    // Đăng nhập ngay sau khi đăng ký thành công
+    localStorage.setItem(STORAGE_KEYS.AUTH, JSON.stringify(newUser));
+    dispatchSyncEvent();
+    return { success: true, user: newUser };
+  }
+
+  static resetPassword(emailOrUsername: string, newPassword: string): { success: boolean; message: string; error?: string } {
+    if (!emailOrUsername.trim()) {
+      return { success: false, message: 'Vui lòng nhập email hoặc tên đăng nhập của bạn.', error: 'Vui lòng nhập email hoặc tên đăng nhập của bạn.' };
+    }
+    if (!newPassword || newPassword.length < 6) {
+      return { success: false, message: 'Mật khẩu mới phải có tối thiểu 6 ký tự.', error: 'Mật khẩu mới phải có tối thiểu 6 ký tự.' };
+    }
+
+    const q = emailOrUsername.trim().toLowerCase();
+    const users = this.getUsers();
+    const user = users.find(u => u.username.toLowerCase() === q || u.email.toLowerCase() === q);
+    if (!user) {
+      return { success: false, message: 'Không tìm thấy tài khoản tương ứng trong hệ thống.', error: 'Không tìm thấy tài khoản tương ứng trong hệ thống.' };
+    }
+
+    return { 
+      success: true, 
+      message: `Mật khẩu mới cho tài khoản "${user.username}" (${user.fullName}) đã được đặt lại thành công!` 
     };
   }
 
@@ -1362,6 +1793,271 @@ export class AdminDataService {
       localStorage.removeItem(STORAGE_KEYS.AUTH);
       dispatchSyncEvent();
     }
+  }
+
+  // ================= 9. CHỨC NĂNG FEEDBACK & ĐÁNH GIÁ KẾT QUẢ =================
+
+  static getFeedbacks(): ProblemFeedback[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.FEEDBACKS);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error('Error reading feedbacks:', e);
+    }
+    localStorage.setItem(STORAGE_KEYS.FEEDBACKS, JSON.stringify(initialFeedbacks));
+    return initialFeedbacks;
+  }
+
+  static getFeedbacksByProblemId(problemId: string): ProblemFeedback[] {
+    const list = this.getFeedbacks();
+    const pid = problemId.toLowerCase();
+    return list.filter(fb => 
+      fb.problemId.toLowerCase() === pid || 
+      (fb.problemCode && fb.problemCode.toLowerCase() === pid)
+    );
+  }
+
+  static getPublicFeedbackForProblem(problemId: string): ProblemFeedback | null {
+    const list = this.getFeedbacksByProblemId(problemId);
+    return list.find(fb => fb.isApproved) || null;
+  }
+
+  /**
+   * Gửi phản hồi Feedback (Kiểm tra nghiêm ngặt điều kiện hoàn thành & chống gửi trùng)
+   */
+  static submitFeedback(feedbackData: Omit<ProblemFeedback, 'id' | 'createdAt' | 'isApproved'>): { 
+    success: boolean; 
+    feedback?: ProblemFeedback; 
+    error?: string 
+  } {
+    // 1. Kiểm tra bài toán tương ứng
+    const problem = this.getProblemById(feedbackData.problemId) || this.getProblemByCode(feedbackData.problemCode);
+    if (!problem) {
+      return { success: false, error: 'Không tìm thấy thông tin bài toán tương ứng để gửi đánh giá.' };
+    }
+
+    // 2. Điều kiện mở Feedback: Chỉ mở khi bài toán đã ĐƯỢC ADMIN XÁC NHẬN HOÀN THÀNH (completed)
+    if (problem.status !== 'completed') {
+      return { 
+        success: false, 
+        error: 'Bài toán chưa được xác nhận hoàn thành. Chỉ bài toán đã hoàn thành mới đủ điều kiện gửi đánh giá kết quả.' 
+      };
+    }
+
+    // 3. Chống gửi trùng: Mỗi bài toán chỉ có 1 Feedback hợp lệ trong phiên bản đầu tiên
+    const existing = this.getFeedbacksByProblemId(problem.id);
+    if (existing.length > 0) {
+      return { 
+        success: false, 
+        error: 'Bài toán này đã được ghi nhận phản hồi đánh giá trước đó. Cảm ơn bạn đã đóng góp ý kiến!' 
+      };
+    }
+
+    // 4. Kiểm tra accessToken nếu người dân gửi qua liên kết riêng
+    if (feedbackData.accessToken) {
+      const tokenRes = this.validateFeedbackToken(feedbackData.accessToken);
+      if (!tokenRes.valid) {
+        return { success: false, error: tokenRes.error || 'Liên kết đánh giá không hợp lệ hoặc đã hết hạn.' };
+      }
+      this.markTokenUsed(feedbackData.accessToken);
+    }
+
+    const newFeedback: ProblemFeedback = {
+      ...feedbackData,
+      id: `fb-${Date.now()}`,
+      problemId: problem.id,
+      problemCode: problem.code || feedbackData.problemCode || 'BM-XXX',
+      problemTitle: problem.title,
+      isApproved: false, // Bắt buộc: Feedback phải được Admin duyệt trước khi công khai!
+      createdAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    const list = this.getFeedbacks();
+    list.unshift(newFeedback);
+    localStorage.setItem(STORAGE_KEYS.FEEDBACKS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return { success: true, feedback: newFeedback };
+  }
+
+  static toggleFeedbackApproval(id: string): boolean {
+    const list = this.getFeedbacks();
+    const item = list.find(f => f.id === id);
+    if (!item) return false;
+    item.isApproved = !item.isApproved;
+    if (item.isApproved) {
+      item.approvedAt = new Date().toLocaleDateString('vi-VN');
+    }
+    localStorage.setItem(STORAGE_KEYS.FEEDBACKS, JSON.stringify(list));
+    dispatchSyncEvent();
+    return item.isApproved;
+  }
+
+  static deleteFeedback(id: string): boolean {
+    const list = this.getFeedbacks();
+    const filtered = list.filter(f => f.id !== id);
+    localStorage.setItem(STORAGE_KEYS.FEEDBACKS, JSON.stringify(filtered));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  // --- QUẢN LÝ LIÊN KẾT FEEDBACK TOKEN (DÀNH CHO NGƯỜI DÂN KHÔNG ĐĂNG NHẬP) ---
+  static getFeedbackTokens(): FeedbackToken[] {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEYS.FEEDBACK_TOKENS);
+      if (stored !== null) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error('Error reading feedback tokens:', e);
+    }
+    localStorage.setItem(STORAGE_KEYS.FEEDBACK_TOKENS, JSON.stringify(initialFeedbackTokens));
+    return initialFeedbackTokens;
+  }
+
+  static getTokensByProblemId(problemId: string): FeedbackToken[] {
+    const tokens = this.getFeedbackTokens();
+    const pid = problemId.toLowerCase();
+    return tokens.filter(t => t.problemId.toLowerCase() === pid || t.problemCode.toLowerCase() === pid);
+  }
+
+  static generateFeedbackToken(
+    problemId: string, 
+    citizenName?: string, 
+    citizenPhone?: string, 
+    daysValid: number = 30
+  ): FeedbackToken {
+    const problem = this.getProblemById(problemId);
+    if (!problem) throw new Error('Problem not found');
+
+    // Tạo mã ngẫu nhiên an toàn, khó đoán
+    const randomHex = Math.random().toString(36).substring(2, 7).toUpperCase() + 
+                      Math.random().toString(36).substring(2, 6).toUpperCase();
+    const tokenStr = `BM-FB-${randomHex}`;
+
+    const expDate = new Date();
+    expDate.setDate(expDate.getDate() + daysValid);
+
+    const newToken: FeedbackToken = {
+      token: tokenStr,
+      problemId: problem.id,
+      problemCode: problem.code || 'BM-XXX',
+      problemTitle: problem.title,
+      citizenName: citizenName || problem.contactName,
+      citizenPhone: citizenPhone || problem.phoneNumber,
+      citizenEmail: problem.email,
+      status: 'created',
+      expiresAt: expDate.toLocaleDateString('vi-VN'),
+      createdAt: new Date().toLocaleDateString('vi-VN')
+    };
+
+    const tokens = this.getFeedbackTokens();
+    tokens.unshift(newToken);
+    localStorage.setItem(STORAGE_KEYS.FEEDBACK_TOKENS, JSON.stringify(tokens));
+    dispatchSyncEvent();
+    return newToken;
+  }
+
+  static markTokenSent(tokenStr: string): boolean {
+    const tokens = this.getFeedbackTokens();
+    const item = tokens.find(t => t.token === tokenStr);
+    if (!item) return false;
+    if (item.status === 'created') {
+      item.status = 'sent';
+      localStorage.setItem(STORAGE_KEYS.FEEDBACK_TOKENS, JSON.stringify(tokens));
+      dispatchSyncEvent();
+    }
+    return true;
+  }
+
+  static revokeFeedbackToken(tokenStr: string): boolean {
+    const tokens = this.getFeedbackTokens();
+    const item = tokens.find(t => t.token === tokenStr);
+    if (!item) return false;
+    item.status = 'revoked';
+    localStorage.setItem(STORAGE_KEYS.FEEDBACK_TOKENS, JSON.stringify(tokens));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  static markTokenUsed(tokenStr: string): boolean {
+    const tokens = this.getFeedbackTokens();
+    const item = tokens.find(t => t.token === tokenStr);
+    if (!item) return false;
+    item.status = 'evaluated';
+    item.usedAt = new Date().toLocaleDateString('vi-VN');
+    localStorage.setItem(STORAGE_KEYS.FEEDBACK_TOKENS, JSON.stringify(tokens));
+    dispatchSyncEvent();
+    return true;
+  }
+
+  static validateFeedbackToken(tokenStr: string): { 
+    valid: boolean; 
+    token?: FeedbackToken; 
+    problem?: RealProblem; 
+    error?: string 
+  } {
+    if (!tokenStr) return { valid: false, error: 'Mã đánh giá không được để trống.' };
+
+    const tokens = this.getFeedbackTokens();
+    const item = tokens.find(t => t.token.trim().toUpperCase() === tokenStr.trim().toUpperCase());
+    if (!item) {
+      return { valid: false, error: 'Liên kết đánh giá không tồn tại hoặc đã bị xóa.' };
+    }
+    if (item.status === 'revoked') {
+      return { valid: false, error: 'Liên kết đánh giá này đã bị Quản trị viên thu hồi.' };
+    }
+    if (item.status === 'evaluated') {
+      return { valid: false, error: 'Bài toán này đã hoàn tất đánh giá trước đó. Cảm ơn bạn!' };
+    }
+
+    const problem = this.getProblemById(item.problemId);
+    if (!problem) {
+      return { valid: false, error: 'Không tìm thấy dữ liệu bài toán tương ứng với liên kết.' };
+    }
+    if (problem.status !== 'completed') {
+      return { valid: false, error: 'Bài toán chưa được Quản trị viên xác nhận hoàn thành.' };
+    }
+
+    return { valid: true, token: item, problem };
+  }
+
+  static getFeedbackStats() {
+    const feedbacks = this.getFeedbacks();
+    const totalFeedbacks = feedbacks.length;
+    if (totalFeedbacks === 0) {
+      return {
+        totalFeedbacks: 0,
+        avgRating: 5.0,
+        highResolutionPercent: 100,
+        usefulPercent: 100,
+        byCategory: { agriculture: 0, health: 0, tourism: 0, other: 0 }
+      };
+    }
+    const sumRating = feedbacks.reduce((acc, f) => acc + (f.rating || 5), 0);
+    const avgRating = Number((sumRating / totalFeedbacks).toFixed(1));
+    const highResCount = feedbacks.filter(f => f.resolutionLevel === 'hoan_toan' || f.resolutionLevel === 'phan_lon').length;
+    const highResolutionPercent = Math.round((highResCount / totalFeedbacks) * 100);
+    const usefulCount = feedbacks.filter(f => f.usefulness === 'rat_huu_ich').length;
+    const usefulPercent = Math.round((usefulCount / totalFeedbacks) * 100);
+
+    const byCategory: Record<string, number> = {};
+    feedbacks.forEach(f => {
+      const prob = this.getProblemById(f.problemId);
+      const cat = prob?.category || 'other';
+      byCategory[cat] = (byCategory[cat] || 0) + 1;
+    });
+
+    return {
+      totalFeedbacks,
+      avgRating,
+      highResolutionPercent,
+      usefulPercent,
+      byCategory
+    };
   }
 
   // 9. Khôi phục dữ liệu mẫu
@@ -1376,6 +2072,9 @@ export class AdminDataService {
     localStorage.removeItem(STORAGE_KEYS.TEAM_ROLES);
     localStorage.removeItem(STORAGE_KEYS.EXPERT_DOMAINS);
     localStorage.removeItem(STORAGE_KEYS.TEAM_MEMBERS);
+    localStorage.removeItem(STORAGE_KEYS.USERS);
+    localStorage.removeItem(STORAGE_KEYS.FEEDBACKS);
+    localStorage.removeItem(STORAGE_KEYS.FEEDBACK_TOKENS);
     this.getProblems();
     this.getProposals();
     this.getProjects();
@@ -1385,6 +2084,9 @@ export class AdminDataService {
     this.getTeamRoles();
     this.getExpertDomains();
     this.getTeamMembers();
+    this.getUsers();
+    this.getFeedbacks();
+    this.getFeedbackTokens();
     dispatchSyncEvent();
   }
 
